@@ -39,8 +39,14 @@ envval() { grep -E "^$1=" .env | head -1 | sed -E "s/^$1=\"?([^\"]*)\"?/\1/"; }
 
 mkdir -p /srv/nagih/uploads /srv/nagih/backups
 
-echo "==> Kéo compose và script mới"
-git pull --ff-only
+# Repo private nên server có thể không clone được. Khi đó chỉ cần ba file:
+# docker-compose.yml, .env, deploy/server-deploy.sh chép lên bằng scp.
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "==> Kéo compose và script mới"
+  git pull --ff-only
+else
+  echo "==> Không phải git repo, dùng file đang có tại chỗ"
+fi
 
 # Image nằm trong package private của GHCR nên server phải đăng nhập.
 # Token là PAT classic có quyền read:packages, điền vào .env một lần.
