@@ -60,8 +60,15 @@ fi
 TAG="${IMAGE_TAG:-$(envval IMAGE_TAG)}"
 TAG="${TAG:-latest}"
 export IMAGE_TAG="$TAG"
-echo "==> Kéo image tag ${IMAGE_TAG}"
-docker compose --profile tools pull
+# Đăng nhập GHCR của GitHub Actions chỉ sống trong lúc job chạy. Chạy tay sau đó
+# với tag cụ thể đã có trên máy thì không cần pull, khỏi vướng "denied".
+have_image() { docker image inspect "ghcr.io/haonnedu/nagihgraphy-$1:${IMAGE_TAG}" >/dev/null 2>&1; }
+if [[ "$IMAGE_TAG" != "latest" ]] && have_image web && have_image migrator; then
+  echo "==> Image tag ${IMAGE_TAG} đã có trên máy, không pull"
+else
+  echo "==> Kéo image tag ${IMAGE_TAG}"
+  docker compose --profile tools pull
+fi
 
 echo "==> Migration"
 docker compose --profile tools run --rm migrate
@@ -86,6 +93,13 @@ DOMAIN="$(envval SITE_DOMAIN)"
 for i in $(seq 1 30); do
   if docker compose exec -T web node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" 2>/dev/null; then
     echo "OK trong container, tag ${IMAGE_TAG}. Kiểm tra ngoài: curl -s https://${DOMAIN}/api/health"
+    # Ghi tag đang chạy vào .env để lệnh docker compose gõ tay sau này dùng đúng image.
+    if grep -q '^IMAGE_TAG=' .env; then
+      sed -i "s|^IMAGE_TAG=.*|IMAGE_TAG=${IMAGE_TAG}|" .env
+    else
+      printf 'IMAGE_TAG=%s
+' "$IMAGE_TAG" >> .env
+    fi
     docker image prune -f >/dev/null
     exit 0
   fi

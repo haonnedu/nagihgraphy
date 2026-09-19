@@ -133,7 +133,7 @@ Rollback: vào tab Actions, chọn lần chạy của commit muốn quay về, b
 cd /opt/nagihgraphy && IMAGE_TAG=sha-abc1234 bash deploy/server-deploy.sh
 ```
 
-Chạy tay trên server ngoài Actions thì cần đăng nhập GHCR trước, vì package private: điền `GHCR_TOKEN` là PAT classic có quyền `read:packages` vào `.env`, script tự login. Nếu CI hỏng mà cần lên gấp, build tại chỗ bằng `docker-compose.build.yml`, nhớ build ăn 1–2 GB RAM.
+Sau mỗi lần deploy, script ghi tag đang chạy vào `IMAGE_TAG` trong `.env`, nên gõ tay `docker compose --profile tools run --rm seed` hay chạy lại script với tag đó đều dùng image có sẵn, không cần đăng nhập GHCR. Chỉ khi cần pull tag khác ngoài Actions mới phải đăng nhập, vì package private: điền `GHCR_TOKEN` là PAT classic có quyền `read:packages` vào `.env`, script tự login. Nếu CI hỏng mà cần lên gấp, build tại chỗ bằng `docker-compose.build.yml`, nhớ build ăn 1–2 GB RAM.
 
 Chỉ chạy `seed` một lần. Nó nạp 6 thợ mẫu và 17 ảnh từ bản artifact của khách, trong đó ba thợ gắn cờ `sample` là dữ liệu giả cần thay bằng thợ thật.
 
