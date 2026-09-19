@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Prisma client sinh tự động, không phải mã tay.
+    "src/generated/**",
+    // Script Node thuần dùng require, không đi vào bundle Next.
+    "scripts/**/*.cjs",
   ]),
 ]);
 
