@@ -1,0 +1,356 @@
+// NAGIH GRAPHY — data model
+// Xem PLAN.md mục 4. Web là kênh giới thiệu thợ + thu thập lead, không phải hệ đặt chỗ.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------- bảng giá
+
+model Tier {
+  id            String   @id @default(cuid())
+  /// mã cũ trong bản artifact: e1, e2, e3, e4, intern
+  slug          String   @unique
+  name          String
+  basePrice     Int      @default(0)
+  note          String   @default("")
+  /// ẩn khỏi bảng giá công khai (Take Care, Intern)
+  hiddenInTable Boolean  @default(false)
+  order         Int      @default(0)
+
+  groupPrices   GroupPrice[]
+  photographers Photographer[]
+
+  @@map("tiers")
+}
+
+/// Giá gói nhóm theo số người, thay cho mảng group[] trong bản cũ.
+model GroupPrice {
+  id     String @id @default(cuid())
+  tierId String
+  people Int
+  price  Int
+
+  tier   Tier   @relation(fields: [tierId], references: [id], onDelete: Cascade)
+
+  @@unique([tierId, people])
+  @@map("group_prices")
+}
+
+// ---------------------------------------------------------------- thợ
+
+model Photographer {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  name          String
+  tierId        String
+  city          String
+  style         String  @default("")
+  bio           String  @default("")
+  rating        Decimal @default(0) @db.Decimal(2, 1)
+  sessions      Int     @default(0)
+  /// chỉ điền khi thợ có giá khác hạng, 0 = theo hạng
+  priceOverride Int     @default(0)
+  driveUrl      String  @default("")
+  /// Kênh liên hệ riêng của thợ. Không có sale, khách nhắn thẳng cho thợ.
+  /// Trống thì trang khách rơi về liên hệ chung của studio trong site_settings.
+  zalo          String  @default("")
+  phone         String  @default("")
+  facebook      String  @default("")
+  instagram     String  @default("")
+  published     Boolean @default(true)
+  /// dữ liệu mẫu từ bản artifact, cần thay bằng thợ thật
+  isSample      Boolean @default(false)
+  order         Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tier         Tier                   @relation(fields: [tierId], references: [id])
+  photos       Photo[]
+  features     PhotographerFeature[]
+  tags         PhotographerTag[]
+  availability Availability[]
+  leads        Lead[]
+
+  @@index([published, order])
+  @@index([city])
+  @@map("photographers")
+}
+
+model Photo {
+  id             String @id @default(cuid())
+  photographerId String
+  /// đường dẫn tương đối dưới /uploads, không phải URL tuyệt đối
+  path           String
+  width          Int    @default(0)
+  height         Int    @default(0)
+  blurHash       String @default("")
+  alt            String @default("")
+  order          Int    @default(0)
+
+  createdAt DateTime @default(now())
+
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+
+  @@index([photographerId, order])
+  @@map("photos")
+}
+
+// ---------------------------------------------------------------- dịch vụ đi kèm
+
+enum FeatureStatus {
+  IN // có sẵn trong gói
+  EXTRA // có, tính thêm phí
+  NO // không có
+}
+
+model Feature {
+  id         String @id @default(cuid())
+  /// mã cũ: bubble, light, outfit, assistant, raw
+  key        String @unique
+  label      String
+  /// nhãn ngắn hiện trên card, rỗng = không hiện
+  shortLabel String @default("")
+  order      Int    @default(0)
+
+  photographers PhotographerFeature[]
+
+  @@map("features")
+}
+
+model PhotographerFeature {
+  photographerId String
+  featureId      String
+  status         FeatureStatus @default(NO)
+
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  feature      Feature      @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@id([photographerId, featureId])
+  @@map("photographer_features")
+}
+
+// ---------------------------------------------------------------- tag
+
+model Tag {
+  id    String @id @default(cuid())
+  slug  String @unique
+  name  String
+  order Int    @default(0)
+
+  photographers PhotographerTag[]
+
+  @@map("tags")
+}
+
+model PhotographerTag {
+  photographerId String
+  tagId          String
+
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  tag          Tag          @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([photographerId, tagId])
+  @@map("photographer_tags")
+}
+
+// ---------------------------------------------------------------- phụ phí đi tỉnh
+
+model TravelZone {
+  id     String @id @default(cuid())
+  slug   String @unique
+  name   String
+  /// phụ phí tham khảo cho 1 thợ
+  minFee Int    @default(0)
+  /// 0 = không có mức trần, hiển thị một con số
+  maxFee Int    @default(0)
+  note   String @default("")
+  order  Int    @default(0)
+
+  leads Lead[]
+
+  @@map("travel_zones")
+}
+
+/// Các dòng chính sách hiển thị dưới bảng phụ phí.
+model Policy {
+  id    String @id @default(cuid())
+  text  String
+  order Int    @default(0)
+
+  @@map("policies")
+}
+
+// ---------------------------------------------------------------- lịch
+
+enum Half {
+  MORNING
+  AFTERNOON
+}
+
+enum AvailabilityStatus {
+  OPEN // còn nhận
+  BUSY // đã có khách
+  OFF // thợ nghỉ
+}
+
+/// Một thợ nhận tối đa 2 buổi mỗi ngày: sáng và chiều.
+/// Chụp cả ngày chiếm cả hai ô. Lịch chỉ để hiển thị, khách không tự chiếm chỗ.
+model Availability {
+  id             String             @id @default(cuid())
+  photographerId String
+  date           DateTime           @db.Date
+  half           Half
+  status         AvailabilityStatus @default(OPEN)
+  note           String             @default("")
+
+  updatedAt DateTime @updatedAt
+
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+
+  @@unique([photographerId, date, half])
+  @@index([date, status])
+  @@map("availability")
+}
+
+// ---------------------------------------------------------------- lead
+
+enum ShootType {
+  FULL_DAY
+  HALF_DAY
+}
+
+enum LeadStatus {
+  NEW // chưa ai liên hệ
+  CONTACTED // sale đã nhắn
+  QUOTED // đã báo giá
+  DEPOSITED // đã cọc
+  CONFIRMED // đã chốt lịch
+  DONE // đã chụp
+  LOST // mất khách
+}
+
+enum LeadChannel {
+  ZALO
+  INSTAGRAM
+  FACEBOOK
+  PHONE
+  SMS
+  FORM // điền form nhưng chưa bấm kênh nào
+  MANUAL // sale tự nhập
+}
+
+model Lead {
+  id             String  @id @default(cuid())
+  /// mã ngắn để sale và khách cùng nhắc tới, VD: NG-2609-A7K3
+  code           String  @unique
+  photographerId String?
+
+  customerName String
+  phone        String
+  zalo         String  @default("")
+  email        String  @default("")
+
+  shootDate     DateTime?  @db.Date
+  shootType     ShootType  @default(FULL_DAY)
+  people        Int        @default(1)
+  travelZoneId  String?
+  placeDetail   String     @default("")
+  concept       String     @default("")
+  eveningAddon  Boolean    @default(false)
+
+  /// số đã hiển thị cho khách lúc đó, để sale đối chiếu. Không phải giá chốt.
+  quotedBase   Int @default(0)
+  quotedTravel Int @default(0)
+  quotedTotal  Int @default(0)
+
+  status       LeadStatus  @default(NEW)
+  channel      LeadChannel @default(FORM)
+  internalNote String      @default("")
+
+  userAgent String @default("")
+  referrer  String @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photographer Photographer? @relation(fields: [photographerId], references: [id], onDelete: SetNull)
+  travelZone   TravelZone?   @relation(fields: [travelZoneId], references: [id], onDelete: SetNull)
+  events       LeadEvent[]
+
+  @@index([status, createdAt])
+  @@index([shootDate])
+  @@map("leads")
+}
+
+model LeadEvent {
+  id         String      @id @default(cuid())
+  leadId     String
+  fromStatus LeadStatus?
+  toStatus   LeadStatus
+  actorId    String?
+  note       String      @default("")
+  createdAt  DateTime    @default(now())
+
+  lead  Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  actor AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([leadId, createdAt])
+  @@map("lead_events")
+}
+
+// ---------------------------------------------------------------- quản trị
+
+enum AdminRole {
+  OWNER
+  SALE
+  VIEWER
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String    @default("")
+  passwordHash String
+  role         AdminRole @default(VIEWER)
+  active       Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leadEvents LeadEvent[]
+  auditLogs  AuditLog[]
+
+  @@map("admin_users")
+}
+
+/// Thông tin studio, liên hệ, nội dung landing. Một hàng một khoá.
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  actorId  String?
+  entity   String
+  entityId String
+  action   String
+  diff     Json?
+  createdAt DateTime @default(now())
+
+  actor AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

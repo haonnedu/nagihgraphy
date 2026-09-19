@@ -1,0 +1,123 @@
+# NAGIH GRAPHY — triển khai trên server riêng.
+#
+# Server đã có sẵn Traefik v3.1 (network `proxy`, entrypoint `web` và `websecure`,
+# certresolver `letsencrypt`) và container postgres:15-alpine tên `esm_postgres`.
+# Dùng chung cả hai, không dựng lại. Quy ước label đặt theo đúng kiểu luxefleur.
+#
+#   docker compose build
+#   docker compose --profile tools run --rm migrate
+#   docker compose --profile tools run --rm seed
+#   docker compose up -d
+#
+# Còn một giá trị phải xác nhận trước khi chạy: DATABASE_NETWORK trong .env,
+# là network mà esm_postgres đang nằm trong đó. Lấy bằng:
+#   docker inspect esm_postgres --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Bắt buộc: Dockerfile có nhiều stage, stage cuối là `migrator`.
+      target: runner
+    image: nagih-web:latest
+    container_name: nagih-web
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      UPLOAD_DIR: /app/uploads
+      NEXT_PUBLIC_UPLOAD_BASE: /uploads
+      NODE_ENV: production
+    volumes:
+      - /srv/nagih/uploads:/app/uploads
+    networks:
+      - proxy
+      - database
+    expose:
+      - "3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.services.nagih.loadbalancer.server.port=3000"
+
+      # --- HTTP: cả apex và www đều chuyển sang HTTPS
+      - "traefik.http.routers.nagih-web.entrypoints=web"
+      - "traefik.http.routers.nagih-web.rule=Host(`${SITE_DOMAIN}`) || Host(`www.${SITE_DOMAIN}`)"
+      - "traefik.http.routers.nagih-web.middlewares=nagih-https-redirect"
+      - "traefik.http.middlewares.nagih-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.nagih-https-redirect.redirectscheme.permanent=true"
+
+      # --- HTTPS: www chuyển 301 về apex
+      # Phục vụ cùng nội dung trên hai hostname sẽ chia đôi điểm SEO,
+      # nên chỉ apex là bản chính. luxefleur đang phục vụ cả hai, ở đây làm khác.
+      - "traefik.http.routers.nagih-www.entrypoints=websecure"
+      - "traefik.http.routers.nagih-www.rule=Host(`www.${SITE_DOMAIN}`)"
+      - "traefik.http.routers.nagih-www.tls=true"
+      - "traefik.http.routers.nagih-www.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nagih-www.service=nagih"
+      - "traefik.http.routers.nagih-www.middlewares=nagih-www-redirect"
+      - "traefik.http.middlewares.nagih-www-redirect.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.nagih-www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.nagih-www-redirect.redirectregex.permanent=true"
+
+      # --- HTTPS: router chính, chỉ apex
+      - "traefik.http.routers.nagih-websecure.entrypoints=websecure"
+      - "traefik.http.routers.nagih-websecure.rule=Host(`${SITE_DOMAIN}`)"
+      - "traefik.http.routers.nagih-websecure.tls=true"
+      - "traefik.http.routers.nagih-websecure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nagih-websecure.service=nagih"
+
+      # --- HTTPS: router riêng cho form liên hệ, có giới hạn nhịp
+      # Thay cho limit_req của Nginx: 10 request/phút mỗi IP, cho dồn tối đa 5.
+      - "traefik.http.routers.nagih-leads.entrypoints=websecure"
+      - "traefik.http.routers.nagih-leads.rule=Host(`${SITE_DOMAIN}`) && PathPrefix(`/api/leads`)"
+      - "traefik.http.routers.nagih-leads.tls=true"
+      - "traefik.http.routers.nagih-leads.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nagih-leads.service=nagih"
+      - "traefik.http.routers.nagih-leads.priority=100"
+      - "traefik.http.routers.nagih-leads.middlewares=nagih-ratelimit"
+      - "traefik.http.middlewares.nagih-ratelimit.ratelimit.average=10"
+      - "traefik.http.middlewares.nagih-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.nagih-ratelimit.ratelimit.burst=5"
+
+  # Chạy migration. Không thường trực, phải gọi tay:
+  #   docker compose --profile tools run --rm migrate
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    image: nagih-migrator:latest
+    profiles: ["tools"]
+    env_file: .env
+    networks:
+      - database
+    command: ["npx", "prisma", "migrate", "deploy"]
+
+  # Nạp dữ liệu từ bản artifact của khách. Chạy một lần sau migration:
+  #   docker compose --profile tools run --rm seed
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    image: nagih-migrator:latest
+    profiles: ["tools"]
+    env_file: .env
+    environment:
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - /srv/nagih/uploads:/app/uploads
+    networks:
+      - database
+    command: ["npx", "tsx", "prisma/seed.ts"]
+
+networks:
+  # Network sẵn có của Traefik trên server này.
+  proxy:
+    external: true
+    name: proxy
+  # Network mà esm_postgres đang nằm trong đó. Xác nhận rồi điền vào .env.
+  database:
+    external: true
+    name: ${DATABASE_NETWORK:-esm_default}

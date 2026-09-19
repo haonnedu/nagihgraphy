@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+uploads
+npm-debug.log*
+*.md
+!README.md
+deploy/certbot-webroot

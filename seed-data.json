@@ -1,0 +1,429 @@
+{
+  "studio": {
+    "name": "NAGIH GRAPHY",
+    "logo": "seed-assets/logo.png",
+    "kicker": "Chọn thợ chụp",
+    "pageTitle": "NAGIH Chọn Thợ",
+    "headline": "Chọn thợ *cá nhân theo vibe*",
+    "intro": "Xem portfolio, giá theo hạng thợ và chi phí di chuyển tỉnh thành, rồi nhắn thẳng cho thợ để giữ lịch.",
+    "priceNote": "Giá khởi điểm cho 1 buổi chụp cá nhân. Giá cuối phụ thuộc gói, số người và địa điểm, thợ sẽ báo chi tiết khi bạn nhắn.",
+    "cities": [
+      "Hà Nội",
+      "Sài Gòn"
+    ],
+    "contacts": {
+      "zalo": "0961.120.879",
+      "phone": "0961.120.879",
+      "instagram": "https://www.instagram.com/nagih.graphy/",
+      "facebook": "https://www.facebook.com/profile.php?id=61590047686290",
+      "tiktok": ""
+    },
+    "bookingLead": "Giữ lịch với thợ trong 4 bước.",
+    "steps": [
+      {
+        "title": "Chọn thợ",
+        "text": "Xem portfolio, chọn thợ bạn thích."
+      },
+      {
+        "title": "Nhắn thợ",
+        "text": "Gửi ngày chụp và số người cho thợ qua Zalo hoặc Messenger, web soạn sẵn tin nhắn cho bạn."
+      },
+      {
+        "title": "Cọc giữ lịch",
+        "text": "Thợ xác nhận lịch trống và gửi thông tin cọc theo chính sách NAGIH."
+      },
+      {
+        "title": "Chụp và nhận ảnh",
+        "text": "Trao đổi trong nhóm trước buổi chụp để thống nhất moodboard và thời gian"
+      }
+    ],
+    "maxPeople": 9
+  },
+  "tags": [
+    "Kỷ yếu Đại học",
+    "Kỷ yếu THPT",
+    "Chụp nhóm",
+    "Chụp cá nhân"
+  ],
+  "features": [
+    {
+      "key": "bubble",
+      "label": "Súng bắn bong bóng / khói màu",
+      "short": "Bong bóng"
+    },
+    {
+      "key": "light",
+      "label": "Đèn (flash & đèn liên tục)",
+      "short": "Đèn"
+    },
+    {
+      "key": "outfit",
+      "label": "Hỗ trợ trang phục / phụ kiện"
+    },
+    {
+      "key": "assistant",
+      "label": "Trợ lý đi kèm"
+    },
+    {
+      "key": "raw",
+      "label": "Trả file ảnh gốc"
+    }
+  ],
+  "tiers": [
+    {
+      "id": "e1",
+      "name": "Ekip 1",
+      "price": 2500000,
+      "note": "Thợ chủ lực, nhiều kinh nghiệm nhất, lịch kín nhanh.",
+      "group": []
+    },
+    {
+      "id": "e2",
+      "name": "Ekip 2",
+      "price": 2200000,
+      "note": "Tay nghề vững, portfolio đa phong cách.",
+      "group": []
+    },
+    {
+      "id": "e3",
+      "name": "Ekip 3",
+      "price": 2200000,
+      "note": "Thợ trẻ, bắt trend nhanh.",
+      "group": []
+    },
+    {
+      "id": "e4",
+      "name": "Take Care",
+      "price": 0,
+      "note": "",
+      "group": [],
+      "hideInTable": true
+    },
+    {
+      "id": "intern",
+      "name": "Intern",
+      "price": 0,
+      "note": "",
+      "group": [],
+      "hideInTable": true
+    }
+  ],
+  "photographers": [
+    {
+      "id": "s1",
+      "name": "Tiger",
+      "tier": "e1",
+      "city": "Hà Nội",
+      "style": "Chụp như nào cũng chụp được",
+      "rating": 4.9,
+      "sessions": 132,
+      "tags": [
+        "Kỷ yếu Đại học",
+        "Kỷ yếu THPT",
+        "Chụp nhóm",
+        "Chụp cá nhân"
+      ],
+      "features": {
+        "bubble": "in",
+        "light": "in",
+        "outfit": "no",
+        "assistant": "extra",
+        "raw": "no"
+      },
+      "photos": [
+        "seed-assets/s1-1.jpg",
+        "seed-assets/s1-2.jpg",
+        "seed-assets/s1-3.jpg",
+        "seed-assets/s1-4.jpg"
+      ],
+      "price": 0,
+      "availableOn": "2026-09-17",
+      "hidden": false,
+      "drive": "https://drive.google.com/drive/folders/1cCDSpqgq2EEV-VFDvg2vVaiOjFtnHl3U"
+    },
+    {
+      "id": "s2",
+      "name": "Bear",
+      "tier": "e1",
+      "city": "Hà Nội",
+      "style": "Phong cách nào cũng tự tin",
+      "rating": 4.9,
+      "sessions": 89,
+      "tags": [
+        "Kỷ yếu Đại học",
+        "Kỷ yếu THPT",
+        "Chụp nhóm",
+        "Chụp cá nhân"
+      ],
+      "features": {
+        "bubble": "in",
+        "light": "in",
+        "outfit": "no",
+        "assistant": "extra",
+        "raw": "in"
+      },
+      "photos": [
+        "seed-assets/s2-1.jpg",
+        "seed-assets/s2-2.jpg",
+        "seed-assets/s2-3.jpg",
+        "seed-assets/s2-4.jpg"
+      ],
+      "price": 0,
+      "availableOn": "2026-09-17",
+      "hidden": false,
+      "drive": ""
+    },
+    {
+      "id": "s3",
+      "name": "Shark",
+      "tier": "e1",
+      "city": "Hà Nội",
+      "style": "Tone pastel, nhẹ nhàng",
+      "rating": 4.9,
+      "sessions": 80,
+      "tags": [
+        "Kỷ yếu Đại học",
+        "Chụp cá nhân"
+      ],
+      "features": {
+        "bubble": "in",
+        "light": "in",
+        "outfit": "in",
+        "assistant": "no",
+        "raw": "in"
+      },
+      "photos": [
+        "seed-assets/s3-1.jpg",
+        "seed-assets/s3-2.jpg",
+        "seed-assets/s3-3.jpg"
+      ],
+      "price": 0,
+      "availableOn": "2026-09-17",
+      "hidden": false,
+      "drive": ""
+    },
+    {
+      "id": "s4",
+      "name": "Duy",
+      "tier": "e3",
+      "city": "Hà Nội",
+      "style": "Film màu, đường phố",
+      "rating": 4.7,
+      "sessions": 47,
+      "tags": [
+        "Kỷ yếu THPT",
+        "Chụp nhóm",
+        "Nhận đi tỉnh"
+      ],
+      "features": {
+        "bubble": "in",
+        "light": "no",
+        "outfit": "no",
+        "assistant": "no",
+        "raw": "in"
+      },
+      "photos": [
+        "seed-assets/s4-1.jpg",
+        "seed-assets/s4-2.jpg"
+      ],
+      "price": 0,
+      "availableOn": "2026-09-17",
+      "sample": true,
+      "drive": ""
+    },
+    {
+      "id": "s5",
+      "name": "Hà",
+      "tier": "e4",
+      "city": "Sài Gòn",
+      "style": "Nắng chiều, cảm xúc",
+      "rating": 4.8,
+      "sessions": 38,
+      "tags": [
+        "Kỷ yếu Đại học",
+        "Chụp cá nhân"
+      ],
+      "features": {
+        "bubble": "no",
+        "light": "in",
+        "outfit": "no",
+        "assistant": "no",
+        "raw": "in"
+      },
+      "photos": [
+        "seed-assets/s5-1.jpg",
+        "seed-assets/s5-2.jpg"
+      ],
+      "price": 0,
+      "availableOn": "",
+      "sample": true,
+      "drive": ""
+    },
+    {
+      "id": "s6",
+      "name": "Khang",
+      "tier": "intern",
+      "city": "Sài Gòn",
+      "style": "Tối giản, sạch sẽ",
+      "rating": 4.6,
+      "sessions": 12,
+      "tags": [
+        "Kỷ yếu THPT",
+        "Chụp nhóm"
+      ],
+      "features": {
+        "bubble": "no",
+        "light": "no",
+        "outfit": "no",
+        "assistant": "no",
+        "raw": "in"
+      },
+      "photos": [
+        "seed-assets/s6-1.jpg",
+        "seed-assets/s6-2.jpg"
+      ],
+      "price": 0,
+      "availableOn": "2026-09-17",
+      "sample": true,
+      "drive": ""
+    }
+  ],
+  "travel": {
+    "note": "Các mức dưới đây là phụ phí tham khảo cho 1 thợ, không phải mức cố định. Thợ sẽ báo chính xác theo địa điểm cụ thể khi bạn nhắn.",
+    "rows": [
+      {
+        "name": "Hà Nội (2 địa điểm nội thành)",
+        "min": 100000,
+        "max": 0,
+        "note": "Áp dụng khi 2 điểm chụp cách nhau trên 5km."
+      },
+      {
+        "name": "Hà Nội (ngoại thành)",
+        "min": 200000,
+        "max": 0,
+        "note": "Chỉ chụp tại trường."
+      },
+      {
+        "name": "Vĩnh Phúc",
+        "min": 300000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Bắc Ninh",
+        "min": 300000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Lạng Sơn",
+        "min": 800000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Hải Dương",
+        "min": 400000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Thái Nguyên",
+        "min": 500000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Hải Phòng",
+        "min": 600000,
+        "max": 0,
+        "note": "Các huyện xa trung tâm có thể chênh thêm một chút."
+      },
+      {
+        "name": "Hạ Long",
+        "min": 700000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Quảng Ninh",
+        "min": 600000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Phú Thọ",
+        "min": 600000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Sơn La",
+        "min": 800000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Lào Cai",
+        "min": 900000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Tuyên Quang",
+        "min": 800000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Bắc Kạn",
+        "min": 800000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Thanh Hoá",
+        "min": 800000,
+        "max": 0,
+        "note": ""
+      },
+      {
+        "name": "Ninh Bình",
+        "min": 500000,
+        "max": 0,
+        "note": "Xa trung tâm thành phố: 600.000đ."
+      },
+      {
+        "name": "Nghệ An",
+        "min": 900000,
+        "max": 1000000,
+        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do thợ cần lưu trú qua đêm để chụp đúng giờ."
+      },
+      {
+        "name": "Hà Tĩnh",
+        "min": 900000,
+        "max": 0,
+        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do thợ cần lưu trú qua đêm để chụp đúng giờ."
+      },
+      {
+        "name": "Lai Châu",
+        "min": 800000,
+        "max": 0,
+        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do thợ cần lưu trú qua đêm để chụp đúng giờ."
+      },
+      {
+        "name": "Bắc Giang",
+        "min": 500000,
+        "max": 0,
+        "note": ""
+      }
+    ],
+    "policies": [
+      "Book theo nhóm để chia sẻ phụ phí di chuyển.",
+      "Gói nhóm kỷ yếu 2-4 người không tặng thêm thợ khi chụp ở tỉnh xa.",
+      "Tỉnh xa không nhận chụp cá nhân nửa ngày, chỉ nhận nhóm nếu chụp nửa ngày.",
+      "Gói nhóm kỷ yếu 5-6 người đi tỉnh được tặng 1 thợ (tính phụ phí di chuyển cho 2 thợ).",
+      "Chụp thêm buổi tối (đến 20h): +500.000đ."
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/*
+  Design token lấy nguyên từ bản artifact của khách để giữ nhận diện.
+  Xem PLAN.md mục 1.
+*/
+@theme {
+  --color-bg: #f7fafd;
+  --color-surface: #ffffff;
+  --color-sunk: #eef3f8;
+
+  --color-ink: #0e2338;
+  --color-ink-2: #4a5b6c;
+  --color-ink-3: #7e8c9a;
+
+  --color-line: #dfe7ef;
+  --color-line-2: #c8d4e0;
+
+  --color-blue: #0070bb;
+  --color-blue-deep: #005a96;
+  --color-blue-soft: #e6f1fa;
+
+  --color-orange: #f05923;
+  --color-orange-soft: #fff0e9;
+
+  --color-cta: #d44614;
+  --color-cta-hover: #b93b0f;
+
+  /* trạng thái dịch vụ: có sẵn / tính thêm phí / không có */
+  --color-in-bg: #e8f4ec;
+  --color-in-ink: #006836;
+  --color-in-line: #bfddc9;
+  --color-extra-bg: #fff0e9;
+  --color-extra-ink: #b23c0f;
+  --color-extra-line: #f6c8b3;
+  --color-none-bg: #eef3f8;
+  --color-none-ink: #667585;
+  --color-none-line: #dae3ec;
+
+  --color-avail: #006836;
+  --color-warn: #b23c0f;
+
+  --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
+  --font-script: var(--font-dancing), var(--font-lora), cursive;
+  --font-sans: var(--font-bvp), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --radius-card: 14px;
+
+  --shadow-card: 0 1px 2px rgb(14 35 56 / 0.05), 0 10px 26px -12px rgb(0 112 187 / 0.22);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  /* Lenis điều khiển scroll, nên tắt smooth scroll gốc của trình duyệt */
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+/*
+  Tắt sạch hiệu ứng khi người dùng yêu cầu giảm chuyển động.
+  Bản artifact cũ đã làm đúng chỗ này, giữ nguyên.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thanh cuộn ngang của gallery: ẩn đi cho sạch */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Dải chạy ngang vô tận: nội dung nhân đôi nên dịch đúng 100% là nối liền */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Nhấc nhẹ khi rê chuột, dùng cho card và nút */
+@utility lift {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift:hover {
+    transform: none;
+  }
+}
