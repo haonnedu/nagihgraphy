@@ -89,4 +89,61 @@ jobs:
           echo "${{ steps.meta_web.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
           echo "${{ steps.meta_migrator.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          echo "Trên server: \`bash deploy/server-deploy.sh\` để kéo bản mới nhất." >> "$GITHUB_STEP_SUMMARY"
+
+  # SSH vào server, kéo đúng image của commit này rồi bật. Cần 4 secret:
+  #   SSH_HOST, SSH_PORT, SSH_USER, SSH_PRIVATE_KEY
+  # Đăng nhập GHCR trên server bằng GITHUB_TOKEN của lần chạy, không cần PAT.
+  # Host key của server ghi cứng bên dưới để không phải tắt kiểm tra host.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Chuẩn bị SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "[103.216.117.100]:24700 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICMiaXXBSnfZi34AH5eSSFiMMLDI1Iz7n+DkGHalUtIb" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host server
+            HostName ${{ secrets.SSH_HOST }}
+            Port ${{ secrets.SSH_PORT }}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+          EOF
+
+      - name: Đưa compose và script mới lên server
+        run: |
+          ssh server 'mkdir -p /opt/nagihgraphy/deploy'
+          scp docker-compose.yml docker-compose.build.yml .env.example server:/opt/nagihgraphy/
+          scp deploy/server-deploy.sh server:/opt/nagihgraphy/deploy/
+
+      - name: Deploy
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: |
+          SHORT="${GITHUB_SHA::7}"
+          ssh server "echo '$GHCR_TOKEN' | docker login ghcr.io -u '$GHCR_USER' --password-stdin >/dev/null \
+            && cd /opt/nagihgraphy \
+            && IMAGE_TAG=sha-$SHORT bash deploy/server-deploy.sh"
+
+      - name: Kiểm tra từ ngoài
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -m 10 -w '%{http_code}' https://nagihgraphy.com/api/health || true)
+            echo "health: $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          echo "Health chưa 200 sau 2 phút. Có thể chứng chỉ đang được cấp; xem docker logs traefik trên server."
+          exit 1

@@ -106,50 +106,36 @@ openssl rand -base64 32
 mkdir -p /srv/nagih/uploads /srv/nagih/backups
 ```
 
-## 5. Đăng nhập GHCR rồi deploy
+## 5. Deploy tự động bằng GitHub Actions
 
-Image do GitHub Actions build mỗi khi push lên `main`, đẩy lên GHCR với ba tag: `latest`, `sha-<7 ký tự>` và full sha. Server không build, chỉ pull. Xem `.github/workflows/deploy-image.yml`.
+Mỗi lần push lên `main`, workflow `.github/workflows/deploy-image.yml` chạy hai job: `build` đẩy image `nagihgraphy-web` và `nagihgraphy-migrator` lên GHCR với tag `latest`, `sha-<7 ký tự>` và full sha; `deploy` SSH vào server, chép compose và script mới lên `/opt/nagihgraphy`, đăng nhập GHCR bằng `GITHUB_TOKEN` của lần chạy, rồi chạy `deploy/server-deploy.sh` với đúng tag của commit đó. Cuối cùng gọi `https://nagihgraphy.com/api/health` từ ngoài. Không cần PAT.
 
-Repo là private nên package trên GHCR cũng private. Tạo một PAT classic tại github.com/settings/tokens với đúng một quyền `read:packages`, điền vào `.env`:
+Điền bốn secret trong Settings → Secrets and variables → Actions của repo:
 
-```bash
-GHCR_USER="haonnedu"
-GHCR_TOKEN="ghp_..."
-```
+| Secret | Giá trị |
+|---|---|
+| `SSH_HOST` | `103.216.117.100` |
+| `SSH_PORT` | `24700` |
+| `SSH_USER` | `root` |
+| `SSH_PRIVATE_KEY` | nội dung khoá riêng ed25519 mà khoá công khai đã nằm trong `authorized_keys` của root |
 
-Script deploy tự đăng nhập bằng token đó. Clone repo lên server:
+Host key của server ghi cứng trong workflow. Server đổi host key thì sửa dòng `known_hosts` trong workflow.
 
-```bash
-git clone https://github.com/haonnedu/nagihgraphy.git /opt/nagihgraphy && cd /opt/nagihgraphy
-```
-
-Lần đầu, sau khi đã có `.env` theo mục 3, có seed và tạo admin:
+Trên server chỉ cần có sẵn `/opt/nagihgraphy/.env` theo mục 3 và database theo mục 1. Lần deploy đầu tiên cần seed và tạo admin, hai việc workflow không làm, chạy tay một lần trên server:
 
 ```bash
-bash deploy/server-deploy.sh --seed --admin chu@nagihgraphy.com
+cd /opt/nagihgraphy && bash deploy/server-deploy.sh --seed --admin chu@nagihgraphy.com
 ```
 
-Các lần cập nhật sau: đợi Actions chạy xong trên GitHub, rồi trên server:
+Rollback: vào tab Actions, chọn lần chạy của commit muốn quay về, bấm Re-run jobs. Hoặc trên server:
 
 ```bash
-bash deploy/server-deploy.sh
+cd /opt/nagihgraphy && IMAGE_TAG=sha-abc1234 bash deploy/server-deploy.sh
 ```
 
-Rollback về một commit cũ, lấy tag ngắn từ tab Actions hoặc `git log --oneline`:
-
-```bash
-IMAGE_TAG=sha-abc1234 bash deploy/server-deploy.sh
-```
-
-Script kéo compose mới, pull image, chạy migration, bật service rồi chờ health. Nó không tạo `.env`, không tạo database, và không seed nếu không có cờ `--seed`. Migration và seed chạy từ image `nagihgraphy-migrator`, cũng do CI build, image web thường trực thì gọn hơn.
+Chạy tay trên server ngoài Actions thì cần đăng nhập GHCR trước, vì package private: điền `GHCR_TOKEN` là PAT classic có quyền `read:packages` vào `.env`, script tự login. Nếu CI hỏng mà cần lên gấp, build tại chỗ bằng `docker-compose.build.yml`, nhớ build ăn 1–2 GB RAM.
 
 Chỉ chạy `seed` một lần. Nó nạp 6 thợ mẫu và 17 ảnh từ bản artifact của khách, trong đó ba thợ gắn cờ `sample` là dữ liệu giả cần thay bằng thợ thật.
-
-Nếu CI chưa chạy được mà cần lên gấp, build tại chỗ bằng file override, nhớ là build ăn 1–2 GB RAM trên server:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.build.yml build
-```
 
 Kiểm tra:
 

@@ -68,7 +68,7 @@ Máy phát triển hiện tại bị chính sách Application Control chặn nat
 
 Từng bước đầy đủ nằm trong [DEPLOY.md](DEPLOY.md).
 
-Tóm tắt: push lên `main` thì GitHub Actions build hai image `nagihgraphy-web` và `nagihgraphy-migrator` lên GHCR. Trên server chạy `bash deploy/server-deploy.sh` để pull, migrate và bật. Server đã có Traefik giữ cổng 80/443 và một container PostgreSQL dùng chung, dự án tạo database riêng trong instance đó rồi gắn label Traefik. Không build trên server, không dựng thêm Postgres hay reverse proxy. Rollback bằng `IMAGE_TAG=sha-xxxxxxx`.
+Tóm tắt: push lên `main` là xong. GitHub Actions build hai image `nagihgraphy-web` và `nagihgraphy-migrator` lên GHCR, rồi SSH vào server pull, migrate, bật và gọi health. Cần bốn secret SSH trong repo, xem DEPLOY.md mục 5. Server đã có Traefik giữ cổng 80/443 và một container PostgreSQL dùng chung, dự án tạo database riêng trong instance đó rồi gắn label Traefik. Không build trên server, không dựng thêm Postgres hay reverse proxy. Rollback bằng `IMAGE_TAG=sha-xxxxxxx`.
 
 ## Cấu trúc
 
