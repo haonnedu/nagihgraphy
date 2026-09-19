@@ -7,20 +7,13 @@ import { dayStatus, dayStatusLabel, formatDateVN } from "@/lib/availability";
 import { photoSrc } from "@/lib/image-paths";
 import { money, priceOf } from "@/lib/pricing";
 import { contactLinks, mergeContacts } from "@/lib/contacts";
-import { getPhotographer, listPhotographerSlugs } from "@/lib/queries";
+import { getPhotographer } from "@/lib/queries";
 import { getSettings } from "@/lib/settings";
 
-/**
- * Nội dung do admin sửa trong dashboard, nên trang làm mới sau 5 phút.
- * Phase 5 sẽ gọi revalidatePath ngay khi admin lưu để thấy đổi tức thì.
- */
-export const revalidate = 300;
+// Render động mỗi request. Không prerender lúc build vì CI không có database,
+// và không dùng generateStaticParams vì nó cũng truy vấn database lúc build.
+export const dynamic = "force-dynamic";
 
-
-export async function generateStaticParams() {
-  const slugs = await listPhotographerSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
 
 export async function generateMetadata(props: PageProps<"/tho/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;

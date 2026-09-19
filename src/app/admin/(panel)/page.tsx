@@ -71,7 +71,7 @@ export default async function AdminHomePage() {
           <li>Xem khách đã để lại tên và số điện thoại, đánh dấu đã liên hệ hoặc đã chốt.</li>
         </ul>
         <p className="mt-3 text-[12.5px] text-ink-3">
-          Trang khách làm mới trong vòng 5 phút sau khi lưu, phần lớn thấy ngay.
+          Trang khách hiện thay đổi ngay sau khi lưu.
         </p>
       </section>
     </div>

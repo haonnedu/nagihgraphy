@@ -15,7 +15,10 @@ import { money } from "@/lib/pricing";
  * Kịch bản từng section xem PLAN.md mục 5.
  * Mọi hiệu ứng tắt sạch dưới prefers-reduced-motion.
  */
-export const revalidate = 300;
+// Render động: trang đọc database mỗi request. Không dùng ISR vì Next sẽ
+// prerender lúc build, mà lúc build trong CI không có database nào.
+// Truy vấn chỉ vài mili giây, đủ nhanh cho lưu lượng của studio.
+export const dynamic = "force-dynamic";
 
 /** "Chọn thợ *cá nhân theo vibe*" -> phần trong dấu sao dùng font script. */
 function Headline({ text, className }: { text: string; className?: string }) {

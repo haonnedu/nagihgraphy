@@ -14,8 +14,11 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Prisma client sinh vào src/generated, phải chạy trước next build
-RUN npx prisma generate
+# Prisma client sinh vào src/generated, phải chạy trước next build.
+# prisma.config.ts gọi env("DATABASE_URL") và ném lỗi nếu thiếu, trong khi lúc
+# build không có database nào. Đưa một URL giả chỉ cho lệnh này; runtime vẫn
+# lấy DATABASE_URL thật từ env_file của compose.
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 

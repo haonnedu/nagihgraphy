@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// auth() đọc cookie nên trang đã động, khai báo rõ để build không thử prerender.
+export const dynamic = "force-dynamic";
+
 /** Nằm ngoài nhóm (panel) để không bị guard chuyển hướng vòng lặp. */
 export default async function AdminLoginPage() {
   const session = await auth();

@@ -5,6 +5,10 @@ import { listPhotographers } from "@/lib/queries";
 import { getSettings } from "@/lib/settings";
 import { money } from "@/lib/pricing";
 
+// Render động mỗi request. Dù có searchParams, Next vẫn thử prerender lúc build
+// và lúc đó không có database.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Chọn thợ chụp",
   description:

@@ -5,11 +5,8 @@ import { money, travelFeeText } from "@/lib/pricing";
 import { getPricingTables } from "@/lib/queries";
 import { getSettings } from "@/lib/settings";
 
-/**
- * Nội dung do admin sửa trong dashboard, nên trang làm mới sau 5 phút.
- * Phase 5 sẽ gọi revalidatePath ngay khi admin lưu để thấy đổi tức thì.
- */
-export const revalidate = 300;
+// Render động mỗi request, không prerender lúc build vì CI không có database.
+export const dynamic = "force-dynamic";
 
 
 export const metadata: Metadata = {

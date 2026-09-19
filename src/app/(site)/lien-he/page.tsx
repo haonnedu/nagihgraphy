@@ -10,7 +10,8 @@ import { getSettings } from "@/lib/settings";
  * qua kênh riêng của thợ; thợ chưa có kênh riêng thì dùng kênh studio.
  * Xem PLAN.md mục 6. Dữ liệu do admin sửa nên làm mới sau 5 phút.
  */
-export const revalidate = 300;
+// Render động mỗi request, không prerender lúc build vì CI không có database.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Đặt lịch chụp",
