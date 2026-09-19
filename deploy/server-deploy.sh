@@ -37,7 +37,11 @@ done
 # Đọc một biến từ .env, bỏ dấu nháy.
 envval() { grep -E "^$1=" .env | head -1 | sed -E "s/^$1=\"?([^\"]*)\"?/\1/"; }
 
-mkdir -p /srv/nagih/uploads /srv/nagih/backups
+# Web chạy bằng uid 1001 (user nextjs trong image), còn migrate và seed chạy root.
+# Thư mục ảnh phải thuộc 1001 và các thư mục cha phải đi qua được (755), nếu
+# không web bị "Permission denied" và trả 404 cho mọi ảnh.
+install -d -m 755 /srv/nagih /srv/nagih/backups
+install -d -m 755 -o 1001 -g 1001 /srv/nagih/uploads
 
 # Repo private nên server có thể không clone được. Khi đó chỉ cần ba file:
 # docker-compose.yml, .env, deploy/server-deploy.sh chép lên bằng scp.
@@ -76,6 +80,8 @@ docker compose --profile tools run --rm migrate
 if [[ "$SEED" == "1" ]]; then
   echo "==> Seed dữ liệu ban đầu"
   docker compose --profile tools run --rm seed
+  # Seed ghi ảnh bằng root, trả quyền về cho web.
+  chown -R 1001:1001 /srv/nagih/uploads
 fi
 
 if [[ -n "$ADMIN_EMAIL" ]]; then

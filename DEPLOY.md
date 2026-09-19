@@ -100,10 +100,12 @@ Sinh `AUTH_SECRET` và `CRON_SECRET`:
 openssl rand -base64 32
 ```
 
-## 4. Tạo thư mục ảnh
+## 4. Thư mục ảnh
+
+Script deploy tự tạo `/srv/nagih/uploads` và `/srv/nagih/backups`. Lưu ý quyền: container web chạy bằng uid 1001, nên `/srv/nagih/uploads` phải thuộc `1001:1001` và `/srv/nagih` phải là 755. Tạo tay bằng `mkdir` với umask chặt sẽ ra 700 và web trả 404 cho mọi ảnh dù file có trên đĩa. Nếu lỡ tạo tay:
 
 ```bash
-mkdir -p /srv/nagih/uploads /srv/nagih/backups
+chmod 755 /srv/nagih && chown -R 1001:1001 /srv/nagih/uploads
 ```
 
 ## 5. Deploy tự động bằng GitHub Actions
