@@ -1,0 +1,29 @@
+# Override để build image ngay tại chỗ thay vì kéo từ GHCR.
+# Dùng khi CI chưa chạy được, hoặc muốn thử một thay đổi chưa push.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml build
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d
+#
+# Cần nhớ: build Next.js ăn 1–2 GB RAM trên chính server đang chạy app khác.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: ghcr.io/haonnedu/nagihgraphy-web:local
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    image: ghcr.io/haonnedu/nagihgraphy-migrator:local
+
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    image: ghcr.io/haonnedu/nagihgraphy-migrator:local

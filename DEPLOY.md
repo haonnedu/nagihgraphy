@@ -106,41 +106,50 @@ openssl rand -base64 32
 mkdir -p /srv/nagih/uploads /srv/nagih/backups
 ```
 
-## 5. Chạy migration rồi bật service
+## 5. Đăng nhập GHCR rồi deploy
 
-Có script gom sẵn các bước bên dưới, chạy lại bao nhiêu lần cũng được:
+Image do GitHub Actions build mỗi khi push lên `main`, đẩy lên GHCR với ba tag: `latest`, `sha-<7 ký tự>` và full sha. Server không build, chỉ pull. Xem `.github/workflows/deploy-image.yml`.
+
+Repo là private nên package trên GHCR cũng private. Tạo một PAT classic tại github.com/settings/tokens với đúng một quyền `read:packages`, điền vào `.env`:
+
+```bash
+GHCR_USER="haonnedu"
+GHCR_TOKEN="ghp_..."
+```
+
+Script deploy tự đăng nhập bằng token đó. Clone repo lên server:
 
 ```bash
 git clone https://github.com/haonnedu/nagihgraphy.git /opt/nagihgraphy && cd /opt/nagihgraphy
 ```
 
-Lần đầu, sau khi đã có `.env` theo mục 3:
+Lần đầu, sau khi đã có `.env` theo mục 3, có seed và tạo admin:
 
 ```bash
 bash deploy/server-deploy.sh --seed --admin chu@nagihgraphy.com
 ```
 
-Các lần cập nhật sau chỉ cần:
+Các lần cập nhật sau: đợi Actions chạy xong trên GitHub, rồi trên server:
 
 ```bash
 bash deploy/server-deploy.sh
 ```
 
-Script kéo code, build image, chạy migration, bật service rồi chờ health. Nó không tạo `.env`, không tạo database, và không seed nếu không có cờ `--seed`. Muốn làm tay từng bước thì theo phần dưới.
+Rollback về một commit cũ, lấy tag ngắn từ tab Actions hoặc `git log --oneline`:
 
 ```bash
-docker compose build
-docker compose --profile tools run --rm migrate
-docker compose --profile tools run --rm seed
-docker compose --profile tools run --rm migrate npx tsx scripts/create-admin.mts --email chu@nagihgraphy.com --password "MAT_KHAU_MANH" --role OWNER
-docker compose up -d
+IMAGE_TAG=sha-abc1234 bash deploy/server-deploy.sh
 ```
 
-Dòng thứ tư tạo tài khoản admin đầu tiên. Nhớ đã điền `AUTH_SECRET` và `AUTH_URL=https://nagihgraphy.com` trong `.env` trước, thiếu là đăng nhập không được.
-
-`migrate` và `seed` dùng một image riêng có đủ mã nguồn và `node_modules`, chỉ chạy khi gọi tay. Image chạy thường trực của web thì gọn, không kèm những thứ đó.
+Script kéo compose mới, pull image, chạy migration, bật service rồi chờ health. Nó không tạo `.env`, không tạo database, và không seed nếu không có cờ `--seed`. Migration và seed chạy từ image `nagihgraphy-migrator`, cũng do CI build, image web thường trực thì gọn hơn.
 
 Chỉ chạy `seed` một lần. Nó nạp 6 thợ mẫu và 17 ảnh từ bản artifact của khách, trong đó ba thợ gắn cờ `sample` là dữ liệu giả cần thay bằng thợ thật.
+
+Nếu CI chưa chạy được mà cần lên gấp, build tại chỗ bằng file override, nhớ là build ăn 1–2 GB RAM trên server:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml build
+```
 
 Kiểm tra:
 

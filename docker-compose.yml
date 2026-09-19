@@ -1,26 +1,22 @@
 # NAGIH GRAPHY — triển khai trên server riêng.
 #
+# Image do GitHub Actions build và đẩy lên GHCR mỗi khi push lên main
+# (.github/workflows/deploy-image.yml). Server chỉ pull, không build.
+# Muốn build tại chỗ thì chồng thêm file override:
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml build
+#
 # Server đã có sẵn Traefik v3.1 (network `proxy`, entrypoint `web` và `websecure`,
 # certresolver `letsencrypt`) và container postgres:15-alpine tên `esm_postgres`.
 # Dùng chung cả hai, không dựng lại. Quy ước label đặt theo đúng kiểu luxefleur.
 #
-#   docker compose build
-#   docker compose --profile tools run --rm migrate
-#   docker compose --profile tools run --rm seed
-#   docker compose up -d
+#   bash deploy/server-deploy.sh            # kéo bản mới nhất và bật
+#   IMAGE_TAG=sha-abc1234 bash deploy/server-deploy.sh   # rollback về một commit
 #
-# Còn một giá trị phải xác nhận trước khi chạy: DATABASE_NETWORK trong .env,
-# là network mà esm_postgres đang nằm trong đó. Lấy bằng:
-#   docker inspect esm_postgres --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+# Biến trong .env: SITE_DOMAIN, DATABASE_NETWORK, IMAGE_TAG (tuỳ chọn, mặc định latest).
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      # Bắt buộc: Dockerfile có nhiều stage, stage cuối là `migrator`.
-      target: runner
-    image: nagih-web:latest
+    image: ghcr.io/haonnedu/nagihgraphy-web:${IMAGE_TAG:-latest}
     container_name: nagih-web
     restart: unless-stopped
     env_file: .env
@@ -68,7 +64,7 @@ services:
       - "traefik.http.routers.nagih-websecure.service=nagih"
 
       # --- HTTPS: router riêng cho form liên hệ, có giới hạn nhịp
-      # Thay cho limit_req của Nginx: 10 request/phút mỗi IP, cho dồn tối đa 5.
+      # 10 request/phút mỗi IP, cho dồn tối đa 5.
       - "traefik.http.routers.nagih-leads.entrypoints=websecure"
       - "traefik.http.routers.nagih-leads.rule=Host(`${SITE_DOMAIN}`) && PathPrefix(`/api/leads`)"
       - "traefik.http.routers.nagih-leads.tls=true"
@@ -83,11 +79,7 @@ services:
   # Chạy migration. Không thường trực, phải gọi tay:
   #   docker compose --profile tools run --rm migrate
   migrate:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: migrator
-    image: nagih-migrator:latest
+    image: ghcr.io/haonnedu/nagihgraphy-migrator:${IMAGE_TAG:-latest}
     profiles: ["tools"]
     env_file: .env
     networks:
@@ -97,11 +89,7 @@ services:
   # Nạp dữ liệu từ bản artifact của khách. Chạy một lần sau migration:
   #   docker compose --profile tools run --rm seed
   seed:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: migrator
-    image: nagih-migrator:latest
+    image: ghcr.io/haonnedu/nagihgraphy-migrator:${IMAGE_TAG:-latest}
     profiles: ["tools"]
     env_file: .env
     environment:

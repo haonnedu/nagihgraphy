@@ -9,3 +9,6 @@ npm-debug.log*
 *.md
 !README.md
 deploy/certbot-webroot
+.github
+docker-compose*.yml
+deploy

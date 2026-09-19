@@ -128,8 +128,8 @@ Nếu sau này ảnh nhiều và muốn Node nhẹ hơn, thêm một container `
 
 | Việc | Cách làm |
 |---|---|
-| Deploy | `docker compose build`, chạy service `migrate` trong profile `tools`, rồi `docker compose up -d`. Migration luôn xong trước khi web nhận traffic |
-| Rollback | Giữ 3 tag image gần nhất, đổi tag trong compose rồi up lại |
+| Deploy | Push lên `main` → GitHub Actions build image `web` và `migrator` lên GHCR. Trên server `bash deploy/server-deploy.sh`: pull, migrate, up. Không build trên server |
+| Rollback | Mỗi commit có tag `sha-xxxxxxx` trên GHCR. `IMAGE_TAG=sha-xxxxxxx bash deploy/server-deploy.sh` |
 | Backup DB | `docker exec esm_postgres pg_dump -U nagih nagih` hằng đêm bằng cron, giữ 14 ngày, nén gzip |
 | Backup ảnh | `tar` thư mục `uploads/` hằng tuần, để cạnh dump |
 | Job định kỳ | Chỉ còn hai việc nhẹ: nhắc Telegram về lead quá 24 giờ chưa ai liên hệ, và dọn ảnh mồ côi không còn thợ nào dùng. Cron trên host gọi route nội bộ có token |

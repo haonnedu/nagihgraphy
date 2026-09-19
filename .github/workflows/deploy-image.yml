@@ -1,0 +1,92 @@
+# Build image khi push lên main, đẩy lên GHCR. Server chỉ việc pull.
+# Hai image: web (chạy thường trực) và migrator (migration, seed, tạo admin).
+#
+# Tag: latest, sha-<7 ký tự>, và full sha. Rollback trên server bằng cách đặt
+# IMAGE_TAG=sha-xxxxxxx rồi chạy deploy/server-deploy.sh.
+name: Build and push images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/nagihgraphy-web
+  IMAGE_MIGRATOR: ghcr.io/${{ github.repository_owner }}/nagihgraphy-migrator
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tags cho web
+        id: meta_web
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_WEB }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-,format=short
+            type=sha,prefix=,format=long
+
+      - name: Tags cho migrator
+        id: meta_migrator
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_MIGRATOR }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-,format=short
+            type=sha,prefix=,format=long
+
+      # Prisma generate chạy trong Dockerfile nên không cần DATABASE_URL lúc build.
+      - name: Build và push web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta_web.outputs.tags }}
+          labels: ${{ steps.meta_web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build và push migrator
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: migrator
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta_migrator.outputs.tags }}
+          labels: ${{ steps.meta_migrator.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Tóm tắt
+        run: |
+          echo "### Image đã đẩy" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.meta_web.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.meta_migrator.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "Trên server: \`bash deploy/server-deploy.sh\` để kéo bản mới nhất." >> "$GITHUB_STEP_SUMMARY"
