@@ -21,8 +21,10 @@ COPY . .
 RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 # Gọi thẳng next build. Script "npm run build" chạy lại prisma generate và lại
-# đòi DATABASE_URL, trong khi client đã sinh ở dòng trên.
-RUN npx next build --webpack
+# đòi DATABASE_URL. Bản thân next build cũng cần biến này vì src/lib/db.ts kiểm tra
+# lúc import khi Next thu thập page data; URL giả không bị kết nối vì mọi trang
+# đều force-dynamic.
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx next build --webpack
 
 # ---------------------------------------------------------------- runtime
 FROM node:22-alpine AS runner
