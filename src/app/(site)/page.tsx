@@ -174,7 +174,7 @@ export default async function HomePage() {
                 Đi tỉnh
               </p>
               <h2 className="mt-1.5 font-serif text-[clamp(22px,4.5vw,32px)] font-semibold leading-tight text-blue">
-                Nhận chụp ở {zones.length} địa điểm
+                Phụ phí di chuyển đi các tỉnh
               </h2>
               <p className="mt-2 max-w-[52ch] text-ink-2">
                 Book theo nhóm để chia phụ phí di chuyển cho nhẹ.
