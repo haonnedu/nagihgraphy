@@ -92,7 +92,7 @@ DEPLOY.md                các bước lên server
 
 | Đường dẫn | Nội dung |
 |---|---|
-| `/` | Trang chủ tĩnh: hero, số liệu, 4 thợ nổi bật, quy trình 4 bước |
+| `/` | Trang chủ: hero, số liệu, 4 thợ nổi bật, phụ phí tỉnh, quy trình 4 bước |
 | `/tho` | Danh sách thợ, lọc theo khu vực / hạng / tag / còn lịch hôm nay, tìm không dấu, 5 kiểu sắp xếp |
 | `/tho/[slug]` | Chi tiết thợ: gallery vuốt ngang, ma trận dịch vụ, lịch, link Drive |
 | `/bang-gia` | Bảng giá theo hạng, máy tính phụ phí 21 tỉnh, chính sách |
@@ -102,15 +102,11 @@ Bộ lọc nằm trong URL nên chia sẻ link giữ nguyên kết quả, và tr
 
 ### Hiệu ứng scroll
 
-Trang chủ có 7 section kể chuyện theo scroll. Lenis làm mượt cuộn trên desktop, Motion lo hiện dần, đếm số, parallax và sách lật. Không còn GSAP.
+Trang chủ có 6 section kể chuyện theo scroll. Lenis làm mượt cuộn trên desktop, Motion lo hiện dần, đếm số và parallax. Không còn GSAP.
 
-**Portfolio là một cuốn sách lật, cuộn xuống là lật trang, chạy giống nhau trên mọi kích thước màn.** Section cao bằng một màn cộng thêm nửa màn cho mỗi trang, bên trong là sân khấu ghim bằng `position: sticky`. Tám trang xếp chồng đúng một chỗ, trang đầu trên cùng. Cuộn xuống thì trang trên gập quanh mép trái tới 105 độ và tối dần 70%, quá 90 độ thì `backface-visibility` giấu nó đi, trang dưới đã nằm phẳng sẵn. Dưới khung có tên thợ và số trang.
+Section portfolio sách lật đã bỏ theo yêu cầu của khách ngày 2026-09-20. Ảnh chỉ còn xem trong gallery từng thợ.
 
-Tiến độ lật không dùng `useScroll` với `target` của Motion, vì nó cache vị trí phần tử lúc mount và bị trôi khi ảnh hero, font nạp muộn làm nội dung phía trên đổi chiều cao. Thay vào đó đọc `getBoundingClientRect` mỗi khung hình khi cuộn, kèm `ResizeObserver` trên body. Ghim bằng sticky chứ không bằng JS nên trên iOS không giật.
-
-Khung ảnh tính theo chiều cao màn để không thừa khoảng trống: rộng `min(94vw, 60svh)`. Điện thoại dọc dùng tỉ lệ 3:5 cho khung cao hơn, ảnh 3:4 bị cắt hai bên chừng 12%. Từ 640px trở lên về 3:4.
-
-Mọi hiệu ứng tắt sạch dưới `prefers-reduced-motion`, sách lật khi đó thành dải cuộn ngang thường.
+Mọi hiệu ứng tắt sạch dưới `prefers-reduced-motion`.
 
 ### Hero ảnh tràn màn
 

@@ -4,7 +4,6 @@ import { CountUp } from "@/components/motion/count-up";
 import { DrawLine } from "@/components/motion/draw-line";
 import { HeroParallax } from "@/components/motion/hero-parallax";
 import { Marquee } from "@/components/motion/marquee";
-import { FlipBook } from "@/components/motion/flip-book";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { listPhotographers, getPricingTables } from "@/lib/queries";
 import { getSettings } from "@/lib/settings";
@@ -54,16 +53,6 @@ export default async function HomePage() {
     : firstPortfolio
       ? { path: firstPortfolio.path, alt: "" }
       : null;
-
-  const galleryPhotos = photographers
-    .flatMap((p) => p.photos.slice(0, 2).map((ph) => ({ ...ph, owner: p.name })))
-    .slice(0, 10)
-    .map((ph) => ({
-      id: ph.id,
-      path: ph.path,
-      alt: ph.alt || `Ảnh của ${ph.owner}`,
-      owner: ph.owner,
-    }));
 
   const stats = [
     { value: String(total), label: "thợ đang nhận lịch" },
@@ -131,26 +120,7 @@ export default async function HomePage() {
         </RevealGroup>
       </section>
 
-      {/* --- 3. gallery ghim: cuộn dọc đẩy dải ảnh chạy ngang --- */}
-      {galleryPhotos.length > 2 && (
-        <section className="border-y border-line bg-sunk">
-          <div className="mx-auto w-full max-w-[1120px] px-4 pt-9">
-            <Reveal>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-3">
-                Portfolio
-              </p>
-              <h2 className="mt-1.5 font-serif text-[clamp(22px,4.5vw,32px)] font-semibold leading-tight text-blue">
-                Ảnh tụi mình đã chụp
-              </h2>
-            </Reveal>
-          </div>
-          <div className="mx-auto w-full max-w-[1120px] px-4">
-            <FlipBook photos={galleryPhotos} />
-          </div>
-        </section>
-      )}
-
-      {/* --- 4. thợ nổi bật, hiện lần lượt --- */}
+      {/* --- 3. thợ nổi bật, hiện lần lượt --- */}
       {featured.length > 0 && (
         <section className="mx-auto w-full max-w-[1120px] px-4 py-12">
           <Reveal>
@@ -176,7 +146,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* --- 5. tỉnh đã đi, chạy ngang vô tận --- */}
+      {/* --- 4. tỉnh đã đi, chạy ngang vô tận --- */}
       {zones.length > 0 && (
         <section className="border-y border-line bg-sunk py-11">
           <div className="mx-auto w-full max-w-[1120px] px-4">
@@ -217,7 +187,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* --- 6. quy trình, có đường kẻ vẽ dần nối các bước --- */}
+      {/* --- 5. quy trình, có đường kẻ vẽ dần nối các bước --- */}
       {settings.booking.steps.length > 0 && (
         <section className="mx-auto w-full max-w-[1120px] px-4 py-12">
           <Reveal>
@@ -251,7 +221,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* --- 7. chốt --- */}
+      {/* --- 6. chốt --- */}
       <section className="mx-auto w-full max-w-[1120px] px-4 pb-14">
         <Reveal>
           <div className="rounded-card border border-line bg-blue-soft px-6 py-10 text-center">
