@@ -56,7 +56,7 @@ Web này là **kênh giới thiệu profile thợ và thu thập thông tin khá
 |---|---|---|
 | Framework | **Next.js 16, App Router, TypeScript** | SSR cho SEO, Server Actions cho form liên hệ, một codebase cho cả web khách và admin |
 | CSS | **Tailwind CSS v4** | Nhanh, dễ giữ design token đồng bộ với palette xanh/cam sẵn có |
-| Animation | **Motion (framer-motion) + Lenis** | Motion lo enter/exit và layout animation; Lenis lo smooth scroll |
+| Animation | **Motion (framer-motion)** | Motion lo enter/exit và layout animation; Lenis đã gỡ vì lỗi giới hạn cuộn, xem README |
 | Database | **PostgreSQL** (đã có sẵn trên server) | Hợp với schema quan hệ bên dưới, hỗ trợ tốt `unaccent` cho tìm kiếm tiếng Việt |
 | ORM | **Prisma**, provider `postgresql` | Schema rõ ràng, migration an toàn |
 | Ảnh | **Lưu trên đĩa server + `sharp`** | Tự resize thành 3 cỡ WebP lúc upload |
@@ -66,7 +66,7 @@ Web này là **kênh giới thiệu profile thợ và thu thập thông tin khá
 | Hosting | **Server riêng, Linux + Docker** | Next.js standalone trong container, sau Traefik sẵn có |
 | Analytics | **Umami** self-host | Cùng server, không gửi dữ liệu khách ra ngoài |
 
-**Lưu ý hiệu năng:** Motion nằm trong bundle chính, Lenis nạp trễ. GSAP đã gỡ vì ghim bằng sticky là đủ.
+**Lưu ý hiệu năng:** Motion nằm trong bundle chính. GSAP và Lenis đã gỡ.
 
 **Lưu ý khi tự host Next.js:** bật `output: "standalone"` trong `next.config` để image Docker gọn (khoảng 150 MB thay vì 1 GB). Next.js Image Optimization chạy được khi self-host nhưng cần `sharp` trong image và cần cấp CPU; nếu server yếu thì tắt optimizer runtime và dùng ảnh đã resize sẵn lúc upload.
 

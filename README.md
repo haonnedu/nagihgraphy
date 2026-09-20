@@ -102,7 +102,9 @@ Bộ lọc nằm trong URL nên chia sẻ link giữ nguyên kết quả, và tr
 
 ### Hiệu ứng scroll
 
-Trang chủ có 5 section kể chuyện theo scroll. Lenis làm mượt cuộn trên desktop, Motion lo hiện dần và đếm số. Không còn GSAP.
+Trang chủ có 5 section kể chuyện theo scroll, Motion lo hiện dần và đếm số. Không còn GSAP, không còn Lenis: cuộn là cuộn gốc của trình duyệt.
+
+Lenis đã gỡ ngày 2026-09-20 vì hai lỗi trên desktop: nó chỉ đo giới hạn cuộn từ hộp của thẻ `html`, mà `html` có `h-full` nên không bao giờ đổi khi nội dung dài ra hay khi chuyển trang, dẫn tới không lăn tới đáy được; và cấu hình `duration` cộng dồn đích cuộn nên touchpad đảo chiều bị khựng. Các hiệu ứng còn lại không cần cuộn mượt.
 
 Section portfolio sách lật đã bỏ theo yêu cầu của khách ngày 2026-09-20. Ảnh chỉ còn xem trong gallery từng thợ.
 

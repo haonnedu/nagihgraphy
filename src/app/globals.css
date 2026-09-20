@@ -53,11 +53,6 @@
   color-scheme: light;
 }
 
-html {
-  /* Lenis điều khiển scroll, nên tắt smooth scroll gốc của trình duyệt */
-  scroll-behavior: auto;
-}
-
 body {
   background: var(--color-bg);
   color: var(--color-ink);
