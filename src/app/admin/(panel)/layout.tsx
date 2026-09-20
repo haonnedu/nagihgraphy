@@ -12,7 +12,7 @@ const NAV = [
   { href: "/admin", label: "Tổng quan" },
   { href: "/admin/tho", label: "Thợ và ảnh portfolio" },
   { href: "/admin/goi", label: "Gói chụp và bảng giá" },
-  { href: "/admin/hero", label: "Ảnh hero trang chủ" },
+  { href: "/admin/hero", label: "Chữ đầu trang chủ" },
   { href: "/admin/lead", label: "Khách để lại thông tin" },
 ];
 

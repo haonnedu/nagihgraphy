@@ -41,11 +41,21 @@ const pricingSchema = z.object({
   eveningAddon: z.number().int().min(0).default(500_000),
 });
 
-/** Ảnh hero trang chủ do admin chọn. Trống thì trang chủ lấy ảnh portfolio đầu tiên. */
+/**
+ * Chữ ở đầu trang chủ, admin sửa trong /admin/hero. Trường nào trống thì trang
+ * chủ rơi về studio.kicker / headline / intro và số liệu tự tính từ database.
+ */
 const heroSchema = z.object({
-  /** stem dưới /uploads, VD brand/hero hoặc photographers/<id>/<photoId> */
-  stem: z.string().default(""),
-  alt: z.string().default(""),
+  /** dòng nhỏ in hoa phía trên tiêu đề */
+  eyebrow: z.string().default(""),
+  /** tiêu đề; cụm trong hai dấu * đổi sang màu nhấn */
+  headline: z.string().default(""),
+  /** đoạn mô tả; cụm trong **hai dấu sao kép** in đậm */
+  lead: z.string().default(""),
+  /** viên số liệu dưới tiêu đề, tối đa 4; trống thì tự tính */
+  stats: z.array(z.object({ value: z.string(), label: z.string() })).max(4).default([]),
+  primaryLabel: z.string().default(""),
+  secondaryLabel: z.string().default(""),
 });
 
 const SCHEMAS = {

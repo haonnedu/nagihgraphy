@@ -2,7 +2,6 @@ import Link from "next/link";
 import { PhotographerCard } from "@/components/photographer-card";
 import { CountUp } from "@/components/motion/count-up";
 import { DrawLine } from "@/components/motion/draw-line";
-import { HeroParallax } from "@/components/motion/hero-parallax";
 import { Marquee } from "@/components/motion/marquee";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { listPhotographers, getPricingTables } from "@/lib/queries";
@@ -19,14 +18,14 @@ import { money } from "@/lib/pricing";
 // Truy vấn chỉ vài mili giây, đủ nhanh cho lưu lượng của studio.
 export const dynamic = "force-dynamic";
 
-/** "Chọn thợ *cá nhân theo vibe*" -> phần trong dấu sao dùng font script. */
+/** "Lớp mình đã chốt *ảnh kỷ yếu* chưa?" -> cụm trong hai dấu sao đổi sang màu nhấn. */
 function Headline({ text, className }: { text: string; className?: string }) {
   const parts = text.split(/\*([^*]+)\*/);
   return (
     <h1 className={className}>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <span key={i} className="font-script text-[1.22em] leading-none">
+          <span key={i} className="text-orange">
             {part}
           </span>
         ) : (
@@ -34,6 +33,24 @@ function Headline({ text, className }: { text: string; className?: string }) {
         ),
       )}
     </h1>
+  );
+}
+
+/** "chụp **trọn 1 ngày** cho cả lớp" -> cụm trong hai dấu sao kép in đậm. */
+function Lead({ text, className }: { text: string; className?: string }) {
+  const parts = text.split(/\*\*([^*]+)\*\*/);
+  return (
+    <p className={className}>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <strong key={i} className="font-semibold text-white">
+            {part}
+          </strong>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </p>
   );
 }
 
@@ -46,81 +63,83 @@ export default async function HomePage() {
 
   const featured = photographers.slice(0, 4);
   const totalSessions = photographers.reduce((sum, p) => sum + p.sessions, 0);
-  // Ảnh hero do admin chọn trong /admin/hero; chưa chọn thì lấy ảnh portfolio đầu tiên.
-  const firstPortfolio = photographers.flatMap((p) => p.photos)[0] ?? null;
-  const heroPhoto = settings.hero.stem
-    ? { path: settings.hero.stem, alt: settings.hero.alt }
-    : firstPortfolio
-      ? { path: firstPortfolio.path, alt: "" }
-      : null;
 
-  const stats = [
-    { value: String(total), label: "thợ đang nhận lịch" },
-    { value: totalSessions.toLocaleString("vi-VN"), label: "buổi đã chụp" },
-    { value: minPrice > 0 ? money(minPrice) : "Liên hệ", label: "giá khởi điểm" },
-  ];
-
-  const heroInner = (
-    <div className="mx-auto flex w-full max-w-[1120px] flex-col justify-end px-4 pb-12 pt-24 sm:pb-16 sm:pt-32">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/75">
-        {settings.studio.kicker}
-      </p>
-      <Headline
-        text={settings.studio.headline}
-        className="mt-3 max-w-[16ch] font-serif text-[clamp(32px,7vw,58px)] font-semibold leading-[1.05] text-white text-balance"
-      />
-      <p className="mt-4 max-w-[48ch] text-[16px] leading-relaxed text-white/85">
-        {settings.studio.intro}
-      </p>
-      <div className="mt-7 flex flex-wrap gap-2.5">
-        <Link
-          href="/tho"
-          className="rounded-[10px] border border-cta bg-cta px-5 py-3 font-medium text-white transition-colors hover:border-cta-hover hover:bg-cta-hover"
-        >
-          Xem {total} thợ
-        </Link>
-        <Link
-          href="/bang-gia"
-          className="rounded-[10px] border border-white/60 bg-white/10 px-5 py-3 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-        >
-          Bảng giá và phụ phí tỉnh
-        </Link>
-      </div>
-    </div>
-  );
+  // Chữ hero do admin sửa trong /admin/hero; trường trống thì rơi về nội dung studio.
+  const hero = settings.hero;
+  const eyebrow = hero.eyebrow || settings.studio.kicker;
+  const headline = hero.headline || settings.studio.headline;
+  const lead = hero.lead || settings.studio.intro;
+  const primaryLabel = hero.primaryLabel || `Xem ${total} thợ`;
+  const secondaryLabel = hero.secondaryLabel || "Bảng giá và phụ phí tỉnh";
+  // Viên số liệu: admin nhập tay; chưa nhập thì tự tính từ database.
+  const stats =
+    hero.stats.length > 0
+      ? hero.stats
+      : [
+          { value: String(total), label: "thợ đang nhận lịch" },
+          { value: totalSessions.toLocaleString("vi-VN"), label: "buổi đã chụp" },
+          { value: minPrice > 0 ? money(minPrice) : "Liên hệ", label: "giá khởi điểm" },
+        ];
 
   return (
     <main className="flex-1">
-      {/* --- 1. hero ảnh tràn màn, ảnh trôi parallax --- */}
-      {heroPhoto ? (
-        <section className="min-h-[72vh]">
-          <HeroParallax path={heroPhoto.path} alt={heroPhoto.alt}>
-            <div className="flex min-h-[72vh] items-end">{heroInner}</div>
-          </HeroParallax>
-        </section>
-      ) : (
-        <section className="bg-sunk">{heroInner}</section>
-      )}
-
-      {/* --- 2. số liệu đếm lên --- */}
-      <section className="mx-auto w-full max-w-[1120px] px-4 py-10">
-        {/* Điện thoại: hai ô đầu cạnh nhau, ô giá chiếm trọn hàng dưới vì
-            "2.200.000đ" không nhét vừa một phần ba màn 375px. Từ sm là ba cột. */}
-        <RevealGroup className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4" stagger={0.09}>
-          {stats.map((s, i) => (
-            <RevealItem key={s.label} className={i === 2 ? "col-span-2 sm:col-span-1" : ""}>
-              <div className="min-w-0 rounded-card border border-line bg-surface px-3 py-4 text-center sm:px-4">
-                <b className="block font-serif text-[clamp(20px,4.6vw,30px)] font-semibold leading-none text-ink">
-                  <CountUp value={s.value} />
-                </b>
-                <span className="mt-1.5 block text-[11.5px] text-ink-3">{s.label}</span>
-              </div>
-            </RevealItem>
-          ))}
-        </RevealGroup>
+      {/* --- 1. hero chữ căn giữa trên nền tối, số liệu thành viên tròn --- */}
+      <section className="relative overflow-hidden bg-ink text-white">
+        {/* quầng sáng xanh mờ phía trên để nền tối không phẳng lì */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(70%_60%_at_50%_0%,rgb(0_112_187/0.38),transparent_72%)]"
+        />
+        <div className="relative mx-auto flex w-full max-w-[900px] flex-col items-center px-4 pb-14 pt-16 text-center sm:pb-20 sm:pt-24">
+          <Reveal>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange">{eyebrow}</p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <Headline
+              text={headline}
+              className="mt-4 font-serif text-[clamp(30px,6.4vw,56px)] font-semibold leading-[1.08] text-balance"
+            />
+          </Reveal>
+          <Reveal delay={0.16}>
+            <Lead
+              text={lead}
+              className="mt-5 max-w-[60ch] text-[15.5px] leading-relaxed text-white/75 text-pretty sm:text-[17px]"
+            />
+          </Reveal>
+          <Reveal delay={0.24}>
+            <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+              <Link
+                href="/tho"
+                className="rounded-[10px] border border-cta bg-cta px-5 py-3 font-medium text-white transition-colors hover:border-cta-hover hover:bg-cta-hover"
+              >
+                {primaryLabel}
+              </Link>
+              <Link
+                href="/bang-gia"
+                className="rounded-[10px] border border-white/25 bg-white/10 px-5 py-3 font-medium text-white transition-colors hover:bg-white/20"
+              >
+                {secondaryLabel}
+              </Link>
+            </div>
+          </Reveal>
+          {stats.length > 0 && (
+            <RevealGroup className="mt-9 flex flex-wrap justify-center gap-2" stagger={0.07}>
+              {stats.map((s) => (
+                <RevealItem key={`${s.value} ${s.label}`}>
+                  <span className="inline-flex items-baseline gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[13.5px] text-white/80">
+                    <b className="font-semibold tabular-nums text-white">
+                      <CountUp value={s.value} />
+                    </b>
+                    {s.label}
+                  </span>
+                </RevealItem>
+              ))}
+            </RevealGroup>
+          )}
+        </div>
       </section>
 
-      {/* --- 3. thợ nổi bật, hiện lần lượt --- */}
+      {/* --- 2. thợ nổi bật, hiện lần lượt --- */}
       {featured.length > 0 && (
         <section className="mx-auto w-full max-w-[1120px] px-4 py-12">
           <Reveal>
@@ -146,7 +165,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* --- 4. tỉnh đã đi, chạy ngang vô tận --- */}
+      {/* --- 3. tỉnh đã đi, chạy ngang vô tận --- */}
       {zones.length > 0 && (
         <section className="border-y border-line bg-sunk py-11">
           <div className="mx-auto w-full max-w-[1120px] px-4">
@@ -187,7 +206,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* --- 5. quy trình, có đường kẻ vẽ dần nối các bước --- */}
+      {/* --- 4. quy trình, có đường kẻ vẽ dần nối các bước --- */}
       {settings.booking.steps.length > 0 && (
         <section className="mx-auto w-full max-w-[1120px] px-4 py-12">
           <Reveal>
@@ -221,7 +240,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* --- 6. chốt --- */}
+      {/* --- 5. chốt --- */}
       <section className="mx-auto w-full max-w-[1120px] px-4 pb-14">
         <Reveal>
           <div className="rounded-card border border-line bg-blue-soft px-6 py-10 text-center">

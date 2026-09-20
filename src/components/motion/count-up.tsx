@@ -15,9 +15,12 @@ export function CountUp({ value, duration = 900 }: { value: string; duration?: n
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const reduced = useReducedMotion();
 
-  // Tách phần số ở đầu và hậu tố phía sau, VD "2.200.000đ" -> 2200000 và "đ".
-  const match = /^([\d.,\s]+)(\D*)$/.exec(value.trim());
-  const target = match ? Number(match[1].replace(/\D/g, "")) : NaN;
+  // Tách phần số nguyên ở đầu và hậu tố phía sau, VD "2.200.000đ" -> 2200000 và "đ",
+  // "120+" -> 120 và "+". Chỉ nhận số nguyên có dấu chấm ngăn hàng nghìn; số thập
+  // phân kiểu "1,2 triệu" hay chuỗi lạ thì hiện thẳng, không đếm, để không ra
+  // "12triệu" giữa chừng. Hậu tố giữ nguyên khoảng trắng đứng trước.
+  const match = /^(\d{1,3}(?:\.\d{3})+|\d+)(\D*)$/.exec(value.trim());
+  const target = match ? Number(match[1].replace(/\./g, "")) : NaN;
   const suffix = match?.[2] ?? "";
   const countable = Number.isFinite(target) && target > 0 && !reduced;
 

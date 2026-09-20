@@ -52,11 +52,11 @@ export default async function AdminHomePage() {
             </Link>
           </p>
         )}
-        {!settings.hero.stem && (
+        {!settings.hero.headline && (
           <p className="rounded-xl border border-line bg-sunk px-3.5 py-3 text-[13.5px] text-ink-2">
-            Trang chủ đang dùng ảnh portfolio đầu tiên làm hero.{" "}
+            Đầu trang chủ đang dùng chữ mặc định.{" "}
             <Link href="/admin/hero" className="text-blue underline underline-offset-2">
-              Chọn ảnh hero riêng
+              Sửa tiêu đề, mô tả và số liệu
             </Link>
           </p>
         )}
@@ -67,7 +67,7 @@ export default async function AdminHomePage() {
         <ul className="mt-2 grid gap-1.5 text-[13.5px] text-ink-2">
           <li>Thêm thợ, upload ảnh portfolio, chọn ảnh bìa, điền Zalo và Messenger của từng thợ.</li>
           <li>Sửa giá theo hạng ekip, giá gói nhóm theo số người, phụ phí từng tỉnh và các dòng chính sách.</li>
-          <li>Chọn ảnh hero cho trang chủ, từ ảnh portfolio có sẵn hoặc upload ảnh riêng.</li>
+          <li>Sửa tiêu đề, đoạn mô tả và các viên số liệu ở đầu trang chủ.</li>
           <li>Xem khách đã để lại tên và số điện thoại, đánh dấu đã liên hệ hoặc đã chốt.</li>
         </ul>
         <p className="mt-3 text-[12.5px] text-ink-3">

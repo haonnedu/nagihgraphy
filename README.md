@@ -92,7 +92,7 @@ DEPLOY.md                các bước lên server
 
 | Đường dẫn | Nội dung |
 |---|---|
-| `/` | Trang chủ: hero, số liệu, 4 thợ nổi bật, phụ phí tỉnh, quy trình 4 bước |
+| `/` | Trang chủ: hero chữ với số liệu, 4 thợ nổi bật, phụ phí tỉnh, quy trình 4 bước |
 | `/tho` | Danh sách thợ, lọc theo khu vực / hạng / tag / còn lịch hôm nay, tìm không dấu, 5 kiểu sắp xếp |
 | `/tho/[slug]` | Chi tiết thợ: gallery vuốt ngang, ma trận dịch vụ, lịch, link Drive |
 | `/bang-gia` | Bảng giá theo hạng, máy tính phụ phí 21 tỉnh, chính sách |
@@ -102,17 +102,17 @@ Bộ lọc nằm trong URL nên chia sẻ link giữ nguyên kết quả, và tr
 
 ### Hiệu ứng scroll
 
-Trang chủ có 6 section kể chuyện theo scroll. Lenis làm mượt cuộn trên desktop, Motion lo hiện dần, đếm số và parallax. Không còn GSAP.
+Trang chủ có 5 section kể chuyện theo scroll. Lenis làm mượt cuộn trên desktop, Motion lo hiện dần và đếm số. Không còn GSAP.
 
 Section portfolio sách lật đã bỏ theo yêu cầu của khách ngày 2026-09-20. Ảnh chỉ còn xem trong gallery từng thợ.
 
 Mọi hiệu ứng tắt sạch dưới `prefers-reduced-motion`.
 
-### Hero ảnh tràn màn
+### Hero chữ trên nền tối
 
-Màn hình đầu là một ảnh portfolio cao 72vh, chữ đè lên với lớp phủ tối, ảnh trôi parallax chậm. Ảnh này là phần tử LCP nên tải eager với `fetchpriority="high"` và lấy thẳng bản 1600px.
+Từ 2026-09-20 hero không còn ảnh, theo yêu cầu của khách. Khối đầu trang là nền tối `bg-ink` với quầng sáng xanh mờ, chữ căn giữa: dòng nhỏ in hoa màu cam, tiêu đề serif có cụm nhấn màu cam đặt giữa hai dấu `*`, đoạn mô tả có cụm in đậm đặt giữa hai dấu `**`, hai nút, và một hàng viên số liệu bo tròn. Số trong viên đếm lên khi vào màn hình.
 
-**Ảnh hiện tại chưa đủ nét cho hero.** Toàn bộ ảnh seed lấy từ file HTML của khách, đã bị nén về cạnh dài 1000px. Ảnh dọc chỉ rộng khoảng 533px mà hero kéo lên 1265px, nên hơi mềm trên màn to. Khi studio gửi ảnh gốc, upload lại qua admin là hết. Đây là mục 9.3 trong PLAN.md.
+Toàn bộ chữ nằm trong `site_settings` khoá `hero`, sửa ở `/admin/hero`. Trường nào trống thì rơi về `studio.kicker`, `studio.headline`, `studio.intro`; hàng số liệu trống thì tự tính số thợ, số buổi đã chụp và giá khởi điểm từ database.
 
 ### Form liên hệ và lead
 
@@ -139,9 +139,9 @@ npm run admin:create -- --email chu@nagihgraphy.com --password "mat khau manh" -
 | `/admin` | Số thợ, số ảnh, khách mới, cảnh báo thợ chưa có kênh liên hệ riêng |
 | `/admin/tho` | Thêm, sửa, ẩn, sắp thứ tự thợ; điền Zalo, Messenger, SĐT riêng; upload nhiều ảnh, chọn bìa, sắp thứ tự, xoá |
 | `/admin/goi` | Hạng ekip và giá gói lẻ, giá gói nhóm theo số người, phụ phí từng tỉnh, chính sách, phụ phí buổi tối |
-| `/admin/hero` | Chọn ảnh hero từ portfolio hoặc upload ảnh riêng |
+| `/admin/hero` | Sửa chữ đầu trang chủ: dòng nhỏ, tiêu đề, mô tả, hai nút, tối đa 4 viên số liệu |
 | `/admin/lead` | Xem khách để lại thông tin, lọc theo trạng thái, ghi chú, đổi trạng thái |
 
 Mọi thao tác lưu đều gọi `revalidatePath` cho trang khách nên đổi hiện gần như ngay. Upload đi qua server action, giới hạn 25 MB mỗi lần trong `next.config.ts`, server tự resize bằng sharp thành ba cỡ WebP.
 
-**Chưa làm:** quản lý lịch trống của thợ trong admin (hiện mới có dữ liệu seed), sửa nội dung trang chủ và thông tin studio qua admin. Xem PLAN.md mục 7.
+**Chưa làm:** quản lý lịch trống của thợ trong admin (hiện mới có dữ liệu seed), sửa các đoạn chữ khác ngoài hero và thông tin studio qua admin. Xem PLAN.md mục 7.
