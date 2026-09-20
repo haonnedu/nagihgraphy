@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BRAND_ICONS, type BrandKey } from "@/components/brand-icons";
 import { FeatureMatrix } from "@/components/feature-matrix";
 import { Photo, PhotoPlaceholder } from "@/components/photo";
 import { dayStatus, dayStatusLabel, formatDateVN } from "@/lib/availability";
@@ -56,7 +57,11 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
   const today = dayStatus(p.todaySlots);
   const drive = safeHttps(p.driveUrl);
   // Không có sale: khách nhắn thẳng cho thợ. Thợ chưa có kênh riêng thì dùng kênh studio.
-  const links = contactLinks(mergeContacts(p, settings.contacts));
+  // Chỉ các app nhắn tin, bỏ nút gọi theo ý khách. Instagram là nút chính to
+  // nhất, các app còn lại thành nút nhỏ bên dưới.
+  const apps = contactLinks(mergeContacts(p, settings.contacts)).filter((c) => c.key in BRAND_ICONS);
+  const primary = apps.find((c) => c.key === "instagram") ?? apps[0];
+  const secondary = apps.filter((c) => c !== primary);
 
   return (
     <main className="mx-auto w-full max-w-[820px] flex-1 px-4 pb-24">
@@ -150,23 +155,20 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
         </p>
       </section>
 
-      {links.length > 0 && (
+      {primary && (
         <section className="mt-4 rounded-card border border-line bg-surface p-3.5">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">
             Nhắn thẳng cho {p.name}
           </h2>
-          <div className="mt-2.5 grid grid-cols-2 gap-2">
-            {links.map((c) => (
-              <a
-                key={c.key}
-                href={c.href}
-                target={c.href.startsWith("http") ? "_blank" : undefined}
-                rel="noopener"
-                className="rounded-[10px] border border-line-2 bg-surface px-3 py-2.5 text-center text-[14px] font-medium hover:border-blue hover:text-blue"
-              >
-                {c.label}
-              </a>
-            ))}
+          <div className="mt-2.5 grid gap-2">
+            <ContactButton link={primary} primary />
+            {secondary.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {secondary.map((c) => (
+                  <ContactButton key={c.key} link={c} />
+                ))}
+              </div>
+            )}
           </div>
           <p className="mt-2 text-[12.5px] text-ink-3">
             Muốn có sẵn nội dung gồm ngày, số người và nơi chụp thì dùng nút soạn tin ở dưới.
@@ -206,5 +208,25 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
         </div>
       </div>
     </main>
+  );
+}
+
+/** Nút mở app nhắn tin, có logo. Nút chính to, nền xanh; nút phụ viền mỏng. */
+function ContactButton({ link, primary = false }: { link: { key: string; label: string; href: string }; primary?: boolean }) {
+  const Icon = BRAND_ICONS[link.key as BrandKey];
+  return (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener"
+      className={
+        primary
+          ? "flex items-center justify-center gap-2.5 rounded-[10px] border border-blue bg-blue px-4 py-3.5 text-[16px] font-semibold text-white hover:bg-blue-deep"
+          : "flex items-center justify-center gap-2 rounded-[10px] border border-line-2 bg-surface px-3 py-2.5 text-[14px] font-medium text-ink hover:border-blue hover:text-blue"
+      }
+    >
+      <Icon size={primary ? 22 : 18} />
+      {link.label}
+    </a>
   );
 }
