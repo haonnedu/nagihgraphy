@@ -7,7 +7,6 @@ import { dayStatus, dayStatusLabel, formatDateVN } from "@/lib/availability";
 import { photoSrc } from "@/lib/image-paths";
 import { money, priceOf } from "@/lib/pricing";
 import { getPhotographer } from "@/lib/queries";
-import { getSettings } from "@/lib/settings";
 
 // Render động mỗi request. Không prerender lúc build vì CI không có database,
 // và không dùng generateStaticParams vì nó cũng truy vấn database lúc build.
@@ -50,11 +49,9 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
   const p = await getPhotographer(slug);
   if (!p) notFound();
 
-  const settings = await getSettings();
   const price = priceOf(p);
   const today = dayStatus(p.todaySlots);
   const drive = safeHttps(p.driveUrl);
-  // Không có sale: khách nhắn thẳng cho thợ. Thợ chưa có kênh riêng thì dùng kênh studio.
 
   return (
     <main className="mx-auto w-full max-w-[820px] flex-1 px-4 pb-24">
