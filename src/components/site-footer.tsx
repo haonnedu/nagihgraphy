@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BRAND_ICONS, type BrandKey } from "@/components/brand-icons";
 import { contactLinks, type Settings } from "@/lib/settings";
 
 export function SiteFooter({
@@ -8,7 +9,8 @@ export function SiteFooter({
   studio: Settings["studio"];
   contacts: Settings["contacts"];
 }) {
-  const links = contactLinks(contacts);
+  // Chỉ các app nhắn tin có logo, không hiện số điện thoại, giống khối liên hệ trên trang thợ.
+  const links = contactLinks(contacts).filter((c) => c.key in BRAND_ICONS);
 
   return (
     <footer className="mt-auto border-t border-line">
@@ -22,17 +24,21 @@ export function SiteFooter({
           <Link href="/bang-gia" className="text-ink-2 hover:text-blue">
             Bảng giá
           </Link>
-          {links.map((c) => (
-            <a
-              key={c.key}
-              href={c.href}
-              target={c.href.startsWith("http") ? "_blank" : undefined}
-              rel="noopener"
-              className="text-ink-2 hover:text-blue"
-            >
-              {c.label}
-            </a>
-          ))}
+          {links.map((c) => {
+            const Icon = BRAND_ICONS[c.key as BrandKey];
+            return (
+              <a
+                key={c.key}
+                href={c.href}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center gap-1.5 text-ink-2 hover:text-blue"
+              >
+                <Icon size={15} />
+                {c.label}
+              </a>
+            );
+          })}
         </nav>
       </div>
     </footer>
