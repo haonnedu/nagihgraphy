@@ -98,7 +98,18 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
         <PhotoPlaceholder name={p.name} className="aspect-4/3 w-full rounded-card" />
       )}
 
-      <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-2">
+      {drive && (
+        <a
+          href={drive}
+          target="_blank"
+          rel="noopener nofollow"
+          className="mt-3 block w-full rounded-[10px] border border-blue bg-blue px-4 py-3 text-center font-medium text-white hover:bg-blue-deep"
+        >
+          Xem album đầy đủ của {p.name} trên Google Drive ↗
+        </a>
+      )}
+
+      <div className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-2">
         <h1 className="font-serif text-[26px] font-semibold leading-tight">{p.name}</h1>
         <span className="rounded-[7px] border border-blue-soft bg-blue-soft px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-blue-deep">
           {p.tier.name}
@@ -174,17 +185,6 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
             Muốn có sẵn nội dung gồm ngày, số người và nơi chụp thì dùng nút soạn tin ở dưới.
           </p>
         </section>
-      )}
-
-      {drive && (
-        <a
-          href={drive}
-          target="_blank"
-          rel="noopener nofollow"
-          className="mt-4 block w-full rounded-[10px] border border-blue bg-blue px-4 py-3 text-center font-medium text-white hover:bg-blue-deep"
-        >
-          Xem album đầy đủ của {p.name} trên Google Drive ↗
-        </a>
       )}
 
       {p.tier.note && (
