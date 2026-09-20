@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { todayVN } from "@/lib/availability";
+import { BRAND_ICONS, type BrandKey } from "@/components/brand-icons";
 import { contactLinks, mergeContacts, type ContactLink, type Contacts } from "@/lib/contacts";
 import { buildLeadMessage, type FormPhotographer, type FormZone } from "@/lib/lead-message";
 import { phoneSchema, type LeadInput } from "@/lib/lead-schema";
@@ -70,7 +71,11 @@ export function ContactForm({
 
   // Nút liên hệ đổi theo thợ đang chọn.
   const contacts = mergeContacts(photographer?.contacts, studioContacts);
-  const links = contactLinks(contacts);
+  // Chỉ các app nhắn tin, không có nút gọi. Instagram là nút chính to nhất,
+  // các app còn lại là nút nhỏ bên dưới; SMS có sẵn nội dung vẫn giữ cho điện thoại.
+  const apps = contactLinks(contacts).filter((c) => c.key in BRAND_ICONS);
+  const primaryApp = apps.find((c) => c.key === "instagram") ?? apps[0];
+  const secondaryApps = apps.filter((c) => c !== primaryApp);
   const smsNumber = contacts.phone.replace(/[^\d+]/g, "");
   const recipient = photographer ? photographer.name : studioName;
 
@@ -384,19 +389,15 @@ export function ContactForm({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        {links.map((c) => (
-          <a
-            key={c.key}
-            href={c.href}
-            target={c.href.startsWith("http") ? "_blank" : undefined}
-            rel="noopener"
-            onClick={() => onContactClick(c)}
-            className="rounded-[10px] border border-line-2 bg-surface px-4 py-3 text-center font-medium hover:border-blue hover:text-blue"
-          >
-            {c.label}
-          </a>
-        ))}
+      <div className="grid gap-2">
+        {primaryApp && <AppButton link={primaryApp} primary onClick={() => onContactClick(primaryApp)} />}
+        {secondaryApps.length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {secondaryApps.map((c) => (
+              <AppButton key={c.key} link={c} onClick={() => onContactClick(c)} />
+            ))}
+          </div>
+        )}
         {smsHref && (
           <a
             href={smsHref}
@@ -456,5 +457,26 @@ function Row({ label, value }: { label: string; value: string }) {
       <span className="text-ink-2">{label}</span>
       <b className="tabular-nums">{value}</b>
     </div>
+  );
+}
+
+/** Nút mở app nhắn tin, có logo. Nút chính to nền xanh, nút phụ viền mỏng. */
+function AppButton({ link, primary = false, onClick }: { link: ContactLink; primary?: boolean; onClick: () => void }) {
+  const Icon = BRAND_ICONS[link.key as BrandKey];
+  return (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener"
+      onClick={onClick}
+      className={
+        primary
+          ? "flex items-center justify-center gap-2.5 rounded-[10px] border border-blue bg-blue px-4 py-3.5 text-[16px] font-semibold text-white hover:bg-blue-deep"
+          : "flex items-center justify-center gap-2 rounded-[10px] border border-line-2 bg-surface px-3 py-2.5 text-[14px] font-medium hover:border-blue hover:text-blue"
+      }
+    >
+      <Icon size={primary ? 22 : 18} />
+      {link.label}
+    </a>
   );
 }
