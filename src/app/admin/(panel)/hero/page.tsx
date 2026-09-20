@@ -35,7 +35,7 @@ export default async function HeroPage() {
     <div className="max-w-[760px]">
       <h1 className="font-serif text-[26px] font-semibold leading-tight">Chữ đầu trang chủ</h1>
       <p className="mt-1 text-[13.5px] text-ink-2">
-        Khối đầu tiên khách nhìn thấy: dòng nhỏ, tiêu đề, đoạn mô tả, hai nút và hàng số liệu. Nền tối, chữ căn giữa, không có ảnh.{" "}
+        Khối đầu tiên khách nhìn thấy: dòng nhỏ, tiêu đề, đoạn mô tả, hai nút và hàng số liệu. Nền trắng, tiêu đề xanh, cụm nhấn màu cam, chữ căn giữa, không có ảnh.{" "}
         <Link href="/" target="_blank" className="text-blue underline underline-offset-2">
           Xem trang chủ
         </Link>

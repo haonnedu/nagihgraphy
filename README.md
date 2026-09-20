@@ -108,9 +108,9 @@ Section portfolio sách lật đã bỏ theo yêu cầu của khách ngày 2026-
 
 Mọi hiệu ứng tắt sạch dưới `prefers-reduced-motion`.
 
-### Hero chữ trên nền tối
+### Hero chữ trên nền trắng
 
-Từ 2026-09-20 hero không còn ảnh, theo yêu cầu của khách. Khối đầu trang là nền tối `bg-ink` với quầng sáng xanh mờ, chữ căn giữa: dòng nhỏ in hoa màu cam, tiêu đề serif có cụm nhấn màu cam đặt giữa hai dấu `*`, đoạn mô tả có cụm in đậm đặt giữa hai dấu `**`, hai nút, và một hàng viên số liệu bo tròn. Số trong viên đếm lên khi vào màn hình.
+Từ 2026-09-20 hero không còn ảnh, theo yêu cầu của khách. Khối đầu trang là nền trắng với quầng xanh rất nhạt, chữ căn giữa: dòng nhỏ in hoa màu cam, tiêu đề serif màu xanh có cụm nhấn màu cam đặt giữa hai dấu `*`, đoạn mô tả có cụm in đậm đặt giữa hai dấu `**`, hai nút, và một hàng viên số liệu bo tròn. Số trong viên đếm lên khi vào màn hình.
 
 Toàn bộ chữ nằm trong `site_settings` khoá `hero`, sửa ở `/admin/hero`. Trường nào trống thì rơi về `studio.kicker`, `studio.headline`, `studio.intro`; hàng số liệu trống thì tự tính số thợ, số buổi đã chụp và giá khởi điểm từ database.
 

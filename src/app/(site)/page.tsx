@@ -43,7 +43,7 @@ function Lead({ text, className }: { text: string; className?: string }) {
     <p className={className}>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <strong key={i} className="font-semibold text-white">
+          <strong key={i} className="font-semibold text-ink">
             {part}
           </strong>
         ) : (
@@ -83,12 +83,12 @@ export default async function HomePage() {
 
   return (
     <main className="flex-1">
-      {/* --- 1. hero chữ căn giữa trên nền tối, số liệu thành viên tròn --- */}
-      <section className="relative overflow-hidden bg-ink text-white">
-        {/* quầng sáng xanh mờ phía trên để nền tối không phẳng lì */}
+      {/* --- 1. hero chữ căn giữa trên nền trắng, chữ xanh và cam, số liệu thành viên tròn --- */}
+      <section className="relative overflow-hidden bg-surface">
+        {/* quầng xanh rất nhạt phía trên để nền trắng không phẳng lì */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(70%_60%_at_50%_0%,rgb(0_112_187/0.38),transparent_72%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(70%_60%_at_50%_0%,rgb(0_112_187/0.10),transparent_72%)]"
         />
         <div className="relative mx-auto flex w-full max-w-[900px] flex-col items-center px-4 pb-14 pt-16 text-center sm:pb-20 sm:pt-24">
           <Reveal>
@@ -97,13 +97,13 @@ export default async function HomePage() {
           <Reveal delay={0.08}>
             <Headline
               text={headline}
-              className="mt-4 font-serif text-[clamp(30px,6.4vw,56px)] font-semibold leading-[1.08] text-balance"
+              className="mt-4 font-serif text-[clamp(30px,6.4vw,56px)] font-semibold leading-[1.08] text-blue text-balance"
             />
           </Reveal>
           <Reveal delay={0.16}>
             <Lead
               text={lead}
-              className="mt-5 max-w-[60ch] text-[15.5px] leading-relaxed text-white/75 text-pretty sm:text-[17px]"
+              className="mt-5 max-w-[60ch] text-[15.5px] leading-relaxed text-ink-2 text-pretty sm:text-[17px]"
             />
           </Reveal>
           <Reveal delay={0.24}>
@@ -116,7 +116,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/bang-gia"
-                className="rounded-[10px] border border-white/25 bg-white/10 px-5 py-3 font-medium text-white transition-colors hover:bg-white/20"
+                className="rounded-[10px] border border-blue bg-surface px-5 py-3 font-medium text-blue transition-colors hover:bg-blue-soft"
               >
                 {secondaryLabel}
               </Link>
@@ -126,8 +126,8 @@ export default async function HomePage() {
             <RevealGroup className="mt-9 flex flex-wrap justify-center gap-2" stagger={0.07}>
               {stats.map((s) => (
                 <RevealItem key={`${s.value} ${s.label}`}>
-                  <span className="inline-flex items-baseline gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[13.5px] text-white/80">
-                    <b className="font-semibold tabular-nums text-white">
+                  <span className="inline-flex items-baseline gap-1.5 rounded-full border border-line bg-sunk px-4 py-2 text-[13.5px] text-ink-2">
+                    <b className="font-semibold tabular-nums text-blue">
                       <CountUp value={s.value} />
                     </b>
                     {s.label}
