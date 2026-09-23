@@ -6,7 +6,7 @@ import { BRAND_ICONS, InstagramIcon, type BrandKey } from "@/components/brand-ic
 import { contactLinks, instagramHandle, type ContactLink, type Contacts, type InstagramAccount } from "@/lib/contacts";
 import { buildLeadMessage, type FormPhotographer, type FormZone } from "@/lib/lead-message";
 import { phoneSchema, type LeadInput } from "@/lib/lead-schema";
-import { groupPriceOf, money, quote, rangeText, travelFeeText } from "@/lib/pricing";
+import { money, quote, rangeText, travelFeeText } from "@/lib/pricing";
 
 type Props = {
   photographers: FormPhotographer[];
@@ -105,7 +105,8 @@ export function ContactForm({
     eveningAddon,
     eveningAddonFee,
   });
-  const groupPrice = photographer ? groupPriceOf(photographer, people) : 0;
+  // Ô giá dùng cùng con số với tin nhắn: cả ngày 1 người lấy giá cả ngày của hạng.
+  const basePrice = q.base;
 
   const phoneOk = phoneSchema.safeParse(phone).success;
   const canSaveLead = customerName.trim().length > 0 && phoneOk;
@@ -243,10 +244,10 @@ export function ContactForm({
         <div className="rounded-card border border-ink bg-surface px-4 pb-3 pt-3.5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <b className="text-[14.5px] font-semibold">
-              {people} người · {people > 1 ? "gói nhóm" : "gói lẻ"}
+              {people} người · {people > 1 ? "gói nhóm" : shootType === "FULL_DAY" ? "cả ngày" : "nửa ngày"}
             </b>
             <strong className="text-xl font-semibold tabular-nums text-blue-deep">
-              {!photographer ? "" : groupPrice > 0 ? `${people === 1 ? "từ " : ""}${money(groupPrice)}` : "Thợ báo giá"}
+              {!photographer ? "" : basePrice > 0 ? `${people === 1 ? "từ " : ""}${money(basePrice)}` : "Thợ báo giá"}
             </strong>
           </div>
           <input
@@ -265,7 +266,7 @@ export function ContactForm({
             ))}
           </div>
           <p className="mt-2 text-[12.5px] text-ink-3">
-            Mặc định 1 người, giá gói lẻ. Kéo sang phải nếu chụp nhóm, tối đa {maxPeople} người.
+            Mặc định 1 người. Kéo sang phải nếu chụp nhóm, tối đa {maxPeople} người.
           </p>
         </div>
 

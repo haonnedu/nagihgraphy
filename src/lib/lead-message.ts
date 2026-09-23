@@ -60,7 +60,9 @@ export function buildLeadMessage(
   const priceNote = p
     ? q.hasBase
       ? ` - giá ${draft.people > 1 ? "" : "từ "}${money(q.base)}`
-      : " - nhờ báo giá nhóm"
+      : draft.people > 1
+        ? " - nhờ báo giá nhóm"
+        : " - nhờ báo giá"
     : "";
   lines.push(`- Số người chụp: ${draft.people} người (${pkg})${priceNote}`);
 
