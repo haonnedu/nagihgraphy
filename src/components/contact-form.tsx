@@ -271,6 +271,32 @@ export function ContactForm({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Tên bạn" hint="Không bắt buộc">
+            <input
+              value={customerName}
+              maxLength={80}
+              onChange={(e) => setCustomerName(e.target.value)}
+              autoComplete="name"
+              className={inputClass}
+            />
+          </Field>
+          <Field
+            label="Số điện thoại"
+            hint={phone && !phoneOk ? "Số chưa đúng, VD 0961 120 879" : undefined}
+            error={Boolean(phone) && !phoneOk}
+          >
+            <input
+              value={phone}
+              inputMode="tel"
+              autoComplete="tel"
+              maxLength={20}
+              onChange={(e) => setPhone(e.target.value)}
+              className={inputClass}
+            />
+          </Field>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Ngày chụp dự kiến">
             <input
               type="date"
@@ -338,32 +364,6 @@ export function ContactForm({
             {zone?.note && <p className="text-[12.5px] text-ink-3">{zone.note}</p>}
           </div>
         )}
-
-        <div className="grid gap-3 border-t border-line pt-3.5 sm:grid-cols-2">
-          <Field label="Tên bạn" hint="Không bắt buộc">
-            <input
-              value={customerName}
-              maxLength={80}
-              onChange={(e) => setCustomerName(e.target.value)}
-              autoComplete="name"
-              className={inputClass}
-            />
-          </Field>
-          <Field
-            label="Số điện thoại"
-            hint={phone && !phoneOk ? "Số chưa đúng, VD 0961 120 879" : undefined}
-            error={Boolean(phone) && !phoneOk}
-          >
-            <input
-              value={phone}
-              inputMode="tel"
-              autoComplete="tel"
-              maxLength={20}
-              onChange={(e) => setPhone(e.target.value)}
-              className={inputClass}
-            />
-          </Field>
-        </div>
 
         {/* honeypot: ẩn với người, bot hay điền bừa */}
         <div aria-hidden className="absolute -left-[9999px] top-0 h-px w-px overflow-hidden">
