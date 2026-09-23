@@ -340,7 +340,7 @@ export function ContactForm({
         )}
 
         <div className="grid gap-3 border-t border-line pt-3.5 sm:grid-cols-2">
-          <Field label="Tên bạn" hint="Không bắt buộc, để thợ biết đang nói chuyện với ai">
+          <Field label="Tên bạn" hint="Không bắt buộc">
             <input
               value={customerName}
               maxLength={80}
@@ -515,7 +515,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="grid gap-1.5">
+    <label className="grid content-start gap-1.5">
       <span className="text-xs font-medium text-ink-2">{label}</span>
       {children}
       {hint && <small className={error ? "text-[11.5px] text-warn" : "text-[11.5px] text-ink-3"}>{hint}</small>}
