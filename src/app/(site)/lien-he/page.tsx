@@ -33,14 +33,11 @@ export default async function ContactPage(props: PageProps<"/lien-he">) {
         slug: true,
         name: true,
         priceOverride: true,
-        zalo: true,
-        phone: true,
-        facebook: true,
-        instagram: true,
         tier: {
           select: {
             name: true,
             basePrice: true,
+            fullDayPrice: true,
             groupPrices: { select: { people: true, price: true }, orderBy: { people: "asc" } },
           },
         },
@@ -57,8 +54,7 @@ export default async function ContactPage(props: PageProps<"/lien-he">) {
     name: p.name,
     tierName: p.tier.name,
     priceOverride: p.priceOverride,
-    tier: { basePrice: p.tier.basePrice, groupPrices: p.tier.groupPrices },
-    contacts: { zalo: p.zalo, phone: p.phone, facebook: p.facebook, instagram: p.instagram },
+    tier: { basePrice: p.tier.basePrice, fullDayPrice: p.tier.fullDayPrice, groupPrices: p.tier.groupPrices },
   }));
   const zones: FormZone[] = zoneRows;
 
@@ -92,6 +88,7 @@ export default async function ContactPage(props: PageProps<"/lien-he">) {
           photographers={photographers}
           zones={zones}
           studioContacts={settings.contacts}
+          instagramAccounts={settings.contacts.instagramAccounts}
           studioName={settings.studio.name}
           maxPeople={settings.studio.maxPeople}
           eveningAddonFee={settings.pricing.eveningAddon}

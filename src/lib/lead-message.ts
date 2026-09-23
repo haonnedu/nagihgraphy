@@ -1,5 +1,4 @@
 import { formatDateVN } from "@/lib/availability";
-import type { Contacts } from "@/lib/contacts";
 import { money, quote, rangeText, travelFeeText, type PriceablePhotographer } from "@/lib/pricing";
 
 /**
@@ -12,8 +11,6 @@ export type FormPhotographer = PriceablePhotographer & {
   slug: string;
   name: string;
   tierName: string;
-  /** Kênh liên hệ riêng của thợ; trống thì form rơi về liên hệ studio. */
-  contacts?: Partial<Contacts>;
 };
 
 export type FormZone = {
@@ -44,6 +41,7 @@ export function buildLeadMessage(
   const { photographer: p, zone } = draft;
   const q = quote({
     photographer: p,
+    shootType: draft.shootType,
     people: draft.people,
     zone: zone ? { min: zone.minFee, max: zone.maxFee } : null,
     eveningAddon: draft.eveningAddon,

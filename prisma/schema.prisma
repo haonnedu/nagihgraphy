@@ -17,7 +17,10 @@ model Tier {
   /// mã cũ trong bản artifact: e1, e2, e3, e4, intern
   slug          String   @unique
   name          String
+  /// giá nửa ngày (một buổi) cho 1 người
   basePrice     Int      @default(0)
+  /// giá cả ngày cho 1 người; 0 nghĩa là thợ báo giá
+  fullDayPrice  Int      @default(0)
   note          String   @default("")
   /// ẩn khỏi bảng giá công khai (Take Care, Intern)
   hiddenInTable Boolean  @default(false)

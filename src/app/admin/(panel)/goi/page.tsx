@@ -36,9 +36,9 @@ export default async function PackagesPage() {
 
       {/* ---------------------------------------------------------------- hạng ekip */}
       <section className="mt-7">
-        <h2 className="font-serif text-lg font-semibold">Hạng ekip và giá gói lẻ</h2>
+        <h2 className="font-serif text-lg font-semibold">Hạng ekip và giá</h2>
         <p className="mt-0.5 text-[13px] text-ink-2">
-          Giá gói lẻ là giá 1 người 1 buổi. Ẩn khỏi bảng giá dùng cho hạng nội bộ như Take Care hay Intern.
+          Giá nửa ngày là giá 1 người 1 buổi, giá cả ngày là 1 người trọn ngày. Để 0 nếu chưa có, khách thấy “Thợ báo giá”. Ẩn khỏi bảng giá dùng cho hạng nội bộ như Take Care hay Intern.
         </p>
 
         <div className="mt-3 grid gap-3">
@@ -46,12 +46,15 @@ export default async function PackagesPage() {
             <div key={t.id} className="rounded-card border border-line bg-surface p-4">
               <ActionForm action={saveTier} submitLabel="Lưu hạng">
                 <input type="hidden" name="id" value={t.id} />
-                <div className="grid gap-3 sm:grid-cols-[1fr_160px_1fr]">
+                <div className="grid gap-3 sm:grid-cols-[1fr_140px_140px_1fr]">
                   <Field label="Tên hạng">
                     <input name="name" defaultValue={t.name} required className={inputClass} />
                   </Field>
-                  <Field label="Giá gói lẻ (đ)">
+                  <Field label="Giá nửa ngày (đ)">
                     <input name="basePrice" type="number" min={0} step={10000} defaultValue={t.basePrice} className={inputClass} />
+                  </Field>
+                  <Field label="Giá cả ngày (đ)">
+                    <input name="fullDayPrice" type="number" min={0} step={10000} defaultValue={t.fullDayPrice} className={inputClass} />
                   </Field>
                   <Field label="Ghi chú hiện cho khách">
                     <input name="note" defaultValue={t.note} maxLength={200} className={inputClass} />

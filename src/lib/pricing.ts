@@ -8,8 +8,13 @@ export function money(value: number | null | undefined): string {
   return n > 0 ? `${n.toLocaleString("vi-VN")}đ` : "Liên hệ";
 }
 
+export type ShootType = "FULL_DAY" | "HALF_DAY";
+
 export type PriceableTier = {
+  /** giá nửa ngày (một buổi) cho 1 người */
   basePrice: number;
+  /** giá cả ngày cho 1 người, 0 là chưa có */
+  fullDayPrice: number;
   groupPrices: { people: number; price: number }[];
 };
 
@@ -18,9 +23,14 @@ export type PriceablePhotographer = {
   tier: PriceableTier;
 };
 
-/** Giá một buổi cho 1 người. Thợ có giá riêng thì ưu tiên giá riêng. */
+/** Giá nửa ngày (một buổi) cho 1 người. Thợ có giá riêng thì ưu tiên giá riêng. */
 export function priceOf(p: PriceablePhotographer): number {
   return p.priceOverride > 0 ? p.priceOverride : p.tier.basePrice;
+}
+
+/** Giá cả ngày cho 1 người, theo hạng. 0 nghĩa là chưa có, hiển thị "Thợ báo giá". */
+export function fullDayPriceOf(p: PriceablePhotographer): number {
+  return p.tier.fullDayPrice;
 }
 
 /**
@@ -49,6 +59,8 @@ export function travelFeeText(zone: FeeRange, photographers = 1): string {
 
 export type QuoteInput = {
   photographer: PriceablePhotographer | null;
+  /** cả ngày hay nửa ngày; chỉ đổi giá khi chụp 1 người */
+  shootType?: ShootType;
   people: number;
   zone: FeeRange | null;
   eveningAddon: boolean;
@@ -67,7 +79,12 @@ export type Quote = {
 };
 
 export function quote(input: QuoteInput): Quote {
-  const base = input.photographer ? groupPriceOf(input.photographer, input.people) : 0;
+  // Giá nhóm hiện chưa tách nửa ngày và cả ngày, nên cả ngày chỉ khác giá khi chụp 1 người.
+  const base = !input.photographer
+    ? 0
+    : input.shootType === "FULL_DAY" && input.people <= 1
+      ? fullDayPriceOf(input.photographer)
+      : groupPriceOf(input.photographer, input.people);
   const travel = input.zone ? travelFee(input.zone, 1) : { min: 0, max: 0 };
   const evening = input.eveningAddon ? input.eveningAddonFee : 0;
   const travelMax = travel.max > travel.min ? travel.max : travel.min;

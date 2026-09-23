@@ -18,10 +18,6 @@ export type PhotographerFormValue = {
   sessions: number;
   priceOverride: number;
   driveUrl: string;
-  zalo: string;
-  phone: string;
-  facebook: string;
-  instagram: string;
   published: boolean;
   isSample: boolean;
   tagIds: string[];
@@ -81,27 +77,6 @@ export function PhotographerForm({ value, options }: { value: PhotographerFormVa
           <Field label="Link Google Drive album đầy đủ" hint='Nhớ bật "Bất kỳ ai có đường liên kết" trên Drive'>
             <input name="driveUrl" type="url" defaultValue={value.driveUrl} placeholder="https://drive.google.com/…" className={inputClass} />
           </Field>
-        </section>
-
-        <section className="grid gap-3 rounded-card border border-line bg-surface p-4">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">Kênh liên hệ của thợ</h2>
-          <p className="text-[13px] text-ink-2">
-            Khách bấm nút liên hệ trên trang thợ sẽ nhắn thẳng vào đây. Ô nào trống thì dùng kênh chung của studio.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Zalo (số điện thoại)">
-              <input name="zalo" defaultValue={value.zalo} inputMode="tel" placeholder="0961 120 879" className={inputClass} />
-            </Field>
-            <Field label="Số gọi điện">
-              <input name="phone" defaultValue={value.phone} inputMode="tel" placeholder="0961 120 879" className={inputClass} />
-            </Field>
-            <Field label="Facebook / Messenger" hint="Link trang cá nhân hoặc m.me/…">
-              <input name="facebook" type="url" defaultValue={value.facebook} placeholder="https://www.facebook.com/…" className={inputClass} />
-            </Field>
-            <Field label="Instagram">
-              <input name="instagram" type="url" defaultValue={value.instagram} placeholder="https://www.instagram.com/…" className={inputClass} />
-            </Field>
-          </div>
         </section>
 
         <section className="grid gap-3 rounded-card border border-line bg-surface p-4">

@@ -14,10 +14,6 @@ export default async function AdminHomePage() {
     getSettings(),
   ]);
 
-  const missingContacts = await db.photographer.count({
-    where: { published: true, zalo: "", facebook: "", phone: "" },
-  });
-
   const cards = [
     { label: "Thợ đang hiện", value: `${published} / ${photographers}`, href: "/admin/tho" },
     { label: "Ảnh portfolio", value: String(photos), href: "/admin/tho" },
@@ -43,15 +39,6 @@ export default async function AdminHomePage() {
       </div>
 
       <div className="mt-6 grid gap-3">
-        {missingContacts > 0 && (
-          <p className="rounded-xl border border-extra-line bg-extra-bg px-3.5 py-3 text-[13.5px] text-extra-ink">
-            <b className="font-semibold">{missingContacts} thợ</b> chưa có Zalo, Messenger hay số điện thoại riêng.
-            Khách bấm nút liên hệ của các thợ này sẽ nhắn vào kênh chung của studio.{" "}
-            <Link href="/admin/tho" className="underline underline-offset-2">
-              Điền ngay
-            </Link>
-          </p>
-        )}
         {!settings.hero.headline && (
           <p className="rounded-xl border border-line bg-sunk px-3.5 py-3 text-[13.5px] text-ink-2">
             Đầu trang chủ đang dùng chữ mặc định.{" "}
@@ -65,7 +52,7 @@ export default async function AdminHomePage() {
       <section className="mt-8 rounded-card border border-line bg-surface p-4">
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">Làm gì ở đây</h2>
         <ul className="mt-2 grid gap-1.5 text-[13.5px] text-ink-2">
-          <li>Thêm thợ, upload ảnh portfolio, chọn ảnh bìa, điền Zalo và Messenger của từng thợ.</li>
+          <li>Thêm thợ, upload ảnh portfolio, chọn ảnh bìa, điền link album Google Drive.</li>
           <li>Sửa giá theo hạng ekip, giá gói nhóm theo số người, phụ phí từng tỉnh và các dòng chính sách.</li>
           <li>Sửa tiêu đề, đoạn mô tả và các viên số liệu ở đầu trang chủ.</li>
           <li>Xem khách đã để lại tên và số điện thoại, đánh dấu đã liên hệ hoặc đã chốt.</li>

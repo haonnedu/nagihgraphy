@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { todayVN } from "@/lib/availability";
-import { BRAND_ICONS, type BrandKey } from "@/components/brand-icons";
-import { contactLinks, mergeContacts, type ContactLink, type Contacts } from "@/lib/contacts";
+import { BRAND_ICONS, InstagramIcon, type BrandKey } from "@/components/brand-icons";
+import { contactLinks, instagramHandle, type ContactLink, type Contacts, type InstagramAccount } from "@/lib/contacts";
 import { buildLeadMessage, type FormPhotographer, type FormZone } from "@/lib/lead-message";
 import { phoneSchema, type LeadInput } from "@/lib/lead-schema";
 import { groupPriceOf, money, quote, rangeText, travelFeeText } from "@/lib/pricing";
@@ -11,8 +11,10 @@ import { groupPriceOf, money, quote, rangeText, travelFeeText } from "@/lib/pric
 type Props = {
   photographers: FormPhotographer[];
   zones: FormZone[];
-  /** Liên hệ chung của studio, dùng khi thợ không có kênh riêng hoặc chưa chọn thợ. */
+  /** Liên hệ chung của studio. Không còn kênh riêng theo thợ. */
   studioContacts: Contacts;
+  /** Tài khoản Instagram tư vấn, từ 2 tài khoản trở lên thì nút Instagram mở popup chọn. */
+  instagramAccounts: InstagramAccount[];
   studioName: string;
   maxPeople: number;
   eveningAddonFee: number;
@@ -34,15 +36,15 @@ const CHANNEL_BY_KEY: Record<string, Channel> = {
  * nhắn, bấm sao chép rồi tự dán vào Zalo. Bấm nút kênh nào thì tin nhắn
  * cũng được chép trước khi mở app.
  *
- * Không có sale: nút liên hệ trỏ thẳng tới kênh của thợ đang chọn, thợ
- * không có kênh riêng thì rơi về studio. Nếu khách điền tên và số điện
- * thoại thì lưu một lead để chủ studio xem trong admin, chạy nền, không
- * chặn việc mở app. Xem PLAN.md mục 6.
+ * Nút liên hệ là kênh chung của studio; nút Instagram mở popup chọn tài
+ * khoản tư vấn. Nếu khách điền tên và số điện thoại thì lưu một lead để chủ
+ * studio xem trong admin, chạy nền, không chặn việc mở app. Xem PLAN.md mục 6.
  */
 export function ContactForm({
   photographers,
   zones,
   studioContacts,
+  instagramAccounts,
   studioName,
   maxPeople,
   eveningAddonFee,
@@ -63,21 +65,21 @@ export function ContactForm({
   const [toast, setToast] = useState("");
   const [copyLabel, setCopyLabel] = useState("Sao chép");
   const [savedCode, setSavedCode] = useState("");
+  const [igOpen, setIgOpen] = useState(false);
   const savingRef = useRef(false);
   const messageRef = useRef<HTMLPreElement>(null);
 
   const photographer = photographers.find((p) => p.slug === pick) ?? null;
   const zone = zones.find((z) => z.slug === zoneSlug) ?? null;
 
-  // Nút liên hệ đổi theo thợ đang chọn.
-  const contacts = mergeContacts(photographer?.contacts, studioContacts);
+  const contacts = studioContacts;
   // Chỉ các app nhắn tin, không có nút gọi. Instagram là nút chính to nhất,
   // các app còn lại là nút nhỏ bên dưới; SMS có sẵn nội dung vẫn giữ cho điện thoại.
   const apps = contactLinks(contacts).filter((c) => c.key in BRAND_ICONS);
   const primaryApp = apps.find((c) => c.key === "instagram") ?? apps[0];
   const secondaryApps = apps.filter((c) => c !== primaryApp);
   const smsNumber = contacts.phone.replace(/[^\d+]/g, "");
-  const recipient = photographer ? photographer.name : studioName;
+  const recipient = studioName;
 
   // Dựng chuỗi tin nhắn rất rẻ, không cần memo; React Compiler tự lo phần còn lại.
   const draft = {
@@ -97,6 +99,7 @@ export function ContactForm({
 
   const q = quote({
     photographer,
+    shootType,
     people,
     zone: zone ? { min: zone.minFee, max: zone.maxFee } : null,
     eveningAddon,
@@ -106,6 +109,15 @@ export function ContactForm({
 
   const phoneOk = phoneSchema.safeParse(phone).success;
   const canSaveLead = customerName.trim().length > 0 && phoneOk;
+
+  useEffect(() => {
+    if (!igOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIgOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [igOpen]);
 
   function showToast(text: string) {
     setToast(text);
@@ -390,7 +402,12 @@ export function ContactForm({
       </div>
 
       <div className="grid gap-2">
-        {primaryApp && <AppButton link={primaryApp} primary onClick={() => onContactClick(primaryApp)} />}
+        {primaryApp &&
+          (primaryApp.key === "instagram" && instagramAccounts.length > 1 ? (
+            <AppButton link={primaryApp} primary asButton onClick={() => setIgOpen(true)} />
+          ) : (
+            <AppButton link={primaryApp} primary onClick={() => onContactClick(primaryApp)} />
+          ))}
         {secondaryApps.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
             {secondaryApps.map((c) => (
@@ -414,6 +431,60 @@ export function ContactForm({
           Đã lưu thông tin, mã của bạn là <b className="font-semibold">{savedCode}</b>. Nhắn thẳng
           cho {recipient} qua nút ở trên nhé.
         </p>
+      )}
+
+      {igOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ig-title"
+          className="fixed inset-0 z-50 grid place-items-end bg-ink/50 p-3 sm:place-items-center"
+          onClick={() => setIgOpen(false)}
+        >
+          <div
+            className="w-full max-w-[420px] rounded-card bg-surface p-4 shadow-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <h3 id="ig-title" className="font-serif text-lg font-semibold">
+                Chọn liên hệ tư vấn
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIgOpen(false)}
+                aria-label="Đóng"
+                className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-sunk hover:text-ink"
+              >
+                ×
+              </button>
+            </div>
+            <p className="mt-1 text-[13px] text-ink-3">
+              Tin nhắn đã soạn sẽ được chép sẵn, bạn chỉ cần dán vào khung chat.
+            </p>
+            <ul className="mt-3 grid gap-2">
+              {instagramAccounts.map((a) => (
+                <li key={a.url}>
+                  <a
+                    href={a.url}
+                    target="_blank"
+                    rel="noopener"
+                    onClick={() => {
+                      onContactClick({ key: "instagram", label: a.label, href: a.url });
+                      setIgOpen(false);
+                    }}
+                    className="flex items-center gap-3 rounded-[10px] border border-line-2 bg-surface px-3.5 py-3 hover:border-blue hover:text-blue"
+                  >
+                    <InstagramIcon size={22} className="shrink-0 text-blue" />
+                    <span className="min-w-0">
+                      <b className="block font-semibold">{a.label}</b>
+                      <span className="block truncate text-[12.5px] text-ink-3">{instagramHandle(a.url)}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       )}
 
       {toast && (
@@ -461,22 +532,38 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 /** Nút mở app nhắn tin, có logo. Nút chính to nền xanh, nút phụ viền mỏng. */
-function AppButton({ link, primary = false, onClick }: { link: ContactLink; primary?: boolean; onClick: () => void }) {
+function AppButton({
+  link,
+  primary = false,
+  asButton = false,
+  onClick,
+}: {
+  link: ContactLink;
+  primary?: boolean;
+  /** true thì là nút mở popup, không phải link */
+  asButton?: boolean;
+  onClick: () => void;
+}) {
   const Icon = BRAND_ICONS[link.key as BrandKey];
-  return (
-    <a
-      href={link.href}
-      target="_blank"
-      rel="noopener"
-      onClick={onClick}
-      className={
-        primary
-          ? "flex items-center justify-center gap-2.5 rounded-[10px] border border-blue bg-blue px-4 py-3.5 text-[16px] font-semibold text-white hover:bg-blue-deep"
-          : "flex items-center justify-center gap-2 rounded-[10px] border border-line-2 bg-surface px-3 py-2.5 text-[14px] font-medium hover:border-blue hover:text-blue"
-      }
-    >
+  const cls = primary
+    ? "flex w-full items-center justify-center gap-2.5 rounded-[10px] border border-blue bg-blue px-4 py-3.5 text-[16px] font-semibold text-white hover:bg-blue-deep"
+    : "flex items-center justify-center gap-2 rounded-[10px] border border-line-2 bg-surface px-3 py-2.5 text-[14px] font-medium hover:border-blue hover:text-blue";
+  const inner = (
+    <>
       <Icon size={primary ? 22 : 18} />
       {link.label}
+    </>
+  );
+  if (asButton) {
+    return (
+      <button type="button" onClick={onClick} className={cls}>
+        {inner}
+      </button>
+    );
+  }
+  return (
+    <a href={link.href} target="_blank" rel="noopener" onClick={onClick} className={cls}>
+      {inner}
     </a>
   );
 }

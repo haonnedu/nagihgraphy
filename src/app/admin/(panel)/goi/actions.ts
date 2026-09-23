@@ -16,6 +16,7 @@ const tierSchema = z.object({
   id: z.string().default(""),
   name: z.string().trim().min(1, "Thiếu tên hạng").max(40),
   basePrice: money.default(0),
+  fullDayPrice: money.default(0),
   note: z.string().trim().max(200).default(""),
   hiddenInTable: z.coerce.boolean().default(false),
 });
@@ -26,6 +27,7 @@ export async function saveTier(_prev: ActionState, formData: FormData): Promise<
     id: formData.get("id"),
     name: formData.get("name"),
     basePrice: formData.get("basePrice") || 0,
+    fullDayPrice: formData.get("fullDayPrice") || 0,
     note: formData.get("note"),
     hiddenInTable: formData.get("hiddenInTable") === "on",
   });
@@ -33,12 +35,12 @@ export async function saveTier(_prev: ActionState, formData: FormData): Promise<
   const d = parsed.data;
 
   if (d.id) {
-    await db.tier.update({ where: { id: d.id }, data: { name: d.name, basePrice: d.basePrice, note: d.note, hiddenInTable: d.hiddenInTable } });
+    await db.tier.update({ where: { id: d.id }, data: { name: d.name, basePrice: d.basePrice, fullDayPrice: d.fullDayPrice, note: d.note, hiddenInTable: d.hiddenInTable } });
   } else {
     const last = await db.tier.findFirst({ orderBy: { order: "desc" }, select: { order: true } });
     let slug = slugify(d.name) || "hang";
     if (await db.tier.findUnique({ where: { slug } })) slug = `${slug}-${Date.now().toString(36)}`;
-    await db.tier.create({ data: { slug, name: d.name, basePrice: d.basePrice, note: d.note, hiddenInTable: d.hiddenInTable, order: (last?.order ?? -1) + 1 } });
+    await db.tier.create({ data: { slug, name: d.name, basePrice: d.basePrice, fullDayPrice: d.fullDayPrice, note: d.note, hiddenInTable: d.hiddenInTable, order: (last?.order ?? -1) + 1 } });
   }
   revalidatePublic();
   return { error: "", ok: "Đã lưu hạng" };

@@ -53,6 +53,7 @@ export async function POST(request: Request) {
               select: {
                 name: true,
                 basePrice: true,
+                fullDayPrice: true,
                 groupPrices: { select: { people: true, price: true } },
               },
             },
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
 
   const q = quote({
     photographer: priceable,
+    shootType: input.shootType,
     people: input.people,
     zone: zone ? { min: zone.minFee, max: zone.maxFee } : null,
     eveningAddon: input.eveningAddon,

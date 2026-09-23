@@ -1,7 +1,6 @@
 /**
- * Kênh liên hệ. Không có sale: khách nhắn thẳng cho thợ, nên mỗi thợ có
- * Zalo, Messenger, Instagram, số điện thoại riêng. Trống thì rơi về liên hệ
- * chung của studio để nút không bao giờ biến mất.
+ * Kênh liên hệ chung của studio. Từ 2026-09-23 không còn kênh riêng theo thợ:
+ * khách nhắn về studio hoặc chọn một tài khoản Instagram tư vấn trong popup.
  *
  * File này không import server, để client component dùng chung được.
  */
@@ -16,17 +15,24 @@ export type Contacts = {
 
 export type ContactLink = { key: string; label: string; href: string };
 
-export const EMPTY_CONTACTS: Contacts = { zalo: "", phone: "", facebook: "", instagram: "" };
+export type InstagramAccount = { label: string; url: string };
 
-/** Từng kênh: thợ có thì lấy của thợ, không thì lấy của studio. */
-export function mergeContacts(own: Partial<Contacts> | null | undefined, fallback: Contacts): Contacts {
-  return {
-    zalo: own?.zalo || fallback.zalo,
-    phone: own?.phone || fallback.phone,
-    facebook: own?.facebook || fallback.facebook,
-    instagram: own?.instagram || fallback.instagram,
-    tiktok: own?.tiktok || fallback.tiktok || "",
-  };
+/**
+ * Tài khoản Instagram tư vấn, khách chọn một trong popup ở form đặt lịch.
+ * Là giá trị mặc định khi site_settings.contacts chưa có instagramAccounts;
+ * đổi trong database là đổi được, không cần sửa code.
+ */
+export const DEFAULT_INSTAGRAM_ACCOUNTS: InstagramAccount[] = [
+  { label: "NAGIH GRAPHY", url: "https://www.instagram.com/nagih.graphy/" },
+  { label: "Trà My", url: "https://www.instagram.com/tramy.nagih/" },
+  { label: "Ngọc Trinh", url: "https://www.instagram.com/nngoctrinhsale.nagih/" },
+  { label: "Mita", url: "https://www.instagram.com/mitasale.nagih/" },
+];
+
+/** "https://www.instagram.com/tramy.nagih/" -> "@tramy.nagih" */
+export function instagramHandle(url: string): string {
+  const m = /instagram\.com\/([^/?#]+)/i.exec(url);
+  return m ? `@${m[1]}` : url;
 }
 
 export function digitsOnly(s: string): string {

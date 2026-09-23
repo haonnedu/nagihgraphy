@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { DEFAULT_INSTAGRAM_ACCOUNTS } from "@/lib/contacts";
 
 /**
  * Nội dung studio nằm trong bảng site_settings, mỗi khoá một hàng JSON.
@@ -25,6 +26,10 @@ const contactsSchema = z.object({
   instagram: z.string().default(""),
   facebook: z.string().default(""),
   tiktok: z.string().default(""),
+  /** tài khoản Instagram tư vấn cho popup ở form đặt lịch */
+  instagramAccounts: z
+    .array(z.object({ label: z.string(), url: z.string() }))
+    .default(DEFAULT_INSTAGRAM_ACCOUNTS),
 });
 
 const bookingSchema = z.object({
@@ -92,4 +97,4 @@ export async function getSettings(): Promise<Settings> {
  * Logic ghép và lọc kênh liên hệ nằm ở lib/contacts.ts để client dùng chung.
  * Giữ re-export cho các chỗ đang import từ đây.
  */
-export { contactLinks, mergeContacts } from "@/lib/contacts";
+export { contactLinks } from "@/lib/contacts";

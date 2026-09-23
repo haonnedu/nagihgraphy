@@ -21,9 +21,6 @@ export default async function AdminPhotographersPage() {
       published: true,
       isSample: true,
       priceOverride: true,
-      zalo: true,
-      facebook: true,
-      phone: true,
       tier: { select: { name: true, basePrice: true } },
       photos: { select: { path: true }, orderBy: { order: "asc" }, take: 1 },
       _count: { select: { photos: true } },
@@ -53,7 +50,6 @@ export default async function AdminPhotographersPage() {
         {rows.map((p, i) => {
           const cover = p.photos[0];
           const price = p.priceOverride > 0 ? p.priceOverride : p.tier.basePrice;
-          const noContact = !p.zalo && !p.facebook && !p.phone;
           return (
             <li
               key={p.id}
@@ -76,9 +72,6 @@ export default async function AdminPhotographersPage() {
                   {p.isSample && " · dữ liệu mẫu"}
                   {!p.published && " · đang ẩn"}
                 </p>
-                {noContact && (
-                  <p className="text-[12px] text-extra-ink">Chưa có Zalo, Messenger hay SĐT riêng, đang dùng kênh studio.</p>
-                )}
               </div>
 
               {editable && (

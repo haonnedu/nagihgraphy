@@ -118,7 +118,7 @@ Toàn bộ chữ nằm trong `site_settings` khoá `hero`, sửa ở `/admin/her
 
 ### Form liên hệ và lead
 
-Không có sale. Khách chọn thợ, web soạn sẵn tin nhắn, khách chép rồi nhắn thẳng cho thợ qua Zalo, Messenger hoặc Instagram. Mỗi thợ có kênh liên hệ riêng trong bốn cột `zalo`, `phone`, `facebook`, `instagram` của bảng `photographers`; cột nào trống thì rơi về liên hệ chung của studio trong `site_settings`, nên nút không bao giờ biến mất. Logic ghép nằm ở `src/lib/contacts.ts`, dùng chung cho cả trang thợ và form. Dữ liệu seed chưa có kênh riêng của thợ, chủ studio điền qua admin.
+Khách chọn thợ, web soạn sẵn tin nhắn, khách chép rồi nhắn qua Zalo, Messenger hoặc Instagram của studio. Từ 2026-09-23 không còn kênh liên hệ riêng theo thợ: bốn cột `zalo`, `phone`, `facebook`, `instagram` của bảng `photographers` vẫn còn trong schema nhưng admin không sửa và web không đọc nữa. Nút Instagram mở popup "Chọn liên hệ tư vấn" liệt kê các tài khoản trong `site_settings.contacts.instagramAccounts`; chưa có trong database thì dùng mặc định trong `src/lib/contacts.ts` (page chính và ba tài khoản sale). Số điện thoại không hiện ở đâu trên web.
 
 Nếu khách điền tên và số điện thoại thì khi bấm sao chép hoặc bấm một kênh, form gửi một lead về `POST /api/leads` chạy nền, không chặn việc mở app, và hiện mã dạng `NG-1909-A7K3`. Lead là để chủ studio xem lại trong admin, web không hứa gọi lại.
 
@@ -139,8 +139,8 @@ npm run admin:create -- --email chu@nagihgraphy.com --password "mat khau manh" -
 | Trang | Làm gì |
 |---|---|
 | `/admin` | Số thợ, số ảnh, khách mới, cảnh báo thợ chưa có kênh liên hệ riêng |
-| `/admin/tho` | Thêm, sửa, ẩn, sắp thứ tự thợ; điền Zalo, Messenger, SĐT riêng; upload nhiều ảnh, chọn bìa, sắp thứ tự, xoá |
-| `/admin/goi` | Hạng ekip và giá gói lẻ, giá gói nhóm theo số người, phụ phí từng tỉnh, chính sách, phụ phí buổi tối |
+| `/admin/tho` | Thêm, sửa, ẩn, sắp thứ tự thợ; link album Drive; upload nhiều ảnh, chọn bìa, sắp thứ tự, xoá |
+| `/admin/goi` | Hạng ekip với giá nửa ngày và giá cả ngày, giá gói nhóm theo số người, phụ phí từng tỉnh, chính sách, phụ phí buổi tối |
 | `/admin/hero` | Sửa chữ đầu trang chủ: dòng nhỏ, tiêu đề, mô tả, hai nút, tối đa 4 viên số liệu |
 | `/admin/lead` | Xem khách để lại thông tin, lọc theo trạng thái, ghi chú, đổi trạng thái |
 

@@ -39,12 +39,14 @@ export default async function PricingPage() {
               className={`grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-3.5 ${i > 0 ? "border-t border-line" : ""}`}
             >
               <span className="font-semibold">{t.name}</span>
-              <span className="col-start-2 row-span-2 row-start-1 text-right font-semibold tabular-nums text-blue">
-                {t.basePrice > 0 && <small className="font-normal text-ink-3">từ </small>}
-                <span className="text-base">{money(t.basePrice)}</span>
-                <small className="block text-[11.5px] font-normal text-ink-3">
-                  {t._count.photographers} thợ
-                </small>
+              <span className="col-start-2 row-span-2 row-start-1 text-right tabular-nums">
+                <span className="block text-[12px] text-ink-3">
+                  Nửa ngày <b className="text-[15px] font-semibold text-blue">{money(t.basePrice)}</b>
+                </span>
+                <span className="block text-[12px] text-ink-3">
+                  Cả ngày <b className="text-[15px] font-semibold text-blue">{money(t.fullDayPrice)}</b>
+                </span>
+                <small className="block text-[11.5px] text-ink-3">{t._count.photographers} thợ</small>
               </span>
               {t.note && <span className="col-start-1 text-[13px] text-ink-2">{t.note}</span>}
             </div>
