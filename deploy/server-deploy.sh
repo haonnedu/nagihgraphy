@@ -61,7 +61,8 @@ if [[ -n "$GHCR_TOKEN" ]]; then
   echo "$GHCR_TOKEN" | docker login ghcr.io -u "${GHCR_USER:-haonnedu}" --password-stdin >/dev/null
 fi
 
-TAG="${IMAGE_TAG:-$(envval IMAGE_TAG)}"
+PREV_TAG="$(envval IMAGE_TAG)"
+TAG="${IMAGE_TAG:-$PREV_TAG}"
 TAG="${TAG:-latest}"
 export IMAGE_TAG="$TAG"
 # Đăng nhập GHCR của GitHub Actions chỉ sống trong lúc job chạy. Chạy tay sau đó
@@ -71,7 +72,13 @@ if [[ "$IMAGE_TAG" != "latest" ]] && have_image web && have_image migrator; then
   echo "==> Image tag ${IMAGE_TAG} đã có trên máy, không pull"
 else
   echo "==> Kéo image tag ${IMAGE_TAG}"
-  docker compose --profile tools pull
+  # Package trên GHCR đang công khai. Nếu pull có đăng nhập bị "denied" (token
+  # CI hết hạn hoặc mất quyền trên một package) thì đăng xuất rồi pull ẩn danh.
+  if ! docker compose --profile tools pull; then
+    echo "==> Pull có đăng nhập thất bại, thử lại ẩn danh"
+    docker logout ghcr.io >/dev/null 2>&1 || true
+    docker compose --profile tools pull
+  fi
 fi
 
 echo "==> Migration"
@@ -106,6 +113,11 @@ for i in $(seq 1 30); do
       printf 'IMAGE_TAG=%s
 ' "$IMAGE_TAG" >> .env
     fi
+    # Đĩa server chỉ 20 GB, image migrator hơn 1 GB mỗi tag. Giữ tag đang chạy
+    # và tag ngay trước để rollback, xoá các tag còn lại; thiếu chỗ là pull đổ.
+    for img in $(docker images "ghcr.io/haonnedu/nagihgraphy-*" --format "{{.Repository}}:{{.Tag}}"); do
+      case "${img##*:}" in "$IMAGE_TAG"|"$PREV_TAG"|latest) ;; *) docker rmi "$img" >/dev/null 2>&1 || true ;; esac
+    done
     docker image prune -f >/dev/null
     exit 0
   fi

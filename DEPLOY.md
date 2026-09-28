@@ -135,7 +135,9 @@ Rollback: vào tab Actions, chọn lần chạy của commit muốn quay về, b
 cd /opt/nagihgraphy && IMAGE_TAG=sha-abc1234 bash deploy/server-deploy.sh
 ```
 
-Sau mỗi lần deploy, script ghi tag đang chạy vào `IMAGE_TAG` trong `.env`, nên gõ tay `docker compose --profile tools run --rm seed` hay chạy lại script với tag đó đều dùng image có sẵn, không cần đăng nhập GHCR. Chỉ khi cần pull tag khác ngoài Actions mới phải đăng nhập, vì package private: điền `GHCR_TOKEN` là PAT classic có quyền `read:packages` vào `.env`, script tự login. Nếu CI hỏng mà cần lên gấp, build tại chỗ bằng `docker-compose.build.yml`, nhớ build ăn 1–2 GB RAM.
+Hai package `nagihgraphy-web` và `nagihgraphy-migrator` trên GHCR đang để công khai, nên server pull được mà không cần đăng nhập; script tự đăng xuất và pull ẩn danh nếu pull có đăng nhập bị từ chối. Nếu sau này chuyển package về private thì phải cấp lại quyền Actions cho repo trong trang package (Package settings → Manage Actions access) và điền `GHCR_TOKEN` vào `.env` để chạy tay. Sau mỗi lần deploy, script ghi tag đang chạy vào `IMAGE_TAG` trong `.env`, nên gõ tay `docker compose --profile tools run --rm seed` hay chạy lại script với tag đó đều dùng image có sẵn, không cần đăng nhập GHCR. Chỉ khi cần pull tag khác ngoài Actions mới phải đăng nhập, vì package private: điền `GHCR_TOKEN` là PAT classic có quyền `read:packages` vào `.env`, script tự login. Nếu CI hỏng mà cần lên gấp, build tại chỗ bằng `docker-compose.build.yml`, nhớ build ăn 1–2 GB RAM.
+
+Đĩa server chỉ 20 GB và mỗi tag image migrator hơn 1 GB, nên script chỉ giữ tag đang chạy và tag ngay trước, xoá các tag cũ hơn sau khi health OK. Deploy đổ với lỗi `no space left on device` thì chạy `docker system df` và `docker image prune -a` cho các dự án khác.
 
 Chỉ chạy `seed` một lần. Nó nạp 6 thợ mẫu và 17 ảnh từ bản artifact của khách, trong đó ba thợ gắn cờ `sample` là dữ liệu giả cần thay bằng thợ thật.
 
