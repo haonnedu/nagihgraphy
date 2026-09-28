@@ -35,11 +35,11 @@ const siteUrl = process.env.SITE_DOMAIN
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "NAGIH GRAPHY — Chọn thợ chụp kỷ yếu",
+    default: "NAGIH GRAPHY — Chọn Photo chụp kỷ yếu",
     template: "%s · NAGIH GRAPHY",
   },
   description:
-    "Xem portfolio từng thợ, giá theo hạng ekip và phụ phí di chuyển tỉnh thành, rồi nhắn NAGIH để giữ lịch.",
+    "Xem portfolio từng Photo, giá theo hạng ekip và phụ phí di chuyển tỉnh thành, rồi nhắn NAGIH để giữ lịch.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",

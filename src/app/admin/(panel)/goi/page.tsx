@@ -31,14 +31,14 @@ export default async function PackagesPage() {
     <div className="max-w-[960px]">
       <h1 className="font-serif text-[26px] font-semibold leading-tight">Gói chụp và bảng giá</h1>
       <p className="mt-1 text-[13.5px] text-ink-2">
-        Mọi con số ở đây là giá tham khảo hiện trên trang khách. Thợ vẫn báo giá cuối khi khách nhắn.
+        Mọi con số ở đây là giá tham khảo hiện trên trang khách. Photo vẫn báo giá cuối khi khách nhắn.
       </p>
 
       {/* ---------------------------------------------------------------- hạng ekip */}
       <section className="mt-7">
         <h2 className="font-serif text-lg font-semibold">Hạng ekip và giá</h2>
         <p className="mt-0.5 text-[13px] text-ink-2">
-          Giá nửa ngày là giá 1 người 1 buổi, giá cả ngày là 1 người trọn ngày. Để 0 nếu chưa có, khách thấy “Thợ báo giá”. Ẩn khỏi bảng giá dùng cho hạng nội bộ như Take Care hay Intern.
+          Giá nửa ngày là giá 1 người 1 buổi, giá cả ngày là 1 người trọn ngày. Để 0 nếu chưa có, khách thấy “Photo báo giá”. Ẩn khỏi bảng giá dùng cho hạng nội bộ như Take Care hay Intern.
         </p>
 
         <div className="mt-3 grid gap-3">
@@ -68,7 +68,7 @@ export default async function PackagesPage() {
 
               <details className="mt-3 rounded-xl bg-sunk p-3">
                 <summary className="cursor-pointer text-[13.5px] font-medium">
-                  Giá gói nhóm theo số người · {t.groupPrices.length ? `${t.groupPrices.length} mức` : "chưa có, khách thấy “Thợ báo giá”"}
+                  Giá gói nhóm theo số người · {t.groupPrices.length ? `${t.groupPrices.length} mức` : "chưa có, khách thấy “Photo báo giá”"}
                 </summary>
                 <ActionForm action={saveGroupPrices} submitLabel="Lưu giá nhóm" className="mt-2">
                   <input type="hidden" name="tierId" value={t.id} />
@@ -92,7 +92,7 @@ export default async function PackagesPage() {
               </details>
 
               <div className="mt-3 flex items-center justify-between text-[12.5px] text-ink-3">
-                <span>{t._count.photographers} thợ đang ở hạng này</span>
+                <span>{t._count.photographers} Photo đang ở hạng này</span>
                 {editable && t._count.photographers === 0 && (
                   <ActionButton action={deleteTier.bind(null, t.id)} confirm={`Xoá hạng ${t.name}?`} tone="danger">
                     Xoá hạng
@@ -139,7 +139,7 @@ export default async function PackagesPage() {
       <section className="mt-9">
         <h2 className="font-serif text-lg font-semibold">Phụ phí di chuyển theo địa điểm</h2>
         <p className="mt-0.5 text-[13px] text-ink-2">
-          Mức cho 1 thợ. Mức cao nhất để 0 nếu chỉ có một con số. Hiện tại {zones.length} địa điểm.
+          Mức cho 1 Photo. Mức cao nhất để 0 nếu chỉ có một con số. Hiện tại {zones.length} địa điểm.
         </p>
         <div className="mt-3 grid gap-2.5">
           {zones.map((z) => (

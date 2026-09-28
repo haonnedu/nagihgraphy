@@ -54,7 +54,7 @@ export default async function LeadsPage(props: PageProps<"/admin/lead">) {
     <div className="max-w-[1080px]">
       <h1 className="font-serif text-[26px] font-semibold leading-tight">Khách để lại thông tin</h1>
       <p className="mt-1 text-[13.5px] text-ink-2">
-        Khách đã nhắn thẳng cho thợ rồi, đây chỉ là bản ghi để theo dõi. Có thể ghi chú và đổi trạng thái.
+        Khách đã nhắn thẳng cho Photo rồi, đây chỉ là bản ghi để theo dõi. Có thể ghi chú và đổi trạng thái.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-1.5 text-[12.5px]">
@@ -90,7 +90,7 @@ export default async function LeadsPage(props: PageProps<"/admin/lead">) {
                     <span className="ml-2 rounded-md bg-sunk px-1.5 py-0.5 text-[11px] font-medium text-ink-2">{l.code}</span>
                   </p>
                   <p className="mt-0.5 text-[12.5px] text-ink-2">
-                    {l.photographer?.name ?? "chưa chọn thợ"} · {l.shootType === "FULL_DAY" ? "cả ngày" : "nửa ngày"}
+                    {l.photographer?.name ?? "chưa chọn Photo"} · {l.shootType === "FULL_DAY" ? "cả ngày" : "nửa ngày"}
                     {l.eveningAddon && " + tối"} · {l.people} người
                     {l.shootDate && ` · ${formatDateVN(l.shootDate.toISOString().slice(0, 10))}`}
                     {l.travelZone && ` · ${l.travelZone.name}`}

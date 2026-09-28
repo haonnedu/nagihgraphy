@@ -37,7 +37,7 @@ const FEATURE_STATUS = [
  */
 export function PhotographerForm({ value, options }: { value: PhotographerFormValue; options: FormOptions }) {
   return (
-    <ActionForm action={savePhotographer} submitLabel={value.id ? "Lưu thay đổi" : "Tạo thợ"}>
+    <ActionForm action={savePhotographer} submitLabel={value.id ? "Lưu thay đổi" : "Tạo Photo"}>
       <input type="hidden" name="id" value={value.id} />
 
       <div className="grid gap-4">
@@ -47,7 +47,7 @@ export function PhotographerForm({ value, options }: { value: PhotographerFormVa
             <Field label="Tên hiển thị" hint="Biệt danh hiện ngoài site">
               <input name="name" defaultValue={value.name} required maxLength={60} className={inputClass} />
             </Field>
-            <Field label="Tên thật" hint="Chỉ hiện trong admin và lịch thợ">
+            <Field label="Tên thật" hint="Chỉ hiện trong admin và lịch Photo">
               <input name="realName" defaultValue={value.realName} maxLength={80} className={inputClass} />
             </Field>
             <Field label="Hạng ekip">

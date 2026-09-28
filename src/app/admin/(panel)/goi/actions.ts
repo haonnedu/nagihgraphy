@@ -49,7 +49,7 @@ export async function saveTier(_prev: ActionState, formData: FormData): Promise<
 export async function deleteTier(id: string): Promise<ActionState> {
   await requireEditor();
   const used = await db.photographer.count({ where: { tierId: id } });
-  if (used > 0) return { error: `Còn ${used} thợ đang ở hạng này, chuyển họ sang hạng khác trước.` };
+  if (used > 0) return { error: `Còn ${used} Photo đang ở hạng này, chuyển họ sang hạng khác trước.` };
   await db.tier.delete({ where: { id } });
   revalidatePublic();
   return { error: "", ok: "Đã xoá hạng" };

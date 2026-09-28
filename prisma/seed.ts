@@ -213,7 +213,7 @@ async function main() {
 
   for (const [i, p] of raw.photographers.entries()) {
     const tierId = tierBySlug.get(p.tier);
-    if (!tierId) throw new Error(`Thợ ${p.name} trỏ tới hạng không tồn tại: ${p.tier}`);
+    if (!tierId) throw new Error(`Photo ${p.name} trỏ tới hạng không tồn tại: ${p.tier}`);
     const slug = uniqueSlug(p.name, photographerSlugs);
 
     const data = {

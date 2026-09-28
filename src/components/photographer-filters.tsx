@@ -105,7 +105,7 @@ export function PhotographerFilters({
           value={query}
           onChange={(e) => onSearch(e.target.value)}
           placeholder="Tìm theo tên hoặc phong cách…"
-          aria-label="Tìm thợ"
+          aria-label="Tìm Photo"
           autoComplete="off"
           className="min-w-0 flex-1 rounded-xl border border-line-2 bg-surface px-3.5 py-2.5 text-[15px] placeholder:text-ink-3 focus:border-blue focus:outline-none focus:ring-3 focus:ring-blue-soft"
         />
@@ -170,7 +170,7 @@ export function PhotographerFilters({
               onChange={(e) => setParam("today", e.target.checked ? "1" : "")}
               className="size-4.5 accent-blue"
             />
-            Chỉ hiện thợ còn lịch hôm nay
+            Chỉ hiện Photo còn lịch hôm nay
           </label>
         </div>
       )}
@@ -203,7 +203,7 @@ export function PhotographerFilters({
         </select>
 
         <p className="text-[12.5px] text-ink-3">
-          Hiển thị <b className="font-semibold text-ink">{shown}</b> thợ
+          Hiển thị <b className="font-semibold text-ink">{shown}</b> Photo
           {hasAny && (
             <>
               {" · "}

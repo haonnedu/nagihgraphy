@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(props: PageProps<"/tho/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const p = await getPhotographer(slug);
-  if (!p) return { title: "Không tìm thấy thợ" };
+  if (!p) return { title: "Không tìm thấy Photo" };
 
   const price = priceOf(p);
   const description = [
@@ -28,7 +28,7 @@ export async function generateMetadata(props: PageProps<"/tho/[slug]">): Promise
     .join(" · ");
 
   return {
-    title: `${p.name} — thợ chụp ${p.city}`,
+    title: `${p.name} — Photo chụp ${p.city}`,
     description,
     alternates: { canonical: `/tho/${p.slug}` },
     openGraph: {
@@ -57,7 +57,7 @@ export default async function PhotographerPage(props: PageProps<"/tho/[slug]">) 
     <main className="mx-auto w-full max-w-[820px] flex-1 px-4 pb-24">
       <nav className="py-3 text-[12.5px] text-ink-3">
         <Link href="/tho" className="hover:text-blue">
-          Chọn thợ
+          Chọn Photo
         </Link>
         <span aria-hidden> / </span>
         <span className="text-ink-2">{p.name}</span>

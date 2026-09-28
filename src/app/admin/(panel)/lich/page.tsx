@@ -76,19 +76,19 @@ export default async function ScheduleAdminPage(props: { searchParams: SearchPar
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-serif text-[26px] font-semibold leading-tight">Quản lý lịch ekip</h1>
-          <p className="mt-1 text-[13.5px] text-ink-2">Xem ai còn trống trong ngày, hoặc lưới cả tháng. Bấm tên thợ để sửa hộ.</p>
+          <p className="mt-1 text-[13.5px] text-ink-2">Xem ai còn trống trong ngày, hoặc lưới cả tháng. Bấm tên Photo để sửa hộ.</p>
         </div>
         {p.tab === "thang" && <MonthNav p={p} year={year} month={month} />}
       </div>
 
       {missing.length > 0 && (
         <p className="mt-4 rounded-xl border border-extra-line bg-extra-bg px-3.5 py-2.5 text-[13px] text-extra-ink">
-          <b className="font-semibold">{missing.length} thợ chưa điền đủ lịch 7 ngày tới:</b>{" "}
+          <b className="font-semibold">{missing.length} Photo chưa điền đủ lịch 7 ngày tới:</b>{" "}
           {missing
             .slice(0, 12)
             .map((m) => `${m.name} (${m.missing} buổi)`)
             .join(", ")}
-          {missing.length > 12 && ` và ${missing.length - 12} thợ khác`}. Nhắc họ vào điền.
+          {missing.length > 12 && ` và ${missing.length - 12} Photo khác`}. Nhắc họ vào điền.
         </p>
       )}
 
@@ -109,7 +109,7 @@ export default async function ScheduleAdminPage(props: { searchParams: SearchPar
           type="search"
           name="q"
           defaultValue={p.q}
-          placeholder="Tìm tên thợ…"
+          placeholder="Tìm tên Photo…"
           className="min-w-[200px] flex-1 rounded-[10px] border border-line-2 bg-surface px-3 py-2 text-sm placeholder:text-ink-3 focus:border-blue focus:outline-none focus:ring-3 focus:ring-blue-soft"
         />
         <button type="submit" className="rounded-[10px] border border-line-2 bg-surface px-3.5 py-2 text-[13.5px] font-medium hover:border-blue hover:text-blue">
@@ -150,7 +150,7 @@ async function DayTab({ p, filter, todayKey }: { p: Params; filter: { tier?: str
         {p.q && <input type="hidden" name="q" value={p.q} />}
         <div className="flex flex-wrap items-end gap-3">
           <label className="grid gap-1">
-            <span className="text-xs font-medium text-ink-2">Ngày cần tìm thợ</span>
+            <span className="text-xs font-medium text-ink-2">Ngày cần tìm Photo</span>
             <input
               type="date"
               name="date"
@@ -167,7 +167,7 @@ async function DayTab({ p, filter, todayKey }: { p: Params; filter: { tier?: str
             </Link>
           )}
           <p className="ml-auto text-[13.5px] text-ink-2">
-            {formatDateVN(p.date)} · <b className="font-semibold text-blue">{groups.FULL.length}</b> thợ trống cả ngày ·{" "}
+            {formatDateVN(p.date)} · <b className="font-semibold text-blue">{groups.FULL.length}</b> Photo trống cả ngày ·{" "}
             <b className="font-semibold text-blue">{half}</b> trống nửa ngày
           </p>
         </div>
@@ -258,14 +258,14 @@ async function MonthTab({
       </div>
 
       {photographers.length === 0 ? (
-        <p className="mt-3 text-[13px] text-ink-3">Không có thợ nào khớp bộ lọc.</p>
+        <p className="mt-3 text-[13px] text-ink-3">Không có Photo nào khớp bộ lọc.</p>
       ) : (
         <div className="mt-3 overflow-x-auto rounded-card border border-line bg-surface">
           <table className="border-collapse text-[12px]">
             <thead>
               <tr className="border-b border-line">
                 <th className="sticky left-0 z-10 bg-surface px-3 py-2 text-left font-semibold text-ink-2 shadow-[1px_0_0_0_var(--color-line)]">
-                  Thợ
+                  Photo
                 </th>
                 {keys.map((k) => {
                   const wd = weekdayVN(k);

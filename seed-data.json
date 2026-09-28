@@ -2,11 +2,11 @@
   "studio": {
     "name": "NAGIH GRAPHY",
     "logo": "seed-assets/logo.png",
-    "kicker": "Chọn thợ chụp",
-    "pageTitle": "NAGIH Chọn Thợ",
-    "headline": "Chọn thợ *cá nhân theo vibe*",
-    "intro": "Xem portfolio, giá theo hạng thợ và chi phí di chuyển tỉnh thành, rồi nhắn thẳng cho thợ để giữ lịch.",
-    "priceNote": "Giá khởi điểm cho 1 buổi chụp cá nhân. Giá cuối phụ thuộc gói, số người và địa điểm, thợ sẽ báo chi tiết khi bạn nhắn.",
+    "kicker": "Chọn Photo chụp",
+    "pageTitle": "NAGIH Chọn Photo",
+    "headline": "Chọn Photo *cá nhân theo vibe*",
+    "intro": "Xem portfolio, giá theo hạng Photo và chi phí di chuyển tỉnh thành, rồi nhắn thẳng cho Photo để giữ lịch.",
+    "priceNote": "Giá khởi điểm cho 1 buổi chụp cá nhân. Giá cuối phụ thuộc gói, số người và địa điểm, Photo sẽ báo chi tiết khi bạn nhắn.",
     "cities": [
       "Hà Nội",
       "Sài Gòn"
@@ -18,19 +18,19 @@
       "facebook": "https://www.facebook.com/profile.php?id=61590047686290",
       "tiktok": ""
     },
-    "bookingLead": "Giữ lịch với thợ trong 4 bước.",
+    "bookingLead": "Giữ lịch với Photo trong 4 bước.",
     "steps": [
       {
-        "title": "Chọn thợ",
-        "text": "Xem portfolio, chọn thợ bạn thích."
+        "title": "Chọn Photo",
+        "text": "Xem portfolio, chọn Photo bạn thích."
       },
       {
-        "title": "Nhắn thợ",
-        "text": "Gửi ngày chụp và số người cho thợ qua Zalo hoặc Messenger, web soạn sẵn tin nhắn cho bạn."
+        "title": "Nhắn Photo",
+        "text": "Gửi ngày chụp và số người cho Photo qua Zalo hoặc Messenger, web soạn sẵn tin nhắn cho bạn."
       },
       {
         "title": "Cọc giữ lịch",
-        "text": "Thợ xác nhận lịch trống và gửi thông tin cọc theo chính sách NAGIH."
+        "text": "Photo xác nhận lịch trống và gửi thông tin cọc theo chính sách NAGIH."
       },
       {
         "title": "Chụp và nhận ảnh",
@@ -74,7 +74,7 @@
       "id": "e1",
       "name": "Ekip 1",
       "price": 2500000,
-      "note": "Thợ chủ lực, nhiều kinh nghiệm nhất, lịch kín nhanh.",
+      "note": "Photo chủ lực, nhiều kinh nghiệm nhất, lịch kín nhanh.",
       "group": []
     },
     {
@@ -88,7 +88,7 @@
       "id": "e3",
       "name": "Ekip 3",
       "price": 2200000,
-      "note": "Thợ trẻ, bắt trend nhanh.",
+      "note": "Photo trẻ, bắt trend nhanh.",
       "group": []
     },
     {
@@ -289,7 +289,7 @@
     }
   ],
   "travel": {
-    "note": "Các mức dưới đây là phụ phí tham khảo cho 1 thợ, không phải mức cố định. Thợ sẽ báo chính xác theo địa điểm cụ thể khi bạn nhắn.",
+    "note": "Các mức dưới đây là phụ phí tham khảo cho 1 Photo, không phải mức cố định. Photo sẽ báo chính xác theo địa điểm cụ thể khi bạn nhắn.",
     "rows": [
       {
         "name": "Hà Nội (2 địa điểm nội thành)",
@@ -397,19 +397,19 @@
         "name": "Nghệ An",
         "min": 900000,
         "max": 1000000,
-        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do thợ cần lưu trú qua đêm để chụp đúng giờ."
+        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do Photo cần lưu trú qua đêm để chụp đúng giờ."
       },
       {
         "name": "Hà Tĩnh",
         "min": 900000,
         "max": 0,
-        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do thợ cần lưu trú qua đêm để chụp đúng giờ."
+        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do Photo cần lưu trú qua đêm để chụp đúng giờ."
       },
       {
         "name": "Lai Châu",
         "min": 800000,
         "max": 0,
-        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do thợ cần lưu trú qua đêm để chụp đúng giờ."
+        "note": "Huyện xa trung tâm thành phố: 1.000.000đ - 1.200.000đ tuỳ địa điểm, do Photo cần lưu trú qua đêm để chụp đúng giờ."
       },
       {
         "name": "Bắc Giang",
@@ -420,9 +420,9 @@
     ],
     "policies": [
       "Book theo nhóm để chia sẻ phụ phí di chuyển.",
-      "Gói nhóm kỷ yếu 2-4 người không tặng thêm thợ khi chụp ở tỉnh xa.",
+      "Gói nhóm kỷ yếu 2-4 người không tặng thêm Photo khi chụp ở tỉnh xa.",
       "Tỉnh xa không nhận chụp cá nhân nửa ngày, chỉ nhận nhóm nếu chụp nửa ngày.",
-      "Gói nhóm kỷ yếu 5-6 người đi tỉnh được tặng 1 thợ (tính phụ phí di chuyển cho 2 thợ).",
+      "Gói nhóm kỷ yếu 5-6 người đi tỉnh được tặng 1 Photo (tính phụ phí di chuyển cho 2 Photo).",
       "Chụp thêm buổi tối (đến 20h): +500.000đ."
     ]
   }

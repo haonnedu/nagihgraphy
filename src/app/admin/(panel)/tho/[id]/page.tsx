@@ -50,7 +50,7 @@ export default async function EditPhotographerPage(props: PageProps<"/admin/tho/
     <div className="max-w-[880px]">
       <nav className="text-[12.5px] text-ink-3">
         <Link href="/admin/tho" className="hover:text-blue">
-          Thợ
+          Photo
         </Link>
         <span aria-hidden> / </span>
         <span className="text-ink-2">{p.name}</span>
@@ -65,7 +65,7 @@ export default async function EditPhotographerPage(props: PageProps<"/admin/tho/
 
       {sp.created && (
         <p className="mt-3 rounded-xl border border-in-line bg-in-bg px-3.5 py-2.5 text-[13.5px] text-in-ink">
-          Đã tạo thợ. Tải ảnh portfolio lên ở phần dưới.
+          Đã tạo Photo. Tải ảnh portfolio lên ở phần dưới.
         </p>
       )}
 
@@ -82,7 +82,7 @@ export default async function EditPhotographerPage(props: PageProps<"/admin/tho/
         <section className="rounded-card border border-extra-line bg-extra-bg p-4">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-extra-ink">Vùng nguy hiểm</h2>
           <p className="mt-1 text-[13px] text-ink-2">
-            Xoá thợ sẽ xoá luôn {p.photos.length} ảnh và bỏ liên kết với các lead cũ. Muốn tạm giấu thì dùng “Ẩn” thay vì xoá.
+            Xoá Photo sẽ xoá luôn {p.photos.length} ảnh và bỏ liên kết với các lead cũ. Muốn tạm giấu thì dùng “Ẩn” thay vì xoá.
           </p>
           <div className="mt-3">
             <ActionButton
@@ -90,7 +90,7 @@ export default async function EditPhotographerPage(props: PageProps<"/admin/tho/
               confirm={`Xoá hẳn ${p.name} và toàn bộ ảnh? Không hoàn tác được.`}
               tone="danger"
             >
-              Xoá thợ này
+              Xoá Photo này
             </ActionButton>
           </div>
         </section>

@@ -55,17 +55,17 @@ export async function createAccount(_prev: ActionState, formData: FormData): Pro
     });
     if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Dữ liệu chưa hợp lệ" };
     const d = parsed.data;
-    if (!canManage(actor, d.role)) return { error: "Bạn chỉ tạo được tài khoản thợ." };
+    if (!canManage(actor, d.role)) return { error: "Bạn chỉ tạo được tài khoản Photo." };
 
     let photographerId: string | null = null;
     let name = d.name;
     if (d.role === "PHOTOGRAPHER") {
-      if (!d.photographerId) return { error: "Chọn thợ cho tài khoản này." };
+      if (!d.photographerId) return { error: "Chọn Photo cho tài khoản này." };
       const ph = await db.photographer.findUnique({
         where: { id: d.photographerId },
         select: { id: true, name: true, user: { select: { email: true } } },
       });
-      if (!ph) return { error: "Không tìm thấy thợ." };
+      if (!ph) return { error: "Không tìm thấy Photo." };
       if (ph.user) return { error: `${ph.name} đã có tài khoản ${ph.user.email}.` };
       photographerId = ph.id;
       name ||= ph.name;
@@ -102,7 +102,7 @@ export async function setActive(_prev: ActionState, formData: FormData): Promise
     const target = await loadTarget(id);
     if (!target) return { error: "Không tìm thấy tài khoản." };
     if (target.id === actor.id) return { error: "Không tự khoá tài khoản của mình." };
-    if (!canManage(actor, target.role)) return { error: "Bạn chỉ khoá hoặc mở được tài khoản thợ." };
+    if (!canManage(actor, target.role)) return { error: "Bạn chỉ khoá hoặc mở được tài khoản Photo." };
     await db.adminUser.update({ where: { id }, data: { active } });
     await db.auditLog.create({
       data: { actorId: actor.id, entity: "admin_user", entityId: target.email, action: active ? "unlock" : "lock" },
@@ -119,7 +119,7 @@ export async function resetPassword(_prev: ActionState, formData: FormData): Pro
     const id = String(formData.get("id") ?? "");
     const target = await loadTarget(id);
     if (!target) return { error: "Không tìm thấy tài khoản." };
-    if (!canManage(actor, target.role)) return { error: "Bạn chỉ cấp lại mật khẩu cho tài khoản thợ." };
+    if (!canManage(actor, target.role)) return { error: "Bạn chỉ cấp lại mật khẩu cho tài khoản Photo." };
     const password = tempPassword();
     await db.adminUser.update({ where: { id }, data: { passwordHash: await hash(password, 10) } });
     await db.auditLog.create({

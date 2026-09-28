@@ -46,7 +46,7 @@ export default async function PricingPage() {
                 <span className="block text-[12px] text-ink-3">
                   Cả ngày <b className="text-[15px] font-semibold text-blue">{money(t.fullDayPrice)}</b>
                 </span>
-                <small className="block text-[11.5px] text-ink-3">{t._count.photographers} thợ</small>
+                <small className="block text-[11.5px] text-ink-3">{t._count.photographers} Photo</small>
               </span>
               {t.note && <span className="col-start-1 text-[13px] text-ink-2">{t.note}</span>}
             </div>
@@ -83,7 +83,7 @@ export default async function PricingPage() {
                 <span className="font-semibold">{z.name}</span>
                 <span className="col-start-2 row-span-2 row-start-1 text-right font-semibold tabular-nums text-blue">
                   {travelFeeText({ min: z.minFee, max: z.maxFee })}
-                  <small className="block text-[11.5px] font-normal text-ink-3">/ 1 thợ</small>
+                  <small className="block text-[11.5px] font-normal text-ink-3">/ 1 Photo</small>
                 </span>
                 {z.note && <span className="col-start-1 text-[13px] text-ink-2">{z.note}</span>}
               </div>
@@ -109,7 +109,7 @@ export default async function PricingPage() {
           href="/tho"
           className="rounded-[10px] border border-line-2 bg-surface px-4 py-3 font-medium hover:border-ink-3"
         >
-          Xem danh sách thợ
+          Xem danh sách Photo
         </Link>
         <Link
           href="/lien-he"

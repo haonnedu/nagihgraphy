@@ -43,7 +43,7 @@ export function TravelCalculator({ zones }: { zones: Zone[] }) {
         </label>
 
         <label className="grid gap-1.5">
-          <span className="text-xs font-medium text-ink-2">Số thợ</span>
+          <span className="text-xs font-medium text-ink-2">Số Photo</span>
           <select
             value={count}
             onChange={(e) => setCount(Number(e.target.value))}
@@ -51,7 +51,7 @@ export function TravelCalculator({ zones }: { zones: Zone[] }) {
           >
             {[1, 2, 3].map((n) => (
               <option key={n} value={n}>
-                {n} thợ
+                {n} Photo
               </option>
             ))}
           </select>

@@ -9,7 +9,7 @@ const ROLE_LABEL: Record<string, string> = {
   OWNER: "Chủ studio",
   SALE: "Sale",
   VIEWER: "Chỉ xem",
-  PHOTOGRAPHER: "Thợ",
+  PHOTOGRAPHER: "Photo",
 };
 
 /** Danh sách tài khoản và form tạo tài khoản thợ. Xem PLAN.md mục 11. */
@@ -41,7 +41,7 @@ export default async function AccountsPage() {
     <div className="max-w-[880px]">
       <h1 className="font-serif text-[26px] font-semibold leading-tight">Tài khoản</h1>
       <p className="mt-1 text-[13.5px] text-ink-2">
-        Mỗi thợ một tài khoản, chỉ thấy lịch của chính mình. Thợ nghỉ thì khoá, lịch cũ vẫn giữ. Mật khẩu tạm chỉ hiện một lần ngay
+        Mỗi Photo một tài khoản, chỉ thấy lịch của chính mình. Photo nghỉ thì khoá, lịch cũ vẫn giữ. Mật khẩu tạm chỉ hiện một lần ngay
         sau khi tạo hoặc cấp lại.
       </p>
 
@@ -52,7 +52,7 @@ export default async function AccountsPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Loại tài khoản">
                 <select name="role" defaultValue="PHOTOGRAPHER" className={inputClass}>
-                  <option value="PHOTOGRAPHER">Thợ</option>
+                  <option value="PHOTOGRAPHER">Photo</option>
                   {user.role === "OWNER" && (
                     <>
                       <option value="SALE">Sale</option>
@@ -62,9 +62,9 @@ export default async function AccountsPage() {
                   )}
                 </select>
               </Field>
-              <Field label="Thợ (bắt buộc với tài khoản thợ)" hint={photographers.length ? undefined : "Mọi thợ đều đã có tài khoản."}>
+              <Field label="Photo (bắt buộc với tài khoản Photo)" hint={photographers.length ? undefined : "Mọi Photo đều đã có tài khoản."}>
                 <select name="photographerId" defaultValue="" className={inputClass}>
-                  <option value="">Chọn thợ…</option>
+                  <option value="">Chọn Photo…</option>
                   {photographers.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name}
@@ -76,7 +76,7 @@ export default async function AccountsPage() {
               <Field label="Email đăng nhập" hint="Không cần email thật, chỉ cần không trùng. Web không gửi thư.">
                 <input name="email" type="email" required placeholder="tiger@nagihgraphy.com" className={inputClass} />
               </Field>
-              <Field label="Tên hiển thị" hint="Trống thì lấy tên thợ">
+              <Field label="Tên hiển thị" hint="Trống thì lấy tên Photo">
                 <input name="name" maxLength={80} className={inputClass} />
               </Field>
             </div>
@@ -105,7 +105,7 @@ export default async function AccountsPage() {
                     <p className="truncate text-[12.5px] text-ink-2">{u.email}</p>
                     <p className="text-[12px] text-ink-3">
                       {ROLE_LABEL[u.role] ?? u.role}
-                      {u.photographer && ` · thợ ${u.photographer.name}`}
+                      {u.photographer && ` · Photo ${u.photographer.name}`}
                       {!u.active && " · đã khoá"}
                     </p>
                   </div>

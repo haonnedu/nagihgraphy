@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Đặt lịch chụp",
   description:
-    "Chọn thợ, số người, ngày và nơi chụp, web soạn sẵn tin nhắn để bạn gửi thẳng cho thợ qua Zalo, Messenger hoặc Instagram.",
+    "Chọn Photo, số người, ngày và nơi chụp, web soạn sẵn tin nhắn để bạn gửi thẳng cho Photo qua Zalo, Messenger hoặc Instagram.",
   alternates: { canonical: "/lien-he" },
 };
 

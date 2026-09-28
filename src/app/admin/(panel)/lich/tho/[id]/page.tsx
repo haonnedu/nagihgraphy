@@ -31,7 +31,7 @@ export default async function PhotographerSchedulePage(props: { params: Promise<
     <div className="max-w-[880px]">
       <nav className="mb-3 text-[12.5px] text-ink-3">
         <Link href="/admin/lich" className="hover:text-blue">
-          Lịch thợ
+          Lịch Photo
         </Link>
         <span aria-hidden> / </span>
         <span className="text-ink-2">{photographer.name}</span>

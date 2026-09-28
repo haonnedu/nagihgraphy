@@ -12,7 +12,7 @@ export type ActionState = { error: string; ok?: string };
 
 const photographerSchema = z.object({
   id: z.string().default(""),
-  name: z.string().trim().min(1, "Thiếu tên thợ").max(60),
+  name: z.string().trim().min(1, "Thiếu tên Photo").max(60),
   realName: z.string().trim().max(80).default(""),
   tierId: z.string().min(1, "Chọn hạng ekip"),
   city: z.string().trim().min(1, "Thiếu khu vực").max(40),
@@ -90,7 +90,7 @@ export async function savePhotographer(_prev: ActionState, formData: FormData): 
 
   if (id) {
     const existing = await db.photographer.findUnique({ where: { id }, select: { slug: true, name: true } });
-    if (!existing) return { error: "Không tìm thấy thợ này" };
+    if (!existing) return { error: "Không tìm thấy Photo này" };
     // Đổi tên thì đổi slug theo, để link /tho/<slug> đọc được.
     slug = existing.name === d.name ? existing.slug : await uniqueSlugFor(d.name, id);
     await db.photographer.update({ where: { id }, data: { ...data, slug } });
@@ -143,7 +143,7 @@ export async function uploadPhotos(_prev: ActionState, formData: FormData): Prom
   await requireEditor();
   const photographerId = String(formData.get("photographerId") ?? "");
   const p = await db.photographer.findUnique({ where: { id: photographerId }, select: { id: true, slug: true, name: true } });
-  if (!p) return { error: "Không tìm thấy thợ" };
+  if (!p) return { error: "Không tìm thấy Photo" };
 
   const files = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
   if (!files.length) return { error: "Chưa chọn ảnh nào" };

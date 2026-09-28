@@ -19,7 +19,7 @@ export function SiteFooter({
 
         <nav className="flex flex-wrap gap-x-4 gap-y-2">
           <Link href="/tho" className="text-ink-2 hover:text-blue">
-            Chọn thợ
+            Chọn Photo
           </Link>
           <Link href="/bang-gia" className="text-ink-2 hover:text-blue">
             Bảng giá

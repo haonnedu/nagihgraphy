@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 const STAFF_NAV = [
   { href: "/admin", label: "Tổng quan" },
-  { href: "/admin/lich", label: "Lịch thợ" },
-  { href: "/admin/tho", label: "Thợ và ảnh portfolio" },
+  { href: "/admin/lich", label: "Lịch Photo" },
+  { href: "/admin/tho", label: "Photo và ảnh portfolio" },
   { href: "/admin/goi", label: "Gói chụp và bảng giá" },
   { href: "/admin/hero", label: "Chữ đầu trang chủ" },
   { href: "/admin/lead", label: "Khách để lại thông tin" },
@@ -40,7 +40,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <div className="flex items-center justify-between gap-3 px-4 py-3 md:block md:py-5">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-3">NAGIH GRAPHY</p>
-            <p className="font-serif text-lg font-semibold leading-tight">{isStaff(user.role) ? "Quản trị" : "Lịch thợ"}</p>
+            <p className="font-serif text-lg font-semibold leading-tight">{isStaff(user.role) ? "Quản trị" : "Lịch Photo"}</p>
           </div>
           <Link href="/" className="text-[12.5px] text-ink-2 hover:text-blue md:mt-2 md:block">
             Xem trang khách ↗
@@ -62,7 +62,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <div className="hidden px-4 py-4 md:block">
           <p className="truncate text-[12.5px] text-ink-2">{user.name || user.email}</p>
           <p className="text-[11px] uppercase tracking-wide text-ink-3">
-            {user.role === "PHOTOGRAPHER" ? "Thợ" : user.role}
+            {user.role === "PHOTOGRAPHER" ? "Photo" : user.role}
             {isStaff(user.role) && !canEdit(user.role) && " · chỉ xem"}
           </p>
           <form action={logout} className="mt-2">

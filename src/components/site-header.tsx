@@ -3,7 +3,7 @@ import { photoSrc } from "@/lib/image-paths";
 import type { Settings } from "@/lib/settings";
 
 const NAV = [
-  { href: "/tho", label: "Chọn thợ" },
+  { href: "/tho", label: "Chọn Photo" },
   { href: "/bang-gia", label: "Bảng giá" },
 ];
 

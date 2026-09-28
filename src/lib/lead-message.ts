@@ -50,7 +50,7 @@ export function buildLeadMessage(
 
   const lines = [`Chào ${opts.studioName}, mình muốn đặt lịch chụp.`];
 
-  lines.push(`- Thợ: ${p ? `${p.name}${p.tierName ? ` (${p.tierName})` : ""}` : "nhờ studio gợi ý"}`);
+  lines.push(`- Photo: ${p ? `${p.name}${p.tierName ? ` (${p.tierName})` : ""}` : "nhờ studio gợi ý"}`);
 
   const shoot = draft.shootType === "FULL_DAY" ? "cả ngày" : "nửa ngày";
   const evening = draft.eveningAddon ? ` + thêm buổi tối đến 20h (+${money(opts.eveningAddonFee)})` : "";
@@ -71,7 +71,7 @@ export function buildLeadMessage(
   lines.push(
     `- Nơi chụp: ${
       zone
-        ? `${zone.name} (phụ phí di chuyển tham khảo ${travelFeeText({ min: zone.minFee, max: zone.maxFee })}/thợ)`
+        ? `${zone.name} (phụ phí di chuyển tham khảo ${travelFeeText({ min: zone.minFee, max: zone.maxFee })}/Photo)`
         : "chưa chọn"
     }`,
   );

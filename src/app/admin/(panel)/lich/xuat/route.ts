@@ -36,7 +36,7 @@ export async function GET(req: Request) {
   const ws = wb.addWorksheet(`Thang ${month}-${year}`, { views: [{ state: "frozen", xSplit: 3, ySplit: 2 }] });
 
   // Hàng 1: ngày, gộp hai cột S và C. Hàng 2: S / C.
-  const header1: (string | number)[] = ["Thợ", "Tên thật", "Hạng"];
+  const header1: (string | number)[] = ["Photo", "Tên thật", "Hạng"];
   const header2: string[] = ["", "", ""];
   for (const k of keys) {
     header1.push(`${WEEKDAY_SHORT[weekdayVN(k)]} ${Number(k.slice(8, 10))}`, "");

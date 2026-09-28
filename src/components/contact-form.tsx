@@ -183,7 +183,7 @@ export function ContactForm({
       if (json.ok && json.code) {
         setSavedCode(json.code);
       } else if (channel === "FORM") {
-        showToast(json.error ?? "Chưa lưu được thông tin, bạn cứ nhắn thợ nhé.");
+        showToast(json.error ?? "Chưa lưu được thông tin, bạn cứ nhắn Photo nhé.");
       }
     } catch {
       // mất mạng thì thôi, khách vẫn nhắn được
@@ -203,7 +203,7 @@ export function ContactForm({
   return (
     <div className="grid gap-4">
       <div className="relative grid gap-3.5 rounded-card border border-line bg-surface p-4">
-        <Field label="Thợ muốn chụp">
+        <Field label="Photo muốn chụp">
           <select value={pick} onChange={(e) => setPick(e.target.value)} className={inputClass}>
             <option value="">Chưa chọn, nhắn studio</option>
             {photographers.map((p) => (
@@ -247,7 +247,7 @@ export function ContactForm({
               {people} người · {people > 1 ? "gói nhóm" : shootType === "FULL_DAY" ? "cả ngày" : "nửa ngày"}
             </b>
             <strong className="text-xl font-semibold tabular-nums text-blue-deep">
-              {!photographer ? "" : basePrice > 0 ? `${people === 1 ? "từ " : ""}${money(basePrice)}` : "Thợ báo giá"}
+              {!photographer ? "" : basePrice > 0 ? `${people === 1 ? "từ " : ""}${money(basePrice)}` : "Photo báo giá"}
             </strong>
           </div>
           <input
@@ -352,9 +352,9 @@ export function ContactForm({
 
         {(zone || eveningAddon) && q.hasBase && (
           <div className="grid gap-1.5 rounded-xl bg-blue-soft px-3.5 py-3 text-[13.5px]">
-            <Row label="Giá thợ" value={`${people > 1 ? "" : "từ "}${money(q.base)}`} />
+            <Row label="Giá Photo" value={`${people > 1 ? "" : "từ "}${money(q.base)}`} />
             {zone && (
-              <Row label="Phụ phí di chuyển tham khảo (1 thợ)" value={rangeText(q.travelMin, q.travelMax)} />
+              <Row label="Phụ phí di chuyển tham khảo (1 Photo)" value={rangeText(q.travelMin, q.travelMax)} />
             )}
             {eveningAddon && <Row label="Chụp thêm buổi tối" value={money(q.evening)} />}
             <div className="flex justify-between gap-3 border-t border-dashed border-line-2 pt-1.5">

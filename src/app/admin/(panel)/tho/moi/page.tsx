@@ -13,14 +13,14 @@ export default async function NewPhotographerPage() {
     <div className="max-w-[880px]">
       <nav className="text-[12.5px] text-ink-3">
         <Link href="/admin/tho" className="hover:text-blue">
-          Thợ
+          Photo
         </Link>
         <span aria-hidden> / </span>
         <span className="text-ink-2">Thêm mới</span>
       </nav>
-      <h1 className="mt-2 font-serif text-[26px] font-semibold leading-tight">Thêm thợ</h1>
+      <h1 className="mt-2 font-serif text-[26px] font-semibold leading-tight">Thêm Photo</h1>
       <p className="mt-1 text-[13.5px] text-ink-2">
-        Điền thông tin rồi bấm “Tạo thợ”. Tạo xong sẽ chuyển sang trang sửa để tải ảnh portfolio lên.
+        Điền thông tin rồi bấm “Tạo Photo”. Tạo xong sẽ chuyển sang trang sửa để tải ảnh portfolio lên.
       </p>
 
       <div className="mt-5">

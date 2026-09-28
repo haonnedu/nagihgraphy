@@ -69,14 +69,14 @@ export default async function HomePage() {
   const eyebrow = hero.eyebrow || settings.studio.kicker;
   const headline = hero.headline || settings.studio.headline;
   const lead = hero.lead || settings.studio.intro;
-  const primaryLabel = hero.primaryLabel || `Xem ${total} thợ`;
+  const primaryLabel = hero.primaryLabel || `Xem ${total} Photo`;
   const secondaryLabel = hero.secondaryLabel || "Bảng giá và phụ phí tỉnh";
   // Viên số liệu: admin nhập tay; chưa nhập thì tự tính từ database.
   const stats =
     hero.stats.length > 0
       ? hero.stats
       : [
-          { value: String(total), label: "thợ đang nhận lịch" },
+          { value: String(total), label: "Photo đang nhận lịch" },
           { value: totalSessions.toLocaleString("vi-VN"), label: "buổi đã chụp" },
           { value: minPrice > 0 ? money(minPrice) : "Liên hệ", label: "giá khởi điểm" },
         ];
@@ -139,13 +139,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* --- 2. thợ nổi bật, hiện lần lượt --- */}
+      {/* --- 2. Photo nổi bật, hiện lần lượt --- */}
       {featured.length > 0 && (
         <section className="mx-auto w-full max-w-[1120px] px-4 py-12">
           <Reveal>
             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
               <h2 className="font-serif text-[clamp(22px,4.5vw,32px)] font-semibold leading-tight text-blue">
-                Thợ nổi bật
+                Photo nổi bật
               </h2>
               <Link
                 href="/tho"
@@ -245,10 +245,10 @@ export default async function HomePage() {
         <Reveal>
           <div className="rounded-card border border-line bg-blue-soft px-6 py-10 text-center">
             <h2 className="font-serif text-[clamp(24px,5vw,36px)] font-semibold leading-tight text-blue-deep text-balance">
-              Chốt thợ, chốt ngày, xong.
+              Chốt Photo, chốt ngày, xong.
             </h2>
             <p className="mx-auto mt-2.5 max-w-[46ch] text-ink-2">
-              Chọn thợ hợp gu, nhắn thẳng cho thợ ngày bạn muốn và số người, thợ báo giá chính xác
+              Chọn Photo hợp gu, nhắn thẳng cho Photo ngày bạn muốn và số người, Photo báo giá chính xác
               và giữ lịch cho bạn.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2.5">
@@ -262,7 +262,7 @@ export default async function HomePage() {
                 href="/tho"
                 className="rounded-[10px] border border-line-2 bg-surface px-5 py-3 font-medium hover:border-ink-3"
               >
-                Xem thợ trước đã
+                Xem Photo trước đã
               </Link>
             </div>
           </div>

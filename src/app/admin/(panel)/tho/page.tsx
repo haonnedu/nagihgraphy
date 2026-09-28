@@ -31,9 +31,9 @@ export default async function AdminPhotographersPage() {
     <div className="max-w-[960px]">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-serif text-[26px] font-semibold leading-tight">Thợ và ảnh portfolio</h1>
+          <h1 className="font-serif text-[26px] font-semibold leading-tight">Photo và ảnh portfolio</h1>
           <p className="mt-1 text-[13.5px] text-ink-2">
-            Thứ tự ở đây là thứ tự “Nổi bật” trên trang khách. Thợ đang ẩn không hiện với khách.
+            Thứ tự ở đây là thứ tự “Nổi bật” trên trang khách. Photo đang ẩn không hiện với khách.
           </p>
         </div>
         {editable && (
@@ -41,7 +41,7 @@ export default async function AdminPhotographersPage() {
             href="/admin/tho/moi"
             className="rounded-[10px] border border-cta bg-cta px-4 py-2.5 text-[13.5px] font-medium text-white hover:bg-cta-hover"
           >
-            + Thêm thợ
+            + Thêm Photo
           </Link>
         )}
       </div>
@@ -95,7 +95,7 @@ export default async function AdminPhotographersPage() {
 
       {rows.length === 0 && (
         <p className="mt-5 rounded-card border border-dashed border-line-2 px-4 py-8 text-center text-ink-2">
-          Chưa có thợ nào. Bấm “Thêm thợ” để bắt đầu.
+          Chưa có Photo nào. Bấm “Thêm Photo” để bắt đầu.
         </p>
       )}
     </div>

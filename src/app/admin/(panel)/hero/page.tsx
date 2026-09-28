@@ -24,7 +24,7 @@ export default async function HeroPage() {
   // cái đang có thay vì ô trắng. Lưu là ghi thẳng giá trị đó.
   const totalSessions = photographers.reduce((sum, p) => sum + p.sessions, 0);
   const fallbackStats = [
-    { value: String(total), label: "thợ đang nhận lịch" },
+    { value: String(total), label: "Photo đang nhận lịch" },
     { value: totalSessions.toLocaleString("vi-VN"), label: "buổi đã chụp" },
     { value: minPrice > 0 ? money(minPrice) : "Liên hệ", label: "giá khởi điểm" },
   ];
@@ -86,7 +86,7 @@ export default async function HeroPage() {
         <section className="rounded-card border border-line bg-surface p-4">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">Hai nút</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <Field label="Nút chính, dẫn tới danh sách thợ" hint={`Trống thì hiện "Xem ${total} thợ"`}>
+            <Field label="Nút chính, dẫn tới danh sách Photo" hint={`Trống thì hiện "Xem ${total} Photo"`}>
               <input name="primaryLabel" maxLength={40} defaultValue={hero.primaryLabel} disabled={!editable} className={inputClass} />
             </Field>
             <Field label="Nút phụ, dẫn tới bảng giá" hint='Trống thì hiện "Bảng giá và phụ phí tỉnh"'>
@@ -99,7 +99,7 @@ export default async function HeroPage() {
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">Hàng số liệu</h2>
           <p className="mt-1 text-[13px] text-ink-2">
             Tối đa {MAX_STATS} viên, mỗi viên gồm số in đậm và nhãn đi sau. Hàng nào bỏ trống cả hai ô thì không hiện. Xoá hết cả {MAX_STATS} hàng
-            thì trang chủ tự tính: số thợ, số buổi đã chụp, giá khởi điểm.
+            thì trang chủ tự tính: số Photo, số buổi đã chụp, giá khởi điểm.
           </p>
           <div className="mt-3 grid gap-2.5">
             {rows.map((row, i) => (

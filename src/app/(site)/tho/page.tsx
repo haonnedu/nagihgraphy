@@ -10,9 +10,9 @@ import { money } from "@/lib/pricing";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Chọn thợ chụp",
+  title: "Chọn Photo chụp",
   description:
-    "Danh sách thợ chụp kỷ yếu của NAGIH GRAPHY. Lọc theo khu vực, hạng ekip và dịch vụ đi kèm, xem portfolio và giá khởi điểm từng người.",
+    "Danh sách Photo chụp kỷ yếu của NAGIH GRAPHY. Lọc theo khu vực, hạng ekip và dịch vụ đi kèm, xem portfolio và giá khởi điểm từng người.",
   alternates: { canonical: "/tho" },
 };
 
@@ -47,13 +47,13 @@ export default async function PhotographersPage(props: PageProps<"/tho">) {
       <section className="flex flex-wrap items-end justify-between gap-x-5 gap-y-2.5 pb-1.5 pt-6">
         <div>
           <h1 className="font-serif text-[clamp(26px,6vw,36px)] font-semibold leading-tight tracking-tight text-balance">
-            Chọn thợ{" "}
+            Chọn Photo{" "}
             <span className="font-script text-[1.22em] leading-none text-blue">theo vibe</span>
           </h1>
           <p className="mt-1.5 max-w-[60ch] text-ink-2">{settings.studio.intro}</p>
         </div>
         <p className="text-[12.5px] text-ink-3">
-          <b className="font-semibold text-ink">{total}</b> thợ
+          <b className="font-semibold text-ink">{total}</b> Photo
           {minPrice > 0 && (
             <>
               {" · giá từ "}
@@ -71,7 +71,7 @@ export default async function PhotographersPage(props: PageProps<"/tho">) {
 
       {photographers.length === 0 ? (
         <p className="mt-4 rounded-card border border-dashed border-line-2 px-4 py-8 text-center text-ink-2">
-          Chưa có thợ nào khớp bộ lọc này. Thử bỏ bớt điều kiện xem sao.
+          Chưa có Photo nào khớp bộ lọc này. Thử bỏ bớt điều kiện xem sao.
         </p>
       ) : (
         <section className="grid grid-cols-2 gap-3 pb-10 pt-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
