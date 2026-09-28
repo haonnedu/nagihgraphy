@@ -265,8 +265,8 @@ async function main() {
       for (const half of ["MORNING", "AFTERNOON"] as const) {
         await db.availability.upsert({
           where: { photographerId_date_half: { photographerId: row.id, date, half } },
-          update: { status: "OPEN" },
-          create: { photographerId: row.id, date, half, status: "OPEN" },
+          update: { status: "FREE" },
+          create: { photographerId: row.id, date, half, status: "FREE" },
         });
       }
       availabilityCount += 2;

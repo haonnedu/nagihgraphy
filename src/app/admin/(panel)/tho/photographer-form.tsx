@@ -10,6 +10,7 @@ export type FormOptions = {
 export type PhotographerFormValue = {
   id: string;
   name: string;
+  realName: string;
   tierId: string;
   city: string;
   style: string;
@@ -43,8 +44,11 @@ export function PhotographerForm({ value, options }: { value: PhotographerFormVa
         <section className="grid gap-3 rounded-card border border-line bg-surface p-4">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">Thông tin</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Tên hiển thị">
+            <Field label="Tên hiển thị" hint="Biệt danh hiện ngoài site">
               <input name="name" defaultValue={value.name} required maxLength={60} className={inputClass} />
+            </Field>
+            <Field label="Tên thật" hint="Chỉ hiện trong admin và lịch thợ">
+              <input name="realName" defaultValue={value.realName} maxLength={80} className={inputClass} />
             </Field>
             <Field label="Hạng ekip">
               <select name="tierId" defaultValue={value.tierId} className={inputClass}>

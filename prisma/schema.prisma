@@ -50,7 +50,10 @@ model GroupPrice {
 model Photographer {
   id            String  @id @default(cuid())
   slug          String  @unique
+  /// biệt danh hiện ngoài site
   name          String
+  /// tên thật, chỉ dùng trong admin
+  realName      String  @default("")
   tierId        String
   city          String
   style         String  @default("")
@@ -79,7 +82,9 @@ model Photographer {
   features     PhotographerFeature[]
   tags         PhotographerTag[]
   availability Availability[]
+  scheduleNotes ScheduleNote[]
   leads        Lead[]
+  user         AdminUser?
 
   @@index([published, order])
   @@index([city])
@@ -198,9 +203,10 @@ enum Half {
 }
 
 enum AvailabilityStatus {
-  OPEN // còn nhận
-  BUSY // đã có khách
-  OFF // thợ nghỉ
+  FREE // rảnh, nhận được khách
+  NAGIH // lịch NAGIH
+  EXTERNAL // lịch chạy ngoài
+  BUSY // bận, không nhận
 }
 
 /// Một thợ nhận tối đa 2 buổi mỗi ngày: sáng và chiều.
@@ -210,8 +216,7 @@ model Availability {
   photographerId String
   date           DateTime           @db.Date
   half           Half
-  status         AvailabilityStatus @default(OPEN)
-  note           String             @default("")
+  status         AvailabilityStatus @default(FREE)
 
   updatedAt DateTime @updatedAt
 
@@ -220,6 +225,20 @@ model Availability {
   @@unique([photographerId, date, half])
   @@index([date, status])
   @@map("availability")
+}
+
+/// Ghi chú ngắn theo ngày của thợ: tên group, địa điểm, giờ.
+model ScheduleNote {
+  id             String   @id @default(cuid())
+  photographerId String
+  date           DateTime @db.Date
+  note           String   @default("")
+  updatedAt      DateTime @updatedAt
+
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+
+  @@unique([photographerId, date])
+  @@map("schedule_notes")
 }
 
 // ---------------------------------------------------------------- lead
@@ -314,6 +333,8 @@ enum AdminRole {
   OWNER
   SALE
   VIEWER
+  /// thợ: chỉ xem và sửa lịch của chính mình
+  PHOTOGRAPHER
 }
 
 model AdminUser {
@@ -323,12 +344,15 @@ model AdminUser {
   passwordHash String
   role         AdminRole @default(VIEWER)
   active       Boolean   @default(true)
+  /// tài khoản của thợ thì trỏ tới thợ; id thợ luôn lấy từ đây, không lấy từ URL
+  photographerId String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   leadEvents LeadEvent[]
   auditLogs  AuditLog[]
+  photographer Photographer? @relation(fields: [photographerId], references: [id], onDelete: SetNull)
 
   @@map("admin_users")
 }

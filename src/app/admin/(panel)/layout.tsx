@@ -1,24 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { signOut } from "@/auth";
-import { requireAdmin, canEdit } from "@/lib/admin-guard";
+import { requireAdmin, canEdit, isStaff, PHOTOGRAPHER_HOME } from "@/lib/admin-guard";
 
 export const metadata: Metadata = {
   title: { default: "Quản trị", template: "%s · Quản trị NAGIH" },
   robots: { index: false, follow: false },
 };
 
-const NAV = [
+const STAFF_NAV = [
   { href: "/admin", label: "Tổng quan" },
+  { href: "/admin/lich", label: "Lịch thợ" },
   { href: "/admin/tho", label: "Thợ và ảnh portfolio" },
   { href: "/admin/goi", label: "Gói chụp và bảng giá" },
   { href: "/admin/hero", label: "Chữ đầu trang chủ" },
   { href: "/admin/lead", label: "Khách để lại thông tin" },
+  { href: "/admin/tai-khoan", label: "Tài khoản" },
+];
+
+/** Thợ chỉ có lịch của mình và đổi mật khẩu. */
+const PHOTOGRAPHER_NAV = [
+  { href: PHOTOGRAPHER_HOME, label: "Lịch của tôi" },
+  { href: "/admin/mat-khau", label: "Đổi mật khẩu" },
 ];
 
 /** Mọi trang trong nhóm (panel) đều qua guard này. Trang login nằm ngoài nhóm. */
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
-  const user = await requireAdmin();
+  const user = await requireAdmin({ allowPhotographer: true });
+  const nav = isStaff(user.role) ? STAFF_NAV : PHOTOGRAPHER_NAV;
 
   async function logout() {
     "use server";
@@ -31,7 +40,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <div className="flex items-center justify-between gap-3 px-4 py-3 md:block md:py-5">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-3">NAGIH GRAPHY</p>
-            <p className="font-serif text-lg font-semibold leading-tight">Quản trị</p>
+            <p className="font-serif text-lg font-semibold leading-tight">{isStaff(user.role) ? "Quản trị" : "Lịch thợ"}</p>
           </div>
           <Link href="/" className="text-[12.5px] text-ink-2 hover:text-blue md:mt-2 md:block">
             Xem trang khách ↗
@@ -39,7 +48,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         </div>
 
         <nav className="no-scrollbar flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:px-3 md:pb-0">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -53,8 +62,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <div className="hidden px-4 py-4 md:block">
           <p className="truncate text-[12.5px] text-ink-2">{user.name || user.email}</p>
           <p className="text-[11px] uppercase tracking-wide text-ink-3">
-            {user.role}
-            {!canEdit(user.role) && " · chỉ xem"}
+            {user.role === "PHOTOGRAPHER" ? "Thợ" : user.role}
+            {isStaff(user.role) && !canEdit(user.role) && " · chỉ xem"}
           </p>
           <form action={logout} className="mt-2">
             <button type="submit" className="text-[12.5px] text-ink-2 underline underline-offset-2 hover:text-blue">

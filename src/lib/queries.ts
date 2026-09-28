@@ -88,7 +88,7 @@ async function loadAvailability(ids: string[]) {
   const today = new Date(`${todayVN()}T00:00:00Z`);
 
   const rows = await db.availability.findMany({
-    where: { photographerId: { in: ids }, date: { gte: today }, status: "OPEN" },
+    where: { photographerId: { in: ids }, date: { gte: today }, status: "FREE" },
     select: { photographerId: true, date: true, half: true, status: true },
     orderBy: { date: "asc" },
   });
@@ -161,7 +161,7 @@ export async function listPhotographers(filters: ListFilters): Promise<ListResul
     });
   }
   if (filters.openToday) {
-    list = list.filter((p) => p.todaySlots.some((s) => s.status === "OPEN"));
+    list = list.filter((p) => p.todaySlots.some((s) => s.status === "FREE"));
   }
   if (filters.q) {
     // Tìm không dấu, giống hàm norm() của bản artifact cũ.

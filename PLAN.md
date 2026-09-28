@@ -405,3 +405,21 @@ Có thể cắt ngắn thêm: Phase 3 rút còn 1 ngày nếu bỏ pin gallery n
 | Mất dữ liệu do tự host | `pg_dump` hằng đêm giữ 14 ngày, `rsync` thư mục ảnh hằng tuần sang máy khác. Diễn tập phục hồi một lần trước khi bàn giao |
 | Server chết là web chết | Không có redundancy như PaaS. Bù bằng healthcheck, `restart: unless-stopped`, và Uptime Kuma cảnh báo qua Telegram |
 | Băng thông server yếu, ảnh tải chậm | Serve ảnh qua Nginx với cache dài hạn, dùng AVIF/WebP, lazy-load. Nếu vẫn chậm thì đặt Cloudflare miễn phí trước domain làm CDN |
+
+
+## 11. Lịch thợ (yêu cầu 2026-09-25)
+
+Thay Google Sheet: thợ tự điền lịch của mình, quản lý và sale xem ai còn trống. Bám bản mẫu của khách (artifact "NAGIH Lịch Thợ").
+
+**Dữ liệu.** Bảng `availability` giữ nguyên khoá (thợ, ngày, buổi), trạng thái đổi thành 4 mức `FREE | NAGIH | EXTERNAL | BUSY`, không có dòng nghĩa là chưa điền. Ghi chú theo ngày tách sang bảng `schedule_notes` (80 ký tự). Mọi lần sửa ghi `audit_logs` với người sửa và diff.
+
+**Phân quyền.** Thêm vai `PHOTOGRAPHER`, tài khoản nối với thợ qua `admin_users.photographerId` (unique). Id thợ luôn lấy từ phiên đăng nhập, không lấy từ URL. `requireAdmin()` mặc định chặn vai thợ và đẩy về `/admin/lich/toi`, nên mọi trang admin cũ tự an toàn; chỉ trang lịch của tôi và đổi mật khẩu mở cho thợ. OWNER và SALE sửa được lịch mọi thợ và tạo tài khoản; VIEWER chỉ xem.
+
+**Màn hình.**
+- `/admin/lich/toi`: lịch tháng của chính thợ. Ô ngày chia hai vạch sáng và chiều tô màu; bấm ngày mở hộp chọn trạng thái từng buổi, ba nút điền nhanh cả ngày, ghi chú; nút "Mặc định Rảnh" điền các ô còn trống của tháng, "Xoá hết"; 4 ô đếm; chuyển tháng. Ưu tiên điện thoại.
+- `/admin/lich/tho/[id]`: cùng giao diện, cho quản lý sửa hộ.
+- `/admin/lich`: tab "Theo ngày" chia 4 nhóm trống cả ngày, chỉ sáng, chỉ chiều, đã kín, mỗi thợ có biệt danh, tên thật, hạng, hai ô S và C, ghi chú; tab "Cả tháng" là lưới thợ nhân ngày, cột tên ghim, cuối hàng tổng Rảnh, NAGIH, Ngoài. Lọc hạng và tìm tên. Dải cảnh báo thợ chưa điền tuần tới. Nút xuất Excel theo tháng.
+- `/admin/tai-khoan`: tạo tài khoản thợ (chọn thợ, email, mật khẩu tạm sinh sẵn), khoá, mở, cấp lại mật khẩu. `/admin/mat-khau`: tự đổi mật khẩu.
+- Lead chuyển sang "đã chốt lịch" thì tự ghi buổi đó của thợ thành NAGIH nếu ô đang Rảnh hoặc chưa điền.
+
+**Site khách** vẫn đọc `FREE` để hiện "còn lịch hôm nay", nên thợ điền Rảnh là ngoài site tự đúng.

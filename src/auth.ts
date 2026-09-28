@@ -6,8 +6,10 @@ import type { AdminRole } from "@/generated/prisma/enums";
 
 /**
  * Đăng nhập admin bằng email và mật khẩu, so bcrypt với bảng admin_users.
- * Phiên lưu trong JWT cookie, không cần bảng session. Chỉ 2–5 tài khoản
- * nội bộ nên không cần OAuth. Xem PLAN.md mục 3.
+ * Phiên lưu trong JWT cookie, không cần bảng session. Xem PLAN.md mục 3.
+ *
+ * Tài khoản thợ (role PHOTOGRAPHER) mang theo photographerId trong phiên;
+ * mọi trang lịch lấy id thợ từ đây, không bao giờ lấy từ URL. Xem PLAN.md mục 11.
  *
  * trustHost: đứng sau Traefik nên Host header là của proxy, phải tin nó.
  */
@@ -31,21 +33,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await compare(password, user.passwordHash);
         if (!ok) return null;
 
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          photographerId: user.photographerId,
+        };
       },
     }),
   ],
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.uid = user.id;
-        token.role = (user as { role?: AdminRole }).role ?? "VIEWER";
+        const u = user as { id?: string; role?: AdminRole; photographerId?: string | null };
+        token.uid = u.id;
+        token.role = u.role ?? "VIEWER";
+        token.pid = u.photographerId ?? null;
       }
       return token;
     },
     session({ session, token }) {
       session.user.id = String(token.uid ?? "");
       session.user.role = (token.role as AdminRole) ?? "VIEWER";
+      session.user.photographerId = (token.pid as string | null) ?? null;
       return session;
     },
   },

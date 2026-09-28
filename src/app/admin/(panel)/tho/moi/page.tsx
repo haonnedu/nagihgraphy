@@ -29,6 +29,7 @@ export default async function NewPhotographerPage() {
           value={{
             id: "",
             name: "",
+            realName: "",
             tierId: options.tiers[0]?.id ?? "",
             city: "Hà Nội",
             style: "",

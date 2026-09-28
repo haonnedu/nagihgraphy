@@ -13,6 +13,7 @@ export type ActionState = { error: string; ok?: string };
 const photographerSchema = z.object({
   id: z.string().default(""),
   name: z.string().trim().min(1, "Thiếu tên thợ").max(60),
+  realName: z.string().trim().max(80).default(""),
   tierId: z.string().min(1, "Chọn hạng ekip"),
   city: z.string().trim().min(1, "Thiếu khu vực").max(40),
   style: z.string().trim().max(160).default(""),
@@ -36,6 +37,7 @@ function readForm(formData: FormData) {
   return photographerSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
+    realName: formData.get("realName"),
     tierId: formData.get("tierId"),
     city: formData.get("city"),
     style: formData.get("style"),
@@ -70,6 +72,7 @@ export async function savePhotographer(_prev: ActionState, formData: FormData): 
 
   const data = {
     name: d.name,
+    realName: d.realName,
     tierId: d.tierId,
     city: d.city,
     style: d.style,

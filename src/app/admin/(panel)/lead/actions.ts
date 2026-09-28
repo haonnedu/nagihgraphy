@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireEditor } from "@/lib/admin-guard";
+import { bookLeadOnSchedule } from "@/lib/schedule-book";
 import { revalidatePath } from "next/cache";
 
 const STATUSES = ["NEW", "CONTACTED", "QUOTED", "DEPOSITED", "CONFIRMED", "DONE", "LOST"] as const;
@@ -36,6 +37,11 @@ export async function updateLeadStatus(formData: FormData): Promise<void> {
       data: { leadId: id, fromStatus: lead.status, toStatus: status, actorId: user.id, note },
     }),
   ]);
+  // Chốt lịch thì tự ghi buổi đó của thợ thành Lịch NAGIH, chỉ đè ô Rảnh hoặc chưa điền.
+  if (status === "CONFIRMED" && lead.status !== "CONFIRMED") {
+    await bookLeadOnSchedule(id, user.id);
+  }
   revalidatePath("/admin/lead");
   revalidatePath("/admin");
+  revalidatePath("/admin/lich");
 }

@@ -1,17 +1,19 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
+import { photographersMissingNextWeek } from "@/lib/schedule-queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomePage() {
-  const [photographers, published, photos, newLeads, totalLeads, settings] = await Promise.all([
+  const [photographers, published, photos, newLeads, totalLeads, settings, missing] = await Promise.all([
     db.photographer.count(),
     db.photographer.count({ where: { published: true } }),
     db.photo.count(),
     db.lead.count({ where: { status: "NEW" } }),
     db.lead.count(),
     getSettings(),
+    photographersMissingNextWeek(),
   ]);
 
   const cards = [
@@ -19,13 +21,14 @@ export default async function AdminHomePage() {
     { label: "Ảnh portfolio", value: String(photos), href: "/admin/tho" },
     { label: "Khách mới chưa xem", value: String(newLeads), href: "/admin/lead" },
     { label: "Tổng khách để lại thông tin", value: String(totalLeads), href: "/admin/lead" },
+    { label: "Thợ chưa điền lịch 7 ngày tới", value: String(missing.length), href: "/admin/lich?tab=thang" },
   ];
 
   return (
     <div className="max-w-[880px]">
       <h1 className="font-serif text-[26px] font-semibold leading-tight">Tổng quan</h1>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {cards.map((c) => (
           <Link
             key={c.label}
@@ -52,6 +55,7 @@ export default async function AdminHomePage() {
       <section className="mt-8 rounded-card border border-line bg-surface p-4">
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">Làm gì ở đây</h2>
         <ul className="mt-2 grid gap-1.5 text-[13.5px] text-ink-2">
+          <li>Xem lịch thợ theo ngày hoặc cả tháng, sửa hộ khi cần; tạo tài khoản để thợ tự điền lịch.</li>
           <li>Thêm thợ, upload ảnh portfolio, chọn ảnh bìa, điền link album Google Drive.</li>
           <li>Sửa giá theo hạng ekip, giá gói nhóm theo số người, phụ phí từng tỉnh và các dòng chính sách.</li>
           <li>Sửa tiêu đề, đoạn mô tả và các viên số liệu ở đầu trang chủ.</li>

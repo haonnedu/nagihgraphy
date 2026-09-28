@@ -143,7 +143,22 @@ npm run admin:create -- --email chu@nagihgraphy.com --password "mat khau manh" -
 | `/admin/goi` | Hạng ekip với giá nửa ngày và giá cả ngày, giá gói nhóm theo số người, phụ phí từng tỉnh, chính sách, phụ phí buổi tối |
 | `/admin/hero` | Sửa chữ đầu trang chủ: dòng nhỏ, tiêu đề, mô tả, hai nút, tối đa 4 viên số liệu |
 | `/admin/lead` | Xem khách để lại thông tin, lọc theo trạng thái, ghi chú, đổi trạng thái |
+| `/admin/lich` | Lịch thợ cho quản lý: tab theo ngày chia 4 nhóm trống, tab cả tháng dạng lưới, lọc hạng, tìm tên, cảnh báo chưa điền tuần tới, xuất Excel |
+| `/admin/lich/tho/[id]` | Sửa hộ lịch một thợ |
+| `/admin/lich/toi` | Lịch của chính thợ đang đăng nhập, trang duy nhất vai thợ thấy |
+| `/admin/tai-khoan` | Tạo tài khoản thợ và nhân sự, khoá, mở, cấp lại mật khẩu tạm |
+| `/admin/mat-khau` | Tự đổi mật khẩu, mọi vai |
+
+### Lịch thợ
+
+Thay Google Sheet, xem PLAN.md mục 11. Mỗi thợ mỗi ngày có hai buổi sáng và chiều, mỗi buổi một trong bốn trạng thái Rảnh, Lịch NAGIH, Lịch ngoài, Bận; chưa có dòng là chưa điền. Ghi chú theo ngày tối đa 80 ký tự nằm ở bảng `schedule_notes`. Mọi lần sửa ghi `audit_logs` với người sửa, thời điểm và diff.
+
+Vai `PHOTOGRAPHER` gắn với một thợ qua `admin_users.photographerId`. Id thợ luôn lấy từ phiên đăng nhập, không lấy từ URL, nên thợ không mở được lịch người khác kể cả sửa địa chỉ. `requireAdmin()` mặc định chặn vai thợ và đẩy về `/admin/lich/toi`; chỉ trang lịch của tôi và đổi mật khẩu truyền `allowPhotographer`. OWNER và SALE sửa được lịch mọi thợ và tạo tài khoản; VIEWER chỉ xem.
+
+Site khách vẫn đọc trạng thái `FREE` để hiện "còn lịch hôm nay", nên thợ điền Rảnh là ngoài site tự đúng. Lead chuyển sang "đã chốt lịch" thì buổi đó của thợ tự thành Lịch NAGIH nếu ô đang Rảnh hoặc chưa điền, xem `src/lib/schedule-book.ts`.
+
+**Tạo tài khoản cho thợ:** vào `/admin/tai-khoan`, chọn thợ, nhập email đăng nhập (không cần email thật, chỉ cần không trùng), bấm tạo. Mật khẩu tạm hiện một lần, gửi cho thợ; thợ đăng nhập rồi đổi ở "Đổi mật khẩu". Thợ nghỉ thì bấm "Khoá", lịch cũ giữ nguyên, mở lại được.
 
 Mọi thao tác lưu đều gọi `revalidatePath` cho trang khách nên đổi hiện gần như ngay. Upload đi qua server action, giới hạn 25 MB mỗi lần trong `next.config.ts`, server tự resize bằng sharp thành ba cỡ WebP.
 
-**Chưa làm:** quản lý lịch trống của thợ trong admin (hiện mới có dữ liệu seed), sửa các đoạn chữ khác ngoài hero và thông tin studio qua admin. Xem PLAN.md mục 7.
+**Chưa làm:** sửa các đoạn chữ khác ngoài hero và thông tin studio qua admin. Xem PLAN.md mục 7.

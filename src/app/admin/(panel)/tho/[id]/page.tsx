@@ -31,6 +31,7 @@ export default async function EditPhotographerPage(props: PageProps<"/admin/tho/
   const value = {
     id: p.id,
     name: p.name,
+    realName: p.realName,
     tierId: p.tierId,
     city: p.city,
     style: p.style,

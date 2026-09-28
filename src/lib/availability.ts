@@ -26,7 +26,7 @@ export function formatDateVN(key: string): string {
 export type DayStatus = "FULL_DAY" | "MORNING_ONLY" | "AFTERNOON_ONLY" | "NONE";
 
 export function dayStatus(slots: HalfSlot[]): DayStatus {
-  const open = (half: Half) => slots.some((s) => s.half === half && s.status === "OPEN");
+  const open = (half: Half) => slots.some((s) => s.half === half && s.status === "FREE");
   const morning = open("MORNING");
   const afternoon = open("AFTERNOON");
   if (morning && afternoon) return "FULL_DAY";

@@ -116,7 +116,9 @@ export const inputClass =
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
-    <label className="grid gap-1">
+    // content-start: khi hai Field nằm cùng hàng lưới, ô nhập không bị kéo giãn
+    // theo cột có dòng gợi ý dài hơn.
+    <label className="grid content-start gap-1">
       <span className="text-xs font-medium text-ink-2">{label}</span>
       {children}
       {hint && <small className="text-[11.5px] text-ink-3">{hint}</small>}
