@@ -9,10 +9,10 @@ export const dynamic = "force-dynamic";
 
 /** Màu ô Excel theo trạng thái, cùng tông với web. */
 const FILL: Record<string, string> = {
-  FREE: "FFE8F4EC",
-  NAGIH: "FFE6F1FA",
-  EXTERNAL: "FFFFF0E9",
-  BUSY: "FFEEF3F8",
+  FREE: "FF9FDCB6",
+  NAGIH: "FF9CC8EF",
+  EXTERNAL: "FFFFB894",
+  BUSY: "FFB9C4CF",
 };
 
 /**

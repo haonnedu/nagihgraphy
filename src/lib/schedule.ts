@@ -30,12 +30,12 @@ export const STATUS_SHORT: Record<SlotStatus, string> = {
 
 /** Màu vạch và ô theo trạng thái, bám bản mẫu: xanh lá, xanh dương, cam, xám; chưa điền là ô trắng viền mờ. */
 export const STATUS_CLASS: Record<SlotStatus, string> = {
-  FREE: "bg-in-bg border-in-line",
-  NAGIH: "bg-blue-soft border-[#b9d7ee]",
-  EXTERNAL: "bg-extra-bg border-extra-line",
-  BUSY: "bg-none-bg border-none-line",
+  FREE: "bg-[#9fdcb6] border-[#3fa868]",
+  NAGIH: "bg-[#9cc8ef] border-[#2f7fc4]",
+  EXTERNAL: "bg-[#ffb894] border-[#e8722f]",
+  BUSY: "bg-[#b9c4cf] border-[#6f7f8f]",
 };
-export const UNSET_CLASS = "bg-surface border-line";
+export const UNSET_CLASS = "bg-surface border-line-2";
 
 export function slotClass(v: SlotValue): string {
   return v ? STATUS_CLASS[v] : UNSET_CLASS;

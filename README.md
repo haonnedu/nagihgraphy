@@ -148,6 +148,7 @@ npm run admin:create -- --email chu@nagihgraphy.com --password "mat khau manh" -
 | `/admin/lich/toi` | Lịch của chính thợ đang đăng nhập, trang duy nhất vai thợ thấy |
 | `/admin/tai-khoan` | Tạo tài khoản thợ và nhân sự, khoá, mở, cấp lại mật khẩu tạm |
 | `/admin/mat-khau` | Tự đổi mật khẩu, mọi vai |
+| `/admin/ho-so` | Photo tự sửa hồ sơ ngoài site của mình: tên thật, khu vực, phong cách, giới thiệu, link Drive, tag, dịch vụ, ảnh portfolio |
 
 ### Lịch thợ
 
@@ -156,6 +157,8 @@ Thay Google Sheet, xem PLAN.md mục 11. Mỗi thợ mỗi ngày có hai buổi 
 Vai `PHOTOGRAPHER` gắn với một thợ qua `admin_users.photographerId`. Id thợ luôn lấy từ phiên đăng nhập, không lấy từ URL, nên thợ không mở được lịch người khác kể cả sửa địa chỉ. `requireAdmin()` mặc định chặn vai thợ và đẩy về `/admin/lich/toi`; chỉ trang lịch của tôi và đổi mật khẩu truyền `allowPhotographer`. OWNER và SALE sửa được lịch mọi thợ và tạo tài khoản; VIEWER chỉ xem.
 
 Site khách vẫn đọc trạng thái `FREE` để hiện "còn lịch hôm nay", nên thợ điền Rảnh là ngoài site tự đúng. Lead chuyển sang "đã chốt lịch" thì buổi đó của thợ tự thành Lịch NAGIH nếu ô đang Rảnh hoặc chưa điền, xem `src/lib/schedule-book.ts`.
+
+**Photo tự sửa hồ sơ:** tài khoản Photo có trang `/admin/ho-so` sửa được phần "về bản thân" và ảnh portfolio của chính mình, id lấy từ phiên. Hạng, giá, điểm, số buổi, ẩn hiện vẫn do studio quyết ở `/admin/tho`. Các server action ảnh kiểm tra chủ sở hữu qua `requireProfileEditor`.
 
 **Tạo tài khoản cho thợ:** vào `/admin/tai-khoan`, chọn thợ, nhập email đăng nhập (không cần email thật, chỉ cần không trùng), bấm tạo. Mật khẩu tạm hiện một lần, gửi cho thợ; thợ đăng nhập rồi đổi ở "Đổi mật khẩu". Thợ nghỉ thì bấm "Khoá", lịch cũ giữ nguyên, mở lại được.
 

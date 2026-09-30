@@ -64,6 +64,14 @@ export function canEditSchedule(user: AdminUser, photographerId: string): boolea
   return canEdit(user.role);
 }
 
+/**
+ * Ai được sửa hồ sơ ngoài site và ảnh của thợ nào. Thợ: chỉ chính mình.
+ * OWNER và SALE: mọi thợ. VIEWER: không. Cùng luật với lịch.
+ */
+export async function requireProfileEditor(photographerId: string): Promise<AdminUser> {
+  return requireScheduleEditor(photographerId);
+}
+
 /** Server action của lịch: đăng nhập rồi kiểm tra quyền trên đúng thợ đó. */
 export async function requireScheduleEditor(photographerId: string): Promise<AdminUser> {
   const session = await auth();

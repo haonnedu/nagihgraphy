@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { requireEditor } from "@/lib/admin-guard";
+import { revalidatePath } from "next/cache";
+import { requireEditor, requireProfileEditor } from "@/lib/admin-guard";
 import { assertAcceptableUpload, deleteImage, photographerDir, processImage } from "@/lib/images";
 import { revalidatePublic } from "@/lib/revalidate-public";
 import { slugify } from "@/lib/slug";
@@ -140,8 +141,13 @@ export async function movePhotographer(id: string, direction: "up" | "down"): Pr
 
 /** Nhận nhiều file từ input multiple, resize bằng sharp, thêm vào cuối danh sách ảnh. */
 export async function uploadPhotos(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  await requireEditor();
   const photographerId = String(formData.get("photographerId") ?? "");
+  // Thợ tự upload ảnh của mình được; quyền kiểm tra trên đúng thợ đó.
+  try {
+    await requireProfileEditor(photographerId);
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
   const p = await db.photographer.findUnique({ where: { id: photographerId }, select: { id: true, slug: true, name: true } });
   if (!p) return { error: "Không tìm thấy Photo" };
 
@@ -174,22 +180,24 @@ export async function uploadPhotos(_prev: ActionState, formData: FormData): Prom
   }
 
   revalidatePublic(p.slug);
+  revalidateAdminPhotos();
   return { error: "", ok: `Đã thêm ${added} ảnh` };
 }
 
 export async function deletePhoto(photoId: string): Promise<void> {
-  await requireEditor();
   const photo = await db.photo.findUnique({ where: { id: photoId }, include: { photographer: { select: { slug: true } } } });
   if (!photo) return;
+  await requireProfileEditor(photo.photographerId);
   await db.photo.delete({ where: { id: photoId } });
   await deleteImage(photo.path).catch(() => {});
   revalidatePublic(photo.photographer.slug);
+  revalidateAdminPhotos();
 }
 
 export async function movePhoto(photoId: string, direction: "up" | "down"): Promise<void> {
-  await requireEditor();
   const photo = await db.photo.findUnique({ where: { id: photoId }, select: { photographerId: true } });
   if (!photo) return;
+  await requireProfileEditor(photo.photographerId);
   const all = await db.photo.findMany({ where: { photographerId: photo.photographerId }, orderBy: { order: "asc" }, select: { id: true } });
   const i = all.findIndex((x) => x.id === photoId);
   const j = direction === "up" ? i - 1 : i + 1;
@@ -198,19 +206,21 @@ export async function movePhoto(photoId: string, direction: "up" | "down"): Prom
   await db.$transaction(all.map((x, order) => db.photo.update({ where: { id: x.id }, data: { order } })));
   const p = await db.photographer.findUnique({ where: { id: photo.photographerId }, select: { slug: true } });
   revalidatePublic(p?.slug);
+  revalidateAdminPhotos();
 }
 
 /** Ảnh bìa là ảnh có order 0. */
 export async function setCover(photoId: string): Promise<void> {
-  await requireEditor();
   const photo = await db.photo.findUnique({ where: { id: photoId }, select: { photographerId: true } });
   if (!photo) return;
+  await requireProfileEditor(photo.photographerId);
   const all = await db.photo.findMany({ where: { photographerId: photo.photographerId }, orderBy: { order: "asc" }, select: { id: true } });
   const rest = all.filter((x) => x.id !== photoId);
   const ordered = [{ id: photoId }, ...rest];
   await db.$transaction(ordered.map((x, order) => db.photo.update({ where: { id: x.id }, data: { order } })));
   const p = await db.photographer.findUnique({ where: { id: photo.photographerId }, select: { slug: true } });
   revalidatePublic(p?.slug);
+  revalidateAdminPhotos();
 }
 
 export async function deletePhotographer(id: string): Promise<void> {
@@ -221,4 +231,10 @@ export async function deletePhotographer(id: string): Promise<void> {
   await Promise.all(p.photos.map((ph) => deleteImage(ph.path).catch(() => {})));
   revalidatePublic(p.slug);
   redirect("/admin/tho");
+}
+
+/** Ảnh đổi thì trang hồ sơ của Photo và trang sửa Photo trong admin cùng làm mới. */
+function revalidateAdminPhotos(): void {
+  revalidatePath("/admin/ho-so");
+  revalidatePath("/admin/tho/[id]", "page");
 }

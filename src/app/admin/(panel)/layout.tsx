@@ -21,6 +21,7 @@ const STAFF_NAV = [
 /** Thợ chỉ có lịch của mình và đổi mật khẩu. */
 const PHOTOGRAPHER_NAV = [
   { href: PHOTOGRAPHER_HOME, label: "Lịch của tôi" },
+  { href: "/admin/ho-so", label: "Hồ sơ của tôi" },
   { href: "/admin/mat-khau", label: "Đổi mật khẩu" },
 ];
 
