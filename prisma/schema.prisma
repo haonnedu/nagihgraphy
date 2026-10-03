@@ -232,7 +232,9 @@ model ScheduleNote {
   id             String   @id @default(cuid())
   photographerId String
   date           DateTime @db.Date
-  note           String   @default("")
+  /// ghi chú riêng từng buổi: tên group, địa điểm, giờ
+  noteMorning    String   @default("")
+  noteAfternoon  String   @default("")
   updatedAt      DateTime @updatedAt
 
   photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)

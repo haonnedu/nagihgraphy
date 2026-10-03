@@ -6,6 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import { clearMonth, fillMonthFree, saveDay } from "@/app/admin/(panel)/lich/actions";
 import {
   countMonth,
+  hasNote,
   monthKeys,
   monthParam,
   NOTE_MAX,
@@ -40,7 +41,7 @@ type Props = {
   basePath: string;
 };
 
-const EMPTY: DayCell = { morning: null, afternoon: null, note: "" };
+const EMPTY: DayCell = { morning: null, afternoon: null, noteMorning: "", noteAfternoon: "" };
 
 export function ScheduleMonth({ photographerId, title, subtitle, year, month, cells: initial, editable, todayKey, basePath }: Props) {
   const router = useRouter();
@@ -74,7 +75,11 @@ export function ScheduleMonth({ photographerId, title, subtitle, year, month, ce
   function save() {
     if (!selected) return;
     const key = selected;
-    const value = { ...draft, note: draft.note.trim().slice(0, NOTE_MAX) };
+    const value = {
+      ...draft,
+      noteMorning: draft.noteMorning.trim().slice(0, NOTE_MAX),
+      noteAfternoon: draft.noteAfternoon.trim().slice(0, NOTE_MAX),
+    };
     startTransition(async () => {
       const r = await saveDay({ photographerId, date: key, ...value });
       if (!r.ok) {
@@ -183,7 +188,7 @@ export function ScheduleMonth({ photographerId, title, subtitle, year, month, ce
               >
                 <span className="flex items-center justify-center text-[12px] font-medium text-ink-2">
                   {Number(k.slice(8, 10))}
-                  {c?.note && <span aria-hidden className="absolute right-1 top-1 size-1.5 rounded-full bg-orange" />}
+                  {hasNote(c) && <span aria-hidden className="absolute right-1 top-1 size-1.5 rounded-full bg-orange" />}
                 </span>
                 <span className={`h-2 rounded-sm border sm:h-2.5 ${slotClass(c?.morning ?? null)}`} title="Sáng" />
                 <span className={`h-2 rounded-sm border sm:h-2.5 ${slotClass(c?.afternoon ?? null)}`} title="Chiều" />
@@ -260,22 +265,20 @@ export function ScheduleMonth({ photographerId, title, subtitle, year, month, ce
                   <Chip onClick={() => setBoth("BUSY")}>Bận cả ngày</Chip>
                 </div>
 
-                <HalfPicker label="Buổi sáng" value={draft.morning} onChange={(v) => setDraft((d) => ({ ...d, morning: v }))} />
-                <HalfPicker label="Buổi chiều" value={draft.afternoon} onChange={(v) => setDraft((d) => ({ ...d, afternoon: v }))} />
-
-                <label className="mt-4 grid gap-1">
-                  <span className="text-xs font-medium text-ink-2">Ghi chú (tên group, địa điểm, giờ)</span>
-                  <input
-                    value={draft.note}
-                    maxLength={NOTE_MAX}
-                    onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
-                    placeholder="VD: NAGIH_FTU_HN_AN"
-                    className="w-full rounded-[10px] border border-line-2 bg-surface px-3 py-2 text-sm placeholder:text-ink-3 focus:border-blue focus:outline-none focus:ring-3 focus:ring-blue-soft"
-                  />
-                  <small className="text-[11.5px] text-ink-3">
-                    {draft.note.length}/{NOTE_MAX}
-                  </small>
-                </label>
+                <HalfPicker
+                  label="Buổi sáng"
+                  value={draft.morning}
+                  note={draft.noteMorning}
+                  onChange={(v) => setDraft((d) => ({ ...d, morning: v }))}
+                  onNote={(t) => setDraft((d) => ({ ...d, noteMorning: t }))}
+                />
+                <HalfPicker
+                  label="Buổi chiều"
+                  value={draft.afternoon}
+                  note={draft.noteAfternoon}
+                  onChange={(v) => setDraft((d) => ({ ...d, afternoon: v }))}
+                  onNote={(t) => setDraft((d) => ({ ...d, noteAfternoon: t }))}
+                />
 
                 {error && (
                   <p role="alert" className="mt-2 text-[13px] text-warn">
@@ -298,11 +301,12 @@ export function ScheduleMonth({ photographerId, title, subtitle, year, month, ce
               <div className="mt-3 grid gap-2 text-[14px]">
                 <p>
                   Sáng: <b className="font-semibold">{draft.morning ? STATUS_LABEL[draft.morning] : "Chưa điền"}</b>
+                  {draft.noteMorning && <span className="block text-[13px] text-ink-2">{draft.noteMorning}</span>}
                 </p>
                 <p>
                   Chiều: <b className="font-semibold">{draft.afternoon ? STATUS_LABEL[draft.afternoon] : "Chưa điền"}</b>
+                  {draft.noteAfternoon && <span className="block text-[13px] text-ink-2">{draft.noteAfternoon}</span>}
                 </p>
-                {draft.note && <p className="text-ink-2">Ghi chú: {draft.note}</p>}
               </div>
             )}
           </div>
@@ -354,7 +358,19 @@ function Chip({ children, onClick, active = false }: { children: React.ReactNode
   );
 }
 
-function HalfPicker({ label, value, onChange }: { label: string; value: SlotValue; onChange: (v: SlotValue) => void }) {
+function HalfPicker({
+  label,
+  value,
+  note,
+  onChange,
+  onNote,
+}: {
+  label: string;
+  value: SlotValue;
+  note: string;
+  onChange: (v: SlotValue) => void;
+  onNote: (t: string) => void;
+}) {
   return (
     <div className="mt-4 border-t border-line pt-3">
       <p className="mb-2 font-serif text-[15px] font-semibold">{label}</p>
@@ -368,6 +384,19 @@ function HalfPicker({ label, value, onChange }: { label: string; value: SlotValu
           Chưa điền
         </Chip>
       </div>
+      <label className="mt-2.5 grid gap-1">
+        <span className="text-xs font-medium text-ink-2">Ghi chú {label.toLowerCase()} (tên group, địa điểm, giờ)</span>
+        <input
+          value={note}
+          maxLength={NOTE_MAX}
+          onChange={(e) => onNote(e.target.value)}
+          placeholder="VD: NAGIH_FTU_HN_AN 8h"
+          className="w-full rounded-[10px] border border-line-2 bg-surface px-3 py-2 text-sm placeholder:text-ink-3 focus:border-blue focus:outline-none focus:ring-3 focus:ring-blue-soft"
+        />
+        <small className="text-[11.5px] text-ink-3">
+          {note.length}/{NOTE_MAX}
+        </small>
+      </label>
     </div>
   );
 }

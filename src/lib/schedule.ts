@@ -11,7 +11,21 @@ export type SlotStatus = AvailabilityStatus;
 /** null = chưa điền */
 export type SlotValue = SlotStatus | null;
 
-export type DayCell = { morning: SlotValue; afternoon: SlotValue; note: string };
+/** Mỗi buổi có trạng thái và ghi chú riêng. */
+export type DayCell = { morning: SlotValue; afternoon: SlotValue; noteMorning: string; noteAfternoon: string };
+
+export function hasNote(c: DayCell | undefined): boolean {
+  return Boolean(c && (c.noteMorning || c.noteAfternoon));
+}
+
+/** "S: … · C: …" cho tooltip và thẻ, bỏ buổi không có ghi chú. */
+export function noteText(c: DayCell | undefined): string {
+  if (!c) return "";
+  const parts: string[] = [];
+  if (c.noteMorning) parts.push(`S: ${c.noteMorning}`);
+  if (c.noteAfternoon) parts.push(`C: ${c.noteAfternoon}`);
+  return parts.join(" · ");
+}
 export type MonthCells = Record<string, DayCell>;
 
 export const STATUS_LABEL: Record<SlotStatus, string> = {

@@ -19,7 +19,8 @@ export type DayInput = {
   date: string;
   morning: SlotValue;
   afternoon: SlotValue;
-  note: string;
+  noteMorning: string;
+  noteAfternoon: string;
 };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -40,13 +41,14 @@ async function readDay(photographerId: string, date: Date): Promise<DayCell> {
     db.availability.findMany({ where: { photographerId, date }, select: { half: true, status: true } }),
     db.scheduleNote.findUnique({
       where: { photographerId_date: { photographerId, date } },
-      select: { note: true },
+      select: { noteMorning: true, noteAfternoon: true },
     }),
   ]);
   return {
     morning: slots.find((s) => s.half === "MORNING")?.status ?? null,
     afternoon: slots.find((s) => s.half === "AFTERNOON")?.status ?? null,
-    note: note?.note ?? "",
+    noteMorning: note?.noteMorning ?? "",
+    noteAfternoon: note?.noteAfternoon ?? "",
   };
 }
 
@@ -66,11 +68,12 @@ async function writeDay(photographerId: string, date: Date, cell: DayCell): Prom
         });
       }
     }
-    if (cell.note) {
+    if (cell.noteMorning || cell.noteAfternoon) {
+      const notes = { noteMorning: cell.noteMorning, noteAfternoon: cell.noteAfternoon };
       await tx.scheduleNote.upsert({
         where: { photographerId_date: { photographerId, date } },
-        update: { note: cell.note },
-        create: { photographerId, date, note: cell.note },
+        update: notes,
+        create: { photographerId, date, ...notes },
       });
     } else {
       await tx.scheduleNote.deleteMany({ where: { photographerId, date } });
@@ -91,13 +94,16 @@ export async function saveDay(input: DayInput): Promise<ScheduleResult> {
     const morning = slotValue(input.morning);
     const afternoon = slotValue(input.afternoon);
     if (morning === undefined || afternoon === undefined) return { ok: false, error: "Trạng thái không hợp lệ." };
-    const note = String(input.note ?? "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, NOTE_MAX);
+    const clean = (v: unknown) =>
+      String(v ?? "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, NOTE_MAX);
+    const noteMorning = clean(input.noteMorning);
+    const noteAfternoon = clean(input.noteAfternoon);
 
     const before = await readDay(input.photographerId, date);
-    const after: DayCell = { morning, afternoon, note };
+    const after: DayCell = { morning, afternoon, noteMorning, noteAfternoon };
     await writeDay(input.photographerId, date, after);
     await db.auditLog.create({
       data: {

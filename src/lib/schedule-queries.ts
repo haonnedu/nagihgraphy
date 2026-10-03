@@ -38,7 +38,7 @@ async function loadMonthFor(ids: string[], gte: Date, lte: Date): Promise<Map<st
     }),
     db.scheduleNote.findMany({
       where: { photographerId: { in: ids }, date: { gte, lte } },
-      select: { photographerId: true, date: true, note: true },
+      select: { photographerId: true, date: true, noteMorning: true, noteAfternoon: true },
     }),
   ]);
   const cell = (pid: string, key: string): DayCell => {
@@ -47,14 +47,18 @@ async function loadMonthFor(ids: string[], gte: Date, lte: Date): Promise<Map<st
       m = {};
       out.set(pid, m);
     }
-    return (m[key] ??= { morning: null, afternoon: null, note: "" });
+    return (m[key] ??= { morning: null, afternoon: null, noteMorning: "", noteAfternoon: "" });
   };
   for (const s of slots) {
     const c = cell(s.photographerId, keyOf(s.date));
     if (s.half === "MORNING") c.morning = s.status;
     else c.afternoon = s.status;
   }
-  for (const n of notes) cell(n.photographerId, keyOf(n.date)).note = n.note;
+  for (const n of notes) {
+    const c = cell(n.photographerId, keyOf(n.date));
+    c.noteMorning = n.noteMorning;
+    c.noteAfternoon = n.noteAfternoon;
+  }
   return out;
 }
 

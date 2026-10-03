@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import { auth } from "@/auth";
 import { todayVN } from "@/lib/availability";
-import { countMonth, parseMonth, STATUS_SHORT, weekdayVN, WEEKDAY_SHORT, type SlotValue } from "@/lib/schedule";
+import { countMonth, hasNote, noteText, parseMonth, STATUS_SHORT, weekdayVN, WEEKDAY_SHORT, type SlotValue } from "@/lib/schedule";
 import { loadMonthAll } from "@/lib/schedule-queries";
 
 export const dynamic = "force-dynamic";
@@ -61,8 +61,8 @@ export async function GET(req: Request) {
     const m = cells.get(ph.id) ?? {};
     const c = countMonth(m, keys);
     const notes = keys
-      .filter((k) => m[k]?.note)
-      .map((k) => `${Number(k.slice(8, 10))}: ${m[k].note}`)
+      .filter((k) => hasNote(m[k]))
+      .map((k) => `${Number(k.slice(8, 10))}: ${noteText(m[k])}`)
       .join("; ");
     const row: (string | number)[] = [ph.name, ph.realName, ph.tierName];
     for (const k of keys) row.push(label(m[k]?.morning ?? null), label(m[k]?.afternoon ?? null));

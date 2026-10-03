@@ -56,11 +56,20 @@ export async function bookLeadOnSchedule(
   }
 
   if (written.length) {
+    // Ghi chú vào đúng buổi vừa ghi, không đè ghi chú Photo đã tự viết.
     const note = `Khách ${lead.customerName} · ${lead.code}`.slice(0, NOTE_MAX);
+    const cur = await db.scheduleNote.findUnique({
+      where: { photographerId_date: { photographerId, date } },
+      select: { noteMorning: true, noteAfternoon: true },
+    });
+    const next = {
+      noteMorning: written.includes("sáng") && !cur?.noteMorning ? note : (cur?.noteMorning ?? ""),
+      noteAfternoon: written.includes("chiều") && !cur?.noteAfternoon ? note : (cur?.noteAfternoon ?? ""),
+    };
     await db.scheduleNote.upsert({
       where: { photographerId_date: { photographerId, date } },
-      update: {},
-      create: { photographerId, date, note },
+      update: next,
+      create: { photographerId, date, ...next },
     });
     await db.auditLog.create({
       data: {

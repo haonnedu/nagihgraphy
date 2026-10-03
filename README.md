@@ -152,7 +152,7 @@ npm run admin:create -- --email chu@nagihgraphy.com --password "mat khau manh" -
 
 ### Lịch thợ
 
-Thay Google Sheet, xem PLAN.md mục 11. Mỗi thợ mỗi ngày có hai buổi sáng và chiều, mỗi buổi một trong bốn trạng thái Rảnh, Lịch NAGIH, Lịch ngoài, Bận; chưa có dòng là chưa điền. Ghi chú theo ngày tối đa 80 ký tự nằm ở bảng `schedule_notes`. Mọi lần sửa ghi `audit_logs` với người sửa, thời điểm và diff.
+Thay Google Sheet, xem PLAN.md mục 11. Mỗi thợ mỗi ngày có hai buổi sáng và chiều, mỗi buổi một trong bốn trạng thái Rảnh, Lịch NAGIH, Lịch ngoài, Bận; chưa có dòng là chưa điền. Ghi chú riêng từng buổi, tối đa 80 ký tự mỗi buổi, nằm ở bảng `schedule_notes` với hai cột `noteMorning` và `noteAfternoon`. Mọi lần sửa ghi `audit_logs` với người sửa, thời điểm và diff.
 
 Vai `PHOTOGRAPHER` gắn với một thợ qua `admin_users.photographerId`. Id thợ luôn lấy từ phiên đăng nhập, không lấy từ URL, nên thợ không mở được lịch người khác kể cả sửa địa chỉ. `requireAdmin()` mặc định chặn vai thợ và đẩy về `/admin/lich/toi`; chỉ trang lịch của tôi và đổi mật khẩu truyền `allowPhotographer`. OWNER và SALE sửa được lịch mọi thợ và tạo tài khoản; VIEWER chỉ xem.
 

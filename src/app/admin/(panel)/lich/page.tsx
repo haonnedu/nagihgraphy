@@ -7,7 +7,9 @@ import {
   countMonth,
   DAY_GROUP_LABEL,
   dayGroup,
+  hasNote,
   monthParam,
+  noteText,
   parseMonth,
   shiftMonth,
   slotClass,
@@ -199,7 +201,7 @@ async function DayTab({ p, filter, todayKey }: { p: Params; filter: { tier?: str
                           {ph.realName ? `${ph.realName} · ` : ""}
                           {ph.tierName}
                         </span>
-                        {c?.note && <span className="mt-0.5 block truncate text-[12.5px] text-ink-2">{c.note}</span>}
+                        {hasNote(c) && <span className="mt-0.5 block truncate text-[12.5px] text-ink-2">{noteText(c)}</span>}
                       </span>
                       <span className="flex shrink-0 gap-1.5">
                         <HalfBox label="S" value={c?.morning ?? null} />
@@ -302,7 +304,7 @@ async function MonthTab({
                       const isToday = k === todayKey;
                       return (
                         <td key={k} className={`px-0.5 py-1.5 align-middle ${isToday ? "bg-blue-soft/40" : ""}`}>
-                          <span className="grid w-6 gap-0.5" title={cell?.note || undefined}>
+                          <span className="grid w-6 gap-0.5" title={noteText(cell) || undefined}>
                             <span className={`h-2 rounded-sm border ${slotClass(cell?.morning ?? null)}`} />
                             <span className={`h-2 rounded-sm border ${slotClass(cell?.afternoon ?? null)}`} />
                           </span>
