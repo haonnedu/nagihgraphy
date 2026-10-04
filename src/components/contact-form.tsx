@@ -74,11 +74,10 @@ export function ContactForm({
 
   const contacts = studioContacts;
   // Chỉ các app nhắn tin, không có nút gọi. Instagram là nút chính to nhất,
-  // các app còn lại là nút nhỏ bên dưới; SMS có sẵn nội dung vẫn giữ cho điện thoại.
+  // các app còn lại là nút nhỏ bên dưới.
   const apps = contactLinks(contacts).filter((c) => c.key in BRAND_ICONS);
   const primaryApp = apps.find((c) => c.key === "instagram") ?? apps[0];
   const secondaryApps = apps.filter((c) => c !== primaryApp);
-  const smsNumber = contacts.phone.replace(/[^\d+]/g, "");
   const recipient = studioName;
 
   // Dựng chuỗi tin nhắn rất rẻ, không cần memo; React Compiler tự lo phần còn lại.
@@ -198,7 +197,6 @@ export function ContactForm({
     void saveLead(CHANNEL_BY_KEY[link.key] ?? "FORM");
   }
 
-  const smsHref = smsNumber ? `sms:${smsNumber}?body=${encodeURIComponent(message)}` : "";
 
   return (
     <div className="grid gap-4">
@@ -415,15 +413,6 @@ export function ContactForm({
               <AppButton key={c.key} link={c} onClick={() => onContactClick(c)} />
             ))}
           </div>
-        )}
-        {smsHref && (
-          <a
-            href={smsHref}
-            onClick={() => void saveLead("SMS")}
-            className="rounded-[10px] border border-cta bg-cta px-4 py-3 text-center font-medium text-white hover:bg-cta-hover sm:hidden"
-          >
-            Nhắn SMS, có sẵn nội dung
-          </a>
         )}
       </div>
 

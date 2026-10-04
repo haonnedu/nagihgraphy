@@ -96,7 +96,7 @@ DEPLOY.md                các bước lên server
 | `/tho` | Danh sách thợ, lọc theo khu vực / hạng / tag / còn lịch hôm nay, tìm không dấu, 5 kiểu sắp xếp |
 | `/tho/[slug]` | Chi tiết thợ: gallery vuốt ngang, ma trận dịch vụ, lịch, link Drive |
 | `/bang-gia` | Bảng giá theo hạng, máy tính phụ phí 21 tỉnh, chính sách |
-| `/lien-he` | Form đặt lịch theo luồng cũ: chọn thợ, cả ngày hay nửa ngày, số người, ngày, tỉnh, địa điểm, concept; tin nhắn soạn sẵn cập nhật realtime; nút sao chép; bấm Zalo, Instagram, Messenger thì tự chép rồi mở app; nút SMS có sẵn nội dung trên điện thoại |
+| `/lien-he` | Form đặt lịch theo luồng cũ: chọn thợ, cả ngày hay nửa ngày, số người, ngày, tỉnh, địa điểm, concept; tin nhắn soạn sẵn cập nhật realtime; nút sao chép; bấm Zalo, Instagram, Messenger thì tự chép rồi mở app |
 
 Bộ lọc nằm trong URL nên chia sẻ link giữ nguyên kết quả, và trang vẫn render từ server cho SEO.
 
@@ -124,7 +124,7 @@ Nếu khách điền tên và số điện thoại thì khi bấm sao chép ho�
 
 API kiểm tra lại toàn bộ dữ liệu bằng Zod, tính lại giá tạm tính từ database chứ không tin con số client gửi, ghi một `LeadEvent` trạng thái NEW, và báo Telegram nếu có `TELEGRAM_BOT_TOKEN` và `TELEGRAM_CHAT_ID` trong `.env`. Thiếu hai biến đó thì bỏ qua thông báo, lead vẫn lưu. Ô honeypot ẩn: bot điền vào thì API trả về thành công giả và không lưu gì. Giới hạn nhịp 10 request mỗi phút cho mỗi IP nằm ở Traefik, xem `docker-compose.yml`.
 
-Zalo, Instagram và Messenger không nhận nội dung tin nhắn qua link, nên chép vào bộ nhớ tạm là cách duy nhất. Chỉ SMS điền sẵn được, vì vậy điện thoại có thêm nút "Nhắn SMS, có sẵn nội dung".
+Zalo, Instagram và Messenger không nhận nội dung tin nhắn qua link, nên chép vào bộ nhớ tạm là cách duy nhất. Nút SMS có sẵn nội dung đã bỏ theo ý khách ngày 2026-10-04.
 
 ### Admin
 
