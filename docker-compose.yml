@@ -24,6 +24,18 @@ services:
       UPLOAD_DIR: /app/uploads
       NEXT_PUBLIC_UPLOAD_BASE: /uploads
       NODE_ENV: production
+      # Server chỉ có 2 GB RAM, không swap. Giới hạn heap để Node dọn rác sớm
+      # thay vì phình tới 1 GB rồi bị kernel giết (đã xảy ra 08/10 và 10/10).
+      NODE_OPTIONS: --max-old-space-size=640
+    # Trần bộ nhớ của container: vượt thì chỉ web này bị restart, không kéo cả máy.
+    mem_limit: 1100m
+    memswap_limit: 1100m
+    # Log xoay vòng, không để file json lớn dần chiếm đĩa.
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
     volumes:
       - /srv/nagih/uploads:/app/uploads
     networks:

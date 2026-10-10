@@ -4,6 +4,11 @@ import { randomBytes } from "node:crypto";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+
+// Server 2 GB RAM: không giữ cache libvips và xử lý từng ảnh một, để một đợt
+// upload nhiều ảnh điện thoại 6000px không đẩy bộ nhớ vượt trần container.
+sharp.cache(false);
+sharp.concurrency(1);
 import { IMAGE_WIDTHS } from "@/lib/image-paths";
 
 /**
