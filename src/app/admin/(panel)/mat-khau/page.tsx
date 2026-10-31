@@ -5,7 +5,7 @@ import { changePassword } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function ChangePasswordPage() {
-  const user = await requireAdmin({ allowPhotographer: true });
+  const user = await requireAdmin({ allowPhotographer: true, allowQc: true });
 
   return (
     <div className="max-w-[440px]">

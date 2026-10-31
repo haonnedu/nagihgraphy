@@ -13,18 +13,18 @@ datasource db {
 // ---------------------------------------------------------------- bảng giá
 
 model Tier {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   /// mã cũ trong bản artifact: e1, e2, e3, e4, intern
-  slug          String   @unique
+  slug          String  @unique
   name          String
   /// giá nửa ngày (một buổi) cho 1 người
-  basePrice     Int      @default(0)
+  basePrice     Int     @default(0)
   /// giá cả ngày cho 1 người; 0 nghĩa là thợ báo giá
-  fullDayPrice  Int      @default(0)
-  note          String   @default("")
+  fullDayPrice  Int     @default(0)
+  note          String  @default("")
   /// ẩn khỏi bảng giá công khai (Take Care, Intern)
-  hiddenInTable Boolean  @default(false)
-  order         Int      @default(0)
+  hiddenInTable Boolean @default(false)
+  order         Int     @default(0)
 
   groupPrices   GroupPrice[]
   photographers Photographer[]
@@ -39,7 +39,7 @@ model GroupPrice {
   people Int
   price  Int
 
-  tier   Tier   @relation(fields: [tierId], references: [id], onDelete: Cascade)
+  tier Tier @relation(fields: [tierId], references: [id], onDelete: Cascade)
 
   @@unique([tierId, people])
   @@map("group_prices")
@@ -77,14 +77,17 @@ model Photographer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tier         Tier                   @relation(fields: [tierId], references: [id])
-  photos       Photo[]
-  features     PhotographerFeature[]
-  tags         PhotographerTag[]
-  availability Availability[]
+  tier          Tier                  @relation(fields: [tierId], references: [id])
+  photos        Photo[]
+  features      PhotographerFeature[]
+  tags          PhotographerTag[]
+  availability  Availability[]
   scheduleNotes ScheduleNote[]
-  leads        Lead[]
-  user         AdminUser?
+  leads         Lead[]
+  user          AdminUser?
+  schoolPhotos  SchoolPhoto[]
+  submissions   PhotoSubmission[]
+  stats         PhotographerStat[]
 
   @@index([published, order])
   @@index([city])
@@ -278,16 +281,16 @@ model Lead {
 
   customerName String
   phone        String
-  zalo         String  @default("")
-  email        String  @default("")
+  zalo         String @default("")
+  email        String @default("")
 
-  shootDate     DateTime?  @db.Date
-  shootType     ShootType  @default(FULL_DAY)
-  people        Int        @default(1)
-  travelZoneId  String?
-  placeDetail   String     @default("")
-  concept       String     @default("")
-  eveningAddon  Boolean    @default(false)
+  shootDate    DateTime? @db.Date
+  shootType    ShootType @default(FULL_DAY)
+  people       Int       @default(1)
+  travelZoneId String?
+  placeDetail  String    @default("")
+  concept      String    @default("")
+  eveningAddon Boolean   @default(false)
 
   /// số đã hiển thị cho khách lúc đó, để sale đối chiếu. Không phải giá chốt.
   quotedBase   Int @default(0)
@@ -329,6 +332,157 @@ model LeadEvent {
   @@map("lead_events")
 }
 
+// ---------------------------------------------------------------- chọn trường
+// Xem docs/chon-truong.md. Ảnh Photo nộp vào photo_submissions, QC duyệt xong
+// mới chép sang school_photos. Trang khách chỉ đọc school_photos.
+
+enum SchoolStatus {
+  LIVE // hiện ở lưới chính
+  SOON // "Sắp có ảnh", tự chuyển LIVE khi đủ 4 ảnh duyệt
+}
+
+enum ShotKind {
+  INDIVIDUAL // cá nhân
+  GROUP // nhóm
+}
+
+enum SubmissionStatus {
+  PENDING // chờ duyệt
+  APPROVED // đã duyệt, đã có SchoolPhoto tương ứng
+  REJECTED // bị trả lại kèm lý do, Photo sửa và nộp lại được
+}
+
+model School {
+  id           String       @id @default(cuid())
+  /// VD dai-hoc-thuong-mai, dùng cho /truong/<slug>
+  slug         String       @unique
+  name         String
+  /// mã trường: TMU, NEU…
+  short        String       @default("")
+  city         String       @default("")
+  /// đoạn giới thiệu ngắn do NAGIH viết
+  intro        String       @default("")
+  /// ảnh bìa, luôn là một ảnh đã duyệt của chính trường này
+  coverPhotoId String?      @unique
+  status       SchoolStatus @default(SOON)
+  order        Int          @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cover       SchoolPhoto?      @relation("SchoolCover", fields: [coverPhotoId], references: [id], onDelete: SetNull)
+  angles      SchoolAngle[]
+  photos      SchoolPhoto[]     @relation("SchoolPhotos")
+  submissions PhotoSubmission[]
+
+  @@index([status, order])
+  @@map("schools")
+}
+
+/// Danh mục góc chuẩn của một trường, QC quản. Góc đang có ảnh thì không xoá được, phải gộp.
+model SchoolAngle {
+  id       String @id @default(cuid())
+  schoolId String
+  name     String
+
+  createdAt DateTime @default(now())
+
+  school      School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  photos      SchoolPhoto[]
+  submissions PhotoSubmission[]
+
+  @@unique([schoolId, name])
+  @@map("school_angles")
+}
+
+/// Ảnh trường đã duyệt, thứ duy nhất trang khách được đọc.
+model SchoolPhoto {
+  id             String    @id @default(cuid())
+  schoolId       String
+  angleId        String
+  photographerId String
+  year           Int
+  kind           ShotKind  @default(INDIVIDUAL)
+  /// ghi chú chụp của Photo: giờ nào đẹp, cần xin phép ai
+  note           String    @default("")
+  /// stem dưới /uploads, giống Photo.path: schools/<schoolId>/<id>
+  path           String
+  width          Int       @default(0)
+  height         Int       @default(0)
+  sortOrder      Int       @default(0)
+  approvedAt     DateTime  @default(now())
+  approvedById   String?
+  /// chép từ bài nộp: ai tick cam kết khách đồng ý đăng ảnh, lúc nào
+  consentAt      DateTime?
+  consentById    String?
+
+  createdAt DateTime @default(now())
+
+  school       School       @relation("SchoolPhotos", fields: [schoolId], references: [id], onDelete: Cascade)
+  angle        SchoolAngle  @relation(fields: [angleId], references: [id], onDelete: Restrict)
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  approvedBy   AdminUser?   @relation("SchoolPhotoApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  consentBy    AdminUser?   @relation("SchoolPhotoConsentBy", fields: [consentById], references: [id], onDelete: SetNull)
+  coverOf      School?      @relation("SchoolCover")
+
+  @@index([schoolId, sortOrder])
+  @@index([angleId])
+  @@index([photographerId])
+  @@map("school_photos")
+}
+
+/// Ảnh Photo nộp, chờ QC duyệt. Không bao giờ hiện ra trang khách.
+model PhotoSubmission {
+  id             String           @id @default(cuid())
+  schoolId       String
+  /// góc Photo chọn từ danh mục; trống thì xem angleText
+  angleId        String?
+  /// góc Photo tự gõ khi chưa có trong danh mục, QC sửa về tên chuẩn lúc duyệt
+  angleText      String           @default("")
+  photographerId String
+  year           Int
+  kind           ShotKind         @default(INDIVIDUAL)
+  note           String           @default("")
+  /// stem dưới /uploads: pending/<photographerId>/<id>, duyệt xong chuyển sang schools/
+  path           String
+  width          Int              @default(0)
+  height         Int              @default(0)
+  consent        Boolean          @default(false)
+  consentAt      DateTime?
+  consentById    String?
+  status         SubmissionStatus @default(PENDING)
+  rejectReason   String           @default("")
+  reviewedById   String?
+  reviewedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school       School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  angle        SchoolAngle? @relation(fields: [angleId], references: [id], onDelete: SetNull)
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  consentBy    AdminUser?   @relation("SubmissionConsentBy", fields: [consentById], references: [id], onDelete: SetNull)
+  reviewedBy   AdminUser?   @relation("SubmissionReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([photographerId, status])
+  @@index([schoolId])
+  @@map("photo_submissions")
+}
+
+/// Đếm lượt khách mở ảnh và bấm Đặt từ ảnh trường, một hàng mỗi Photo mỗi ngày (giờ VN).
+model PhotographerStat {
+  photographerId String
+  date           DateTime @db.Date
+  views          Int      @default(0)
+  bookClicks     Int      @default(0)
+
+  photographer Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+
+  @@id([photographerId, date])
+  @@map("photographer_stats")
+}
+
 // ---------------------------------------------------------------- quản trị
 
 enum AdminRole {
@@ -337,24 +491,31 @@ enum AdminRole {
   VIEWER
   /// thợ: chỉ xem và sửa lịch của chính mình
   PHOTOGRAPHER
+  /// QC duyệt ảnh trường: chỉ vào khu duyệt ảnh và danh mục góc của trường
+  QC
 }
 
 model AdminUser {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  name         String    @default("")
-  passwordHash String
-  role         AdminRole @default(VIEWER)
-  active       Boolean   @default(true)
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String    @default("")
+  passwordHash   String
+  role           AdminRole @default(VIEWER)
+  active         Boolean   @default(true)
   /// tài khoản của thợ thì trỏ tới thợ; id thợ luôn lấy từ đây, không lấy từ URL
-  photographerId String? @unique
+  photographerId String?   @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   leadEvents LeadEvent[]
   auditLogs  AuditLog[]
-  photographer Photographer? @relation(fields: [photographerId], references: [id], onDelete: SetNull)
+
+  approvedSchoolPhotos SchoolPhoto[]     @relation("SchoolPhotoApprovedBy")
+  consentSchoolPhotos  SchoolPhoto[]     @relation("SchoolPhotoConsentBy")
+  consentSubmissions   PhotoSubmission[] @relation("SubmissionConsentBy")
+  reviewedSubmissions  PhotoSubmission[] @relation("SubmissionReviewedBy")
+  photographer         Photographer?     @relation(fields: [photographerId], references: [id], onDelete: SetNull)
 
   @@map("admin_users")
 }
@@ -369,12 +530,12 @@ model SiteSetting {
 }
 
 model AuditLog {
-  id       String   @id @default(cuid())
-  actorId  String?
-  entity   String
-  entityId String
-  action   String
-  diff     Json?
+  id        String   @id @default(cuid())
+  actorId   String?
+  entity    String
+  entityId  String
+  action    String
+  diff      Json?
   createdAt DateTime @default(now())
 
   actor AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)

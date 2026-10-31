@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Lora, Dancing_Script, Be_Vietnam_Pro } from "next/font/google";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const lora = Lora({
@@ -28,12 +29,8 @@ const beVietnamPro = Be_Vietnam_Pro({
   display: "swap",
 });
 
-const siteUrl = process.env.SITE_DOMAIN
-  ? `https://${process.env.SITE_DOMAIN}`
-  : "http://localhost:3000";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "NAGIH GRAPHY — Chọn Photo chụp kỷ yếu",
     template: "%s · NAGIH GRAPHY",
@@ -45,7 +42,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     siteName: "NAGIH GRAPHY",
-    url: siteUrl,
+    url: siteUrl(),
   },
   robots: { index: true, follow: true },
 };

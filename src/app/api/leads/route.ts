@@ -11,6 +11,27 @@ import { formatDateVN } from "@/lib/availability";
 export const dynamic = "force-dynamic";
 
 /**
+ * Khách bấm Đặt từ ảnh ở trang trường: tra lại tên trường và góc từ slug, id.
+ * Góc chỉ nhận khi thuộc đúng trường đó; sai thì bỏ qua, không báo lỗi.
+ * Bảng leads chưa có cột trường, nên tên trường và góc nằm trong tin nhắn
+ * báo về và ghi chú của sự kiện đầu tiên trong lịch sử lead.
+ */
+async function loadReference(schoolSlug: string, angleId: string) {
+  if (!schoolSlug) return { school: null, angle: "" };
+  const school = await db.school.findUnique({ where: { slug: schoolSlug }, select: { id: true, name: true } });
+  if (!school) return { school: null, angle: "" };
+  const angle = angleId
+    ? await db.schoolAngle.findFirst({ where: { id: angleId, schoolId: school.id }, select: { name: true } })
+    : null;
+  return { school: { name: school.name }, angle: angle?.name ?? "" };
+}
+
+function referenceNote(ref: { school: { name: string } | null; angle: string }): string {
+  if (!ref.school) return "";
+  return ref.angle ? ` · ảnh tham khảo: góc ${ref.angle} tại ${ref.school.name}` : ` · trường: ${ref.school.name}`;
+}
+
+/**
  * Nhận lead từ form liên hệ. Giới hạn nhịp nằm ở Traefik (10 req/phút/IP),
  * xem docker-compose.yml. Ở đây chỉ kiểm tra dữ liệu và honeypot.
  *
@@ -39,7 +60,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, code: "NG-0000-XXXX" });
   }
 
-  const [settings, photographer, zone] = await Promise.all([
+  const [settings, photographer, zone, reference] = await Promise.all([
     getSettings(),
     input.photographerSlug
       ? db.photographer.findFirst({
@@ -66,6 +87,7 @@ export async function POST(request: Request) {
           select: { id: true, slug: true, name: true, minFee: true, maxFee: true, note: true },
         })
       : null,
+    loadReference(input.schoolSlug, input.angleId),
   ]);
 
   const priceable = photographer
@@ -126,7 +148,12 @@ export async function POST(request: Request) {
   }
 
   await db.leadEvent.create({
-    data: { leadId: lead.id, fromStatus: null, toStatus: "NEW", note: `Khách gửi từ web qua ${input.channel}` },
+    data: {
+      leadId: lead.id,
+      fromStatus: null,
+      toStatus: "NEW",
+      note: `Khách gửi từ web qua ${input.channel}${referenceNote(reference)}`,
+    },
   });
 
   const message = buildLeadMessage(
@@ -141,6 +168,8 @@ export async function POST(request: Request) {
       eveningAddon: input.eveningAddon,
       customerName: input.customerName,
       phone: input.phone,
+      school: reference.school,
+      angle: reference.angle,
     },
     { studioName: settings.studio.name, eveningAddonFee: settings.pricing.eveningAddon },
   );

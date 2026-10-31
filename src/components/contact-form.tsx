@@ -19,6 +19,10 @@ type Props = {
   maxPeople: number;
   eveningAddonFee: number;
   initialPhotographer: string;
+  /** khách bấm Đặt từ ảnh ở trang trường (?truong=), tên tra ở server */
+  initialSchool?: { slug: string; name: string } | null;
+  /** góc của ảnh đó (?goc=), đã kiểm tra thuộc đúng trường; null nếu không có */
+  initialAngle?: { id: string; name: string } | null;
 };
 
 type Channel = LeadInput["channel"];
@@ -49,13 +53,17 @@ export function ContactForm({
   maxPeople,
   eveningAddonFee,
   initialPhotographer,
+  initialSchool = null,
+  initialAngle = null,
 }: Props) {
   const [pick, setPick] = useState(initialPhotographer);
   const [shootType, setShootType] = useState<"FULL_DAY" | "HALF_DAY">("FULL_DAY");
   const [shootDate, setShootDate] = useState("");
   const [people, setPeople] = useState(1);
   const [zoneSlug, setZoneSlug] = useState("");
-  const [placeDetail, setPlaceDetail] = useState("");
+  // Ảnh tham khảo từ trang trường; khách bỏ được bằng nút × trên chip.
+  const [reference, setReference] = useState(initialSchool ? { school: initialSchool, angle: initialAngle } : null);
+  const [placeDetail, setPlaceDetail] = useState(initialSchool?.name ?? "");
   const [concept, setConcept] = useState("");
   const [eveningAddon, setEveningAddon] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -92,6 +100,8 @@ export function ContactForm({
       eveningAddon,
       customerName: customerName.trim(),
       phone: phone.trim(),
+      school: reference?.school ?? null,
+      angle: reference?.angle?.name ?? "",
   };
 
   const message = buildLeadMessage(draft, { studioName, eveningAddonFee });
@@ -168,6 +178,8 @@ export function ContactForm({
       placeDetail: placeDetail.trim(),
       concept: concept.trim(),
       eveningAddon,
+      schoolSlug: reference?.school.slug ?? "",
+      angleId: reference?.angle?.id ?? "",
       channel,
       website,
     };
@@ -201,6 +213,24 @@ export function ContactForm({
   return (
     <div className="grid gap-4">
       <div className="relative grid gap-3.5 rounded-card border border-line bg-surface p-4">
+        {reference && (
+          <p className="flex items-center gap-2 justify-self-start rounded-full border border-blue-soft bg-blue-soft py-1 pl-3 pr-1 text-[13px] text-blue-deep">
+            <span className="min-w-0">
+              {reference.angle
+                ? `Ảnh tham khảo: góc ${reference.angle.name} tại ${reference.school.name}`
+                : `Trường: ${reference.school.name}`}
+            </span>
+            <button
+              type="button"
+              onClick={() => setReference(null)}
+              aria-label="Bỏ ảnh tham khảo khỏi tin nhắn"
+              className="grid size-6 shrink-0 place-items-center rounded-full text-base leading-none hover:bg-surface"
+            >
+              ×
+            </button>
+          </p>
+        )}
+
         <Field label="Photo muốn chụp">
           <select value={pick} onChange={(e) => setPick(e.target.value)} className={inputClass}>
             <option value="">Chưa chọn, nhắn studio</option>

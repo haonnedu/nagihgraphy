@@ -32,6 +32,9 @@ export type LeadDraft = {
   eveningAddon: boolean;
   customerName: string;
   phone: string;
+  /** khách bấm Đặt từ ảnh ở trang trường: tên trường và tên góc để Photo biết khách ưng ảnh nào */
+  school?: { name: string } | null;
+  angle?: string;
 };
 
 export function buildLeadMessage(
@@ -51,6 +54,11 @@ export function buildLeadMessage(
   const lines = [`Chào ${opts.studioName}, mình muốn đặt lịch chụp.`];
 
   lines.push(`- Photo: ${p ? `${p.name}${p.tierName ? ` (${p.tierName})` : ""}` : "nhờ studio gợi ý"}`);
+
+  if (draft.school?.name) {
+    const angle = draft.angle?.trim();
+    lines.push(angle ? `- Ảnh tham khảo: góc ${angle} tại ${draft.school.name}` : `- Trường: ${draft.school.name}`);
+  }
 
   const shoot = draft.shootType === "FULL_DAY" ? "cả ngày" : "nửa ngày";
   const evening = draft.eveningAddon ? ` + thêm buổi tối đến 20h (+${money(opts.eveningAddonFee)})` : "";

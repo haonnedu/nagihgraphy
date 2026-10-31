@@ -122,6 +122,15 @@ export default async function HomePage() {
               </Link>
             </div>
           </Reveal>
+          <Reveal delay={0.28}>
+            {/* lối vào Chọn trường, menu header ẩn trên điện thoại nên đặt ngay hero */}
+            <Link
+              href="/truong"
+              className="mt-4 inline-block text-[14px] font-medium text-blue underline-offset-2 hover:underline"
+            >
+              Hoặc xem ảnh thật chụp tại trường của bạn →
+            </Link>
+          </Reveal>
           {stats.length > 0 && (
             <RevealGroup className="mt-9 flex flex-wrap justify-center gap-2" stagger={0.07}>
               {stats.map((s) => (

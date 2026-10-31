@@ -88,6 +88,19 @@ services:
       - "traefik.http.middlewares.nagih-ratelimit.ratelimit.period=1m"
       - "traefik.http.middlewares.nagih-ratelimit.ratelimit.burst=5"
 
+      # --- HTTPS: router riêng cho đếm lượt xem / bấm Đặt ảnh trường, có giới hạn nhịp
+      # Khách lướt nhiều ảnh nên rộng hơn form liên hệ: 60 request/phút mỗi IP, dồn tối đa 20.
+      - "traefik.http.routers.nagih-stats.entrypoints=websecure"
+      - "traefik.http.routers.nagih-stats.rule=Host(`${SITE_DOMAIN}`) && PathPrefix(`/api/truong/su-kien`)"
+      - "traefik.http.routers.nagih-stats.tls=true"
+      - "traefik.http.routers.nagih-stats.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nagih-stats.service=nagih"
+      - "traefik.http.routers.nagih-stats.priority=100"
+      - "traefik.http.routers.nagih-stats.middlewares=nagih-stats-ratelimit"
+      - "traefik.http.middlewares.nagih-stats-ratelimit.ratelimit.average=60"
+      - "traefik.http.middlewares.nagih-stats-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.nagih-stats-ratelimit.ratelimit.burst=20"
+
   # Chạy migration. Không thường trực, phải gọi tay:
   #   docker compose --profile tools run --rm migrate
   migrate:

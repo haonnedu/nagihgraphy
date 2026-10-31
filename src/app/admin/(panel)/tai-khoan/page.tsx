@@ -10,6 +10,7 @@ const ROLE_LABEL: Record<string, string> = {
   SALE: "Sale",
   VIEWER: "Chỉ xem",
   PHOTOGRAPHER: "Photo",
+  QC: "QC duyệt ảnh trường",
 };
 
 /** Danh sách tài khoản và form tạo tài khoản thợ. Xem PLAN.md mục 11. */
@@ -55,6 +56,7 @@ export default async function AccountsPage() {
                   <option value="PHOTOGRAPHER">Photo</option>
                   {user.role === "OWNER" && (
                     <>
+                      <option value="QC">QC duyệt ảnh trường</option>
                       <option value="SALE">Sale</option>
                       <option value="VIEWER">Chỉ xem</option>
                       <option value="OWNER">Chủ studio</option>

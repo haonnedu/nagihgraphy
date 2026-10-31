@@ -423,3 +423,9 @@ Thay Google Sheet: thợ tự điền lịch của mình, quản lý và sale xe
 - Lead chuyển sang "đã chốt lịch" thì tự ghi buổi đó của thợ thành NAGIH nếu ô đang Rảnh hoặc chưa điền.
 
 **Site khách** vẫn đọc `FREE` để hiện "còn lịch hôm nay", nên thợ điền Rảnh là ngoài site tự đúng.
+
+## 12. Chọn trường (yêu cầu 2026-10-31)
+
+Lối vào thứ hai cho khách: vào từ trường của mình, xem ảnh thật Photo NAGIH đã chụp ở đó, chọn luôn Photo đã chụp góc mình ưng. Yêu cầu của khách, các quyết định khi ghép vào code và hợp đồng hàm nằm hết trong [docs/chon-truong.md](docs/chon-truong.md), file đó là nguồn chuẩn.
+
+**Tóm tắt.** Trang khách `/truong` và `/truong/[slug]` (lọc góc, năm, kiểu chụp; popup ảnh có thẻ Photo và nút Đặt sang `/lien-he?tho=&truong=&goc=`). Photo tự nộp ảnh ở `/admin/anh-truong`, ảnh không lên web ngay mà chờ QC duyệt ở `/admin/duyet-anh`; QC chốt tên góc theo danh mục chuẩn của trường. Thêm vai `QC`. Luật chặn ở server: 5 ảnh một lần nộp, 10 ảnh chờ duyệt mỗi Photo, cảnh báo khi một Photo chiếm quá 40% ảnh của trường, trường đủ 4 ảnh duyệt thì tự hiện chính.

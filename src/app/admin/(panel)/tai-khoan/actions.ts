@@ -11,12 +11,13 @@ export type ActionState = { error: string; ok?: string };
 
 /**
  * Quản lý tài khoản đăng nhập admin, chủ yếu để tạo tài khoản cho thợ.
- * OWNER làm được mọi thứ. SALE chỉ tạo, khoá, cấp lại mật khẩu cho tài khoản thợ.
+ * OWNER làm được mọi thứ, kể cả tài khoản QC duyệt ảnh trường.
+ * SALE chỉ tạo, khoá, cấp lại mật khẩu cho tài khoản thợ.
  * Mật khẩu tạm sinh ở server, chỉ hiện một lần trong thông báo, lưu dạng bcrypt.
  * Xem PLAN.md mục 11.
  */
 
-const ROLES = ["OWNER", "SALE", "VIEWER", "PHOTOGRAPHER"] as const;
+const ROLES = ["OWNER", "SALE", "VIEWER", "PHOTOGRAPHER", "QC"] as const;
 
 /** Mật khẩu tạm 10 ký tự, bỏ các ký tự dễ nhầm như 0 O l 1 I. */
 function tempPassword(): string {

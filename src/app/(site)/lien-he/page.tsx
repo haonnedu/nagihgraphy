@@ -20,11 +20,30 @@ export const metadata: Metadata = {
   alternates: { canonical: "/lien-he" },
 };
 
+function first(value: string | string[] | undefined): string {
+  return (Array.isArray(value) ? value[0] : value) ?? "";
+}
+
+/**
+ * Khách bấm Đặt từ ảnh ở trang trường: ?truong=<slug>&goc=<angleId>.
+ * Tra tên ở server, góc chỉ nhận khi thuộc đúng trường đó; sai thì bỏ qua.
+ */
+async function loadReference(schoolSlug: string, angleId: string) {
+  if (!schoolSlug || schoolSlug.length > 120) return { school: null, angle: null };
+  const school = await db.school.findUnique({ where: { slug: schoolSlug }, select: { id: true, slug: true, name: true } });
+  if (!school) return { school: null, angle: null };
+  const angle =
+    angleId && angleId.length <= 40
+      ? await db.schoolAngle.findFirst({ where: { id: angleId, schoolId: school.id }, select: { id: true, name: true } })
+      : null;
+  return { school: { slug: school.slug, name: school.name }, angle };
+}
+
 export default async function ContactPage(props: PageProps<"/lien-he">) {
   const sp = await props.searchParams;
-  const requested = Array.isArray(sp.tho) ? sp.tho[0] : (sp.tho ?? "");
+  const requested = first(sp.tho);
 
-  const [settings, photographerRows, zoneRows] = await Promise.all([
+  const [settings, photographerRows, zoneRows, reference] = await Promise.all([
     getSettings(),
     db.photographer.findMany({
       where: { published: true },
@@ -47,6 +66,7 @@ export default async function ContactPage(props: PageProps<"/lien-he">) {
       orderBy: { order: "asc" },
       select: { slug: true, name: true, minFee: true, maxFee: true, note: true },
     }),
+    loadReference(first(sp.truong), first(sp.goc)),
   ]);
 
   const photographers: FormPhotographer[] = photographerRows.map((p) => ({
@@ -93,6 +113,8 @@ export default async function ContactPage(props: PageProps<"/lien-he">) {
           maxPeople={settings.studio.maxPeople}
           eveningAddonFee={settings.pricing.eveningAddon}
           initialPhotographer={initialPhotographer}
+          initialSchool={reference.school}
+          initialAngle={reference.angle}
         />
       </div>
     </main>

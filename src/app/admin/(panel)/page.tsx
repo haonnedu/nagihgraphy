@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/admin-guard";
 import { getSettings } from "@/lib/settings";
 import { photographersMissingNextWeek } from "@/lib/schedule-queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomePage() {
+  // Layout cho cả thợ và QC đi qua; trang tổng quan thì đẩy họ về trang đầu của mình.
+  // Sau đăng nhập ai cũng về /admin nên đây cũng là chỗ rẽ nhánh theo vai.
+  await requireAdmin();
   const [photographers, published, photos, newLeads, totalLeads, settings, missing] = await Promise.all([
     db.photographer.count(),
     db.photographer.count({ where: { published: true } }),

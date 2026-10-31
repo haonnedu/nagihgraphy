@@ -21,6 +21,9 @@ export function SiteFooter({
           <Link href="/tho" className="text-ink-2 hover:text-blue">
             Chọn Photo
           </Link>
+          <Link href="/truong" className="text-ink-2 hover:text-blue">
+            Chọn trường
+          </Link>
           <Link href="/bang-gia" className="text-ink-2 hover:text-blue">
             Bảng giá
           </Link>

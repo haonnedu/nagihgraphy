@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PhotographerCard } from "@/components/photographer-card";
 import { PhotographerFilters } from "@/components/photographer-filters";
+import { BrowseTabs } from "@/components/school/browse-tabs";
 import { listPhotographers } from "@/lib/queries";
 import { getSettings } from "@/lib/settings";
 import { money } from "@/lib/pricing";
@@ -44,7 +45,9 @@ export default async function PhotographersPage(props: PageProps<"/tho">) {
 
   return (
     <main className="mx-auto w-full max-w-[1120px] flex-1 px-4">
-      <section className="flex flex-wrap items-end justify-between gap-x-5 gap-y-2.5 pb-1.5 pt-6">
+      <BrowseTabs active="tho" className="pt-4" />
+
+      <section className="flex flex-wrap items-end justify-between gap-x-5 gap-y-2.5 pb-1.5 pt-4">
         <div>
           <h1 className="font-serif text-[clamp(26px,6vw,36px)] font-semibold leading-tight tracking-tight text-balance">
             Chọn Photo{" "}

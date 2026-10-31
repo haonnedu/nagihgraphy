@@ -24,11 +24,11 @@ const role = (arg("role") || "OWNER").toUpperCase();
 const name = arg("name") || email.split("@")[0];
 
 if (!email || !password) {
-  console.error("Cần --email và --password. Thêm --role OWNER|SALE|VIEWER nếu muốn, mặc định OWNER.");
+  console.error("Cần --email và --password. Thêm --role OWNER|SALE|VIEWER|QC nếu muốn, mặc định OWNER.");
   process.exit(1);
 }
-if (!["OWNER", "SALE", "VIEWER"].includes(role)) {
-  console.error("Role phải là OWNER, SALE hoặc VIEWER.");
+if (!["OWNER", "SALE", "VIEWER", "QC"].includes(role)) {
+  console.error("Role phải là OWNER, SALE, VIEWER hoặc QC.");
   process.exit(1);
 }
 if (password.length < 8) {
@@ -47,8 +47,8 @@ const passwordHash = await hash(password, 12);
 
 const user = await db.adminUser.upsert({
   where: { email },
-  update: { passwordHash, role: role as "OWNER" | "SALE" | "VIEWER", name, active: true },
-  create: { email, passwordHash, role: role as "OWNER" | "SALE" | "VIEWER", name },
+  update: { passwordHash, role: role as "OWNER" | "SALE" | "VIEWER" | "QC", name, active: true },
+  create: { email, passwordHash, role: role as "OWNER" | "SALE" | "VIEWER" | "QC", name },
   select: { email: true, role: true, name: true },
 });
 

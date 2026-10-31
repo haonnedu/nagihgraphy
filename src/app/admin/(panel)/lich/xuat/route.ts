@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import { auth } from "@/auth";
+import { isStaff } from "@/lib/admin-guard";
 import { todayVN } from "@/lib/availability";
 import { countMonth, hasNote, noteText, parseMonth, STATUS_SHORT, weekdayVN, WEEKDAY_SHORT, type SlotValue } from "@/lib/schedule";
 import { loadMonthAll } from "@/lib/schedule-queries";
@@ -18,11 +19,11 @@ const FILL: Record<string, string> = {
 /**
  * Xuất lịch cả tháng ra Excel: mỗi thợ một hàng, mỗi ngày hai cột S và C,
  * cuối hàng là tổng theo trạng thái và ghi chú các ngày có ghi chú.
- * Chỉ nhân sự studio tải được; thợ không có quyền.
+ * Chỉ nhân sự studio (OWNER, SALE, VIEWER) tải được; Photo và QC không có quyền.
  */
 export async function GET(req: Request) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role === "PHOTOGRAPHER") {
+  if (!session?.user?.id || !isStaff(session.user.role)) {
     return new NextResponse("Không có quyền", { status: 403 });
   }
 

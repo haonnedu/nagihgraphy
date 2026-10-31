@@ -8,6 +8,9 @@
 export const IMAGE_WIDTHS = [400, 800, 1600] as const;
 export type ImageWidth = (typeof IMAGE_WIDTHS)[number];
 
+/** Ảnh trường có thêm một bản JPEG cỡ này cho trình duyệt không đọc WebP. */
+export const JPEG_FALLBACK_WIDTH = 800;
+
 /**
  * Dùng NEXT_PUBLIC_ để giá trị được nhúng vào bundle client. Bỏ trống thì
  * mặc định /uploads, khớp với route serve ảnh và cấu hình Traefik.
@@ -27,4 +30,12 @@ export function photoSrc(stem: string, width: ImageWidth = 800): string {
 
 export function photoSrcSet(stem: string): string {
   return IMAGE_WIDTHS.map((w) => `${photoSrc(stem, w)} ${w}w`).join(", ");
+}
+
+/**
+ * Bản JPEG 800px của ảnh trường, dùng làm <img src> fallback bên trong
+ * <picture> có <source type="image/webp">. Ảnh portfolio không có bản này.
+ */
+export function photoJpegSrc(stem: string): string {
+  return `${publicUploadBase()}/${stem}-${JPEG_FALLBACK_WIDTH}.jpg`;
 }

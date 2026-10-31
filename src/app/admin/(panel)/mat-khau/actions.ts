@@ -6,9 +6,9 @@ import { requireAdmin } from "@/lib/admin-guard";
 
 export type ActionState = { error: string; ok?: string };
 
-/** Tự đổi mật khẩu, mọi vai kể cả thợ. Phải nhập đúng mật khẩu hiện tại. */
+/** Tự đổi mật khẩu, mọi vai kể cả thợ và QC. Phải nhập đúng mật khẩu hiện tại. */
 export async function changePassword(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireAdmin({ allowPhotographer: true });
+  const user = await requireAdmin({ allowPhotographer: true, allowQc: true });
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");
   const confirm = String(formData.get("confirm") ?? "");

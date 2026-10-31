@@ -80,7 +80,9 @@ seed-assets/             18 ảnh portfolio gốc tách từ base64
 src/lib/db.ts            Prisma client dùng driver adapter
 src/lib/images.ts        pipeline sharp: 1 gốc + 3 cỡ WebP
 src/lib/slug.ts          bỏ dấu tiếng Việt, slug, chuẩn hoá tìm kiếm
-src/app/uploads/         route serve ảnh portfolio
+src/app/uploads/         route serve ảnh portfolio và ảnh trường (pending/ cần đăng nhập)
+src/lib/school-*.ts      Chọn trường: hằng số dùng chung, luật nghiệp vụ, truy vấn
+docs/chon-truong.md      yêu cầu và thiết kế Chọn trường
 scripts/local-db.mts     PostgreSQL tạm bằng PGlite
 docker-compose.yml       service web + migrate + seed, gắn label Traefik
 DEPLOY.md                các bước lên server
@@ -95,8 +97,10 @@ DEPLOY.md                các bước lên server
 | `/` | Trang chủ: hero chữ với số liệu, 4 thợ nổi bật, phụ phí tỉnh, quy trình 4 bước |
 | `/tho` | Danh sách thợ, lọc theo khu vực / hạng / tag / còn lịch hôm nay, tìm không dấu, 5 kiểu sắp xếp |
 | `/tho/[slug]` | Chi tiết thợ: gallery vuốt ngang, ma trận dịch vụ, lịch, link Drive |
+| `/truong` | Chọn trường: lưới trường đang có ảnh, tìm không dấu, lọc thành phố, khu "Sắp có ảnh" |
+| `/truong/[slug]` | Một trường: ảnh thật đã duyệt, lọc góc / năm / kiểu chụp, popup ảnh có thẻ Photo và nút Đặt |
 | `/bang-gia` | Bảng giá theo hạng, máy tính phụ phí 21 tỉnh, chính sách |
-| `/lien-he` | Form đặt lịch theo luồng cũ: chọn thợ, cả ngày hay nửa ngày, số người, ngày, tỉnh, địa điểm, concept; tin nhắn soạn sẵn cập nhật realtime; nút sao chép; bấm Zalo, Instagram, Messenger thì tự chép rồi mở app |
+| `/lien-he` | Form đặt lịch theo luồng cũ: chọn thợ, cả ngày hay nửa ngày, số người, ngày, tỉnh, địa điểm, concept; tin nhắn soạn sẵn cập nhật realtime; nút sao chép; bấm Zalo, Instagram, Messenger thì tự chép rồi mở app. Nhận `?tho=&truong=&goc=` để điền sẵn Photo, trường và góc |
 
 Bộ lọc nằm trong URL nên chia sẻ link giữ nguyên kết quả, và trang vẫn render từ server cho SEO.
 
@@ -149,6 +153,9 @@ npm run admin:create -- --email chu@nagihgraphy.com --password "mat khau manh" -
 | `/admin/tai-khoan` | Tạo tài khoản thợ và nhân sự, khoá, mở, cấp lại mật khẩu tạm |
 | `/admin/mat-khau` | Tự đổi mật khẩu, mọi vai |
 | `/admin/ho-so` | Photo tự sửa hồ sơ ngoài site của mình: tên thật, khu vực, phong cách, giới thiệu, link Drive, tag, dịch vụ, ảnh portfolio |
+| `/admin/anh-truong` | Photo nộp ảnh trường (1–5 ảnh một lần, tối đa 10 chờ duyệt), xem bốn số thống kê, sửa ảnh bị trả lại |
+| `/admin/duyet-anh` | QC, SALE, OWNER duyệt hoặc trả ảnh Photo nộp, chốt tên góc chuẩn |
+| `/admin/truong` | Danh sách trường; OWNER thêm, sửa, xoá trường. Trang chi tiết có danh mục góc (đổi tên, gộp, xoá) và ảnh đã lên web (gỡ, đặt bìa) |
 
 ### Lịch thợ
 
@@ -163,5 +170,15 @@ Site khách vẫn đọc trạng thái `FREE` để hiện "còn lịch hôm nay
 **Tạo tài khoản cho thợ:** vào `/admin/tai-khoan`, chọn thợ, nhập email đăng nhập (không cần email thật, chỉ cần không trùng), bấm tạo. Mật khẩu tạm hiện một lần, gửi cho thợ; thợ đăng nhập rồi đổi ở "Đổi mật khẩu". Thợ nghỉ thì bấm "Khoá", lịch cũ giữ nguyên, mở lại được.
 
 Mọi thao tác lưu đều gọi `revalidatePath` cho trang khách nên đổi hiện gần như ngay. Upload đi qua server action, giới hạn 25 MB mỗi lần trong `next.config.ts`, server tự resize bằng sharp thành ba cỡ WebP.
+
+### Chọn trường
+
+Lối vào thứ hai cho khách: chọn trường của mình, xem ảnh thật Photo NAGIH đã chụp ở đó, ưng góc nào thì bấm Đặt với đúng Photo đã chụp góc đó. Yêu cầu, quyết định và hợp đồng hàm nằm trong [docs/chon-truong.md](docs/chon-truong.md).
+
+Năm bảng mới: `schools`, `school_angles`, `school_photos` (ảnh đã duyệt, thứ duy nhất trang khách đọc), `photo_submissions` (ảnh Photo nộp, chờ duyệt) và `photographer_stats` (lượt xem, lượt bấm Đặt theo ngày). Migration `20261031000000_chon_truong` nạp sẵn 7 trường ở trạng thái "Sắp có ảnh"; trường đủ 4 ảnh duyệt thì tự chuyển sang hiện chính.
+
+Thêm vai `QC`: chỉ vào `/admin/duyet-anh`, `/admin/truong/**` và đổi mật khẩu, trang khác tự đẩy về hàng đợi. SALE duyệt được như QC, chỉ OWNER thêm, sửa, xoá trường. Tạo tài khoản QC ở `/admin/tai-khoan` hoặc `npm run admin:create -- ... --role QC`.
+
+Ảnh chờ duyệt nằm trong `uploads/pending/<id Photo>/`, route `/uploads` chỉ trả cho người đã đăng nhập admin (Photo chỉ thấy thư mục của mình). Duyệt xong file chuyển sang `uploads/schools/<id trường>/`, kèm thêm một bản JPEG 800 làm fallback. HEIC và ảnh nặng được trình duyệt của Photo chuyển sang JPEG, thu cạnh dài về 2560px trước khi gửi; server không giải mã HEIC. Lượt xem và bấm Đặt gửi về `POST /api/truong/su-kien`. `/sitemap.xml` và `/robots.txt` đọc database mỗi request nên thêm trường là sitemap tự có.
 
 **Chưa làm:** sửa các đoạn chữ khác ngoài hero và thông tin studio qua admin. Xem PLAN.md mục 7.

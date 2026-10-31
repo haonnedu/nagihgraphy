@@ -34,6 +34,10 @@ export const leadInputSchema = z.object({
   concept: z.string().trim().max(500).default(""),
   eveningAddon: z.boolean().default(false),
 
+  /** khách bấm Đặt từ ảnh ở trang trường: slug trường và id góc, server tra lại tên */
+  schoolSlug: z.string().trim().max(120).default(""),
+  angleId: z.string().trim().max(40).default(""),
+
   channel: z.enum(LEAD_CHANNELS).default("FORM"),
 
   /**

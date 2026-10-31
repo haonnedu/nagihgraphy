@@ -225,10 +225,21 @@ export async function setCover(photoId: string): Promise<void> {
 
 export async function deletePhotographer(id: string): Promise<void> {
   await requireEditor();
-  const p = await db.photographer.findUnique({ where: { id }, include: { photos: { select: { path: true } } } });
+  const p = await db.photographer.findUnique({
+    where: { id },
+    include: {
+      photos: { select: { path: true } },
+      // ảnh trường đã duyệt và bài nộp cũng xoá theo cascade, file phải tự xoá
+      schoolPhotos: { select: { path: true } },
+      submissions: { where: { status: { not: "APPROVED" } }, select: { path: true } },
+    },
+  });
   if (!p) return;
-  await db.photographer.delete({ where: { id } }); // photos, tags, features xoá theo cascade
-  await Promise.all(p.photos.map((ph) => deleteImage(ph.path).catch(() => {})));
+  await db.photographer.delete({ where: { id } }); // photos, tags, features, ảnh trường xoá theo cascade
+  // Xoá từng ảnh một, không mở cả trăm thao tác file cùng lúc.
+  for (const ph of [...p.photos, ...p.schoolPhotos, ...p.submissions]) {
+    await deleteImage(ph.path).catch(() => {});
+  }
   revalidatePublic(p.slug);
   redirect("/admin/tho");
 }

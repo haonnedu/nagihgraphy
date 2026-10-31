@@ -4,6 +4,7 @@ import type { Settings } from "@/lib/settings";
 
 const NAV = [
   { href: "/tho", label: "Chọn Photo" },
+  { href: "/truong", label: "Chọn trường" },
   { href: "/bang-gia", label: "Bảng giá" },
 ];
 
