@@ -14,6 +14,7 @@ export function SchoolPicture({
   eager = false,
   priority = false,
   className,
+  onLoad,
 }: {
   stem: string;
   width: number;
@@ -30,6 +31,8 @@ export function SchoolPicture({
   priority?: boolean;
   /** class cho thẻ img */
   className?: string;
+  /** gọi khi ảnh tải xong, dùng cho card chạy vòng để không chuyển sang ảnh còn trống */
+  onLoad?: () => void;
 }) {
   return (
     <picture>
@@ -43,28 +46,17 @@ export function SchoolPicture({
         decoding="async"
         fetchPriority={priority ? "high" : undefined}
         className={className}
+        onLoad={onLoad}
       />
     </picture>
   );
 }
 
 /** Ô giữ chỗ khi trường chưa có ảnh: hiện mã trường (TMU, NEU…). */
-export function SchoolPlaceholder({
-  short,
-  name,
-  className,
-  small = false,
-}: {
-  short: string;
-  name: string;
-  className?: string;
-  /** ô vuông nhỏ ở khu "Sắp có ảnh": chữ nhỏ để mã 4 ký tự như HUST, ULIS không tràn */
-  small?: boolean;
-}) {
-  const size = small ? "text-[17px] tracking-normal" : "text-[clamp(22px,5vw,30px)] tracking-wide";
+export function SchoolPlaceholder({ short, name, className }: { short: string; name: string; className?: string }) {
   return (
     <div
-      className={`grid place-items-center overflow-hidden bg-blue-soft font-serif font-semibold text-blue/70 ${size} ${className ?? ""}`}
+      className={`grid place-items-center overflow-hidden bg-blue-soft font-serif text-[clamp(22px,5vw,30px)] font-semibold tracking-wide text-blue/70 ${className ?? ""}`}
     >
       {short || name.charAt(0)}
     </div>

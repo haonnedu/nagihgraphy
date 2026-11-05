@@ -23,6 +23,8 @@ export type PublicSchoolCard = {
   status: SchoolStatus;
   /** ảnh bìa; null khi trường chưa có ảnh nào */
   cover: Stem | null;
+  /** ảnh card chạy vòng: bìa trước, rồi các ảnh còn lại theo thứ tự trang trường */
+  slides: Stem[];
   photoCount: number;
   photographerCount: number;
 };
@@ -67,36 +69,43 @@ export async function listSchoolsPublic(): Promise<PublicSchoolList> {
     photographerCount.set(g.schoolId, (photographerCount.get(g.schoolId) ?? 0) + 1);
   }
 
-  // Bìa trỏ vào ảnh của Photo đang ẩn thì lấy ảnh đầu tiên còn hiện của trường.
-  const needFallback = schools
-    .filter((s) => (!s.cover || !s.cover.photographer.published) && (photoCount.get(s.id) ?? 0) > 0)
-    .map((s) => s.id);
-  const fallback = new Map<string, Stem>();
-  if (needFallback.length) {
+  // Toàn bộ ảnh đang hiện của các trường có ảnh, để card chạy vòng qua từng ảnh.
+  // Chỉ lấy đường dẫn và kích thước, ảnh thật do trình duyệt tải dần khi tới lượt.
+  const withPhotos = schools.filter((s) => (photoCount.get(s.id) ?? 0) > 0).map((s) => s.id);
+  const photosBySchool = new Map<string, Stem[]>();
+  if (withPhotos.length) {
     const rows = await db.schoolPhoto.findMany({
-      where: { schoolId: { in: needFallback }, ...visiblePhoto },
+      where: { schoolId: { in: withPhotos }, ...visiblePhoto },
       orderBy: [{ sortOrder: "asc" }, { approvedAt: "asc" }],
       select: { schoolId: true, path: true, width: true, height: true },
     });
     for (const r of rows) {
-      if (!fallback.has(r.schoolId)) fallback.set(r.schoolId, { stem: r.path, width: r.width, height: r.height });
+      const list = photosBySchool.get(r.schoolId) ?? [];
+      list.push({ stem: r.path, width: r.width, height: r.height });
+      photosBySchool.set(r.schoolId, list);
     }
   }
 
-  const cards: PublicSchoolCard[] = schools.map((s) => ({
-    id: s.id,
-    slug: s.slug,
-    name: s.name,
-    short: s.short,
-    city: s.city,
-    status: s.status,
-    cover:
+  const cards: PublicSchoolCard[] = schools.map((s) => {
+    const photos = photosBySchool.get(s.id) ?? [];
+    // Bìa trỏ vào ảnh của Photo đang ẩn thì lấy ảnh đầu tiên còn hiện của trường.
+    const cover =
       s.cover && s.cover.photographer.published
         ? { stem: s.cover.path, width: s.cover.width, height: s.cover.height }
-        : (fallback.get(s.id) ?? null),
-    photoCount: photoCount.get(s.id) ?? 0,
-    photographerCount: photographerCount.get(s.id) ?? 0,
-  }));
+        : (photos[0] ?? null);
+    return {
+      id: s.id,
+      slug: s.slug,
+      name: s.name,
+      short: s.short,
+      city: s.city,
+      status: s.status,
+      cover,
+      slides: cover ? [cover, ...photos.filter((p) => p.stem !== cover.stem)] : [],
+      photoCount: photoCount.get(s.id) ?? 0,
+      photographerCount: photographerCount.get(s.id) ?? 0,
+    };
+  });
 
   const cities = [...new Set(cards.map((c) => c.city).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi"));
   return {

@@ -120,16 +120,14 @@ export default async function HomePage() {
               >
                 {secondaryLabel}
               </Link>
+              {/* lối vào Chọn trường, menu header ẩn trên điện thoại nên đặt ngay hero */}
+              <Link
+                href="/truong"
+                className="rounded-[10px] border border-blue bg-surface px-5 py-3 font-medium text-blue transition-colors hover:bg-blue-soft"
+              >
+                Xem ảnh thật tại trường của bạn
+              </Link>
             </div>
-          </Reveal>
-          <Reveal delay={0.28}>
-            {/* lối vào Chọn trường, menu header ẩn trên điện thoại nên đặt ngay hero */}
-            <Link
-              href="/truong"
-              className="mt-4 inline-block text-[14px] font-medium text-blue underline-offset-2 hover:underline"
-            >
-              Hoặc xem ảnh thật chụp tại trường của bạn →
-            </Link>
           </Reveal>
           {stats.length > 0 && (
             <RevealGroup className="mt-9 flex flex-wrap justify-center gap-2" stagger={0.07}>
